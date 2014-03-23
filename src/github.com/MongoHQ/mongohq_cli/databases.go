@@ -6,6 +6,14 @@ import (
 )
 
 func Databases() {
-  databases := mongohq_api.Databases
-  fmt.Println(databases)
+  databases, err := mongohq_api.GetDatabases(OauthToken)
+
+  if err != nil {
+    fmt.Println("Error retrieving databases: " + err.Error())
+  } else { 
+    fmt.Println("=== My Databases")
+    for _, database := range databases {
+      fmt.Println(database.Name)
+    }
+  }
 }

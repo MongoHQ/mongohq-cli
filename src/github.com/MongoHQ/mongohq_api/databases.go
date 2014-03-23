@@ -2,9 +2,10 @@ package mongohq_api
 
 import (
   "net/http"
-  "fmt"
+  //"fmt"
+  "io/ioutil"
   //"net/url"
-  //"encoding/json"
+  "encoding/json"
   //"errors"
 )
 
@@ -13,19 +14,21 @@ type Database struct {
     Name string
 }
 
-func Databases() ([]Database, error) {
-  client := &http.Client{
-    //CheckRedirect: redirectPolicyFunc,
-  }
+func GetDatabases(oauthToken string) ([]Database, error) {
+  client := &http.Client{}
+  request, err := http.NewRequest("GET", rest_url_for("/databases"), nil)
+  request.Header.Add("Authorization", "Bearer " + oauthToken)
+  response, err := client.Do(request)
 
-  response, err := client.Get(rest_url_for("/databases"))
   if err != nil {
     return nil, err
+  } else {
+    responseBody, _ := ioutil.ReadAll(response.Body)
+    response.Body.Close()
+
+    var databasesSlice []Database
+    _ = json.Unmarshal(responseBody, &databasesSlice)
+
+    return databasesSlice, err
   }
-  fmt.Println(response)
-
-  request, err := http.NewRequest("GET", rest_url_for("/databases"), nil)
-  request.Header.Add("Authorization", "Bearer ") // + oauth_token)
-
-  return nil, err
 }
