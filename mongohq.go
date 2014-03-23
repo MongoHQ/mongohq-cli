@@ -27,14 +27,14 @@ func main() {
         cli.StringFlag { "db", "database-name", ""},
       },
       Action: func(c *cli.Context) {
-        println("added task: ", c.Args().First())
+        println("Pending")
       },
     },
     {
       Name:      "deployments",
       Usage:     "list deployments",
       Action: func(c *cli.Context) {
-        println("added task: ", c.Args().First())
+        mongohq_cli.Deployments()
       },
     },
     {
@@ -44,21 +44,21 @@ func main() {
         cli.StringFlag { "dp", "host:port", ""},
       },
       Action: func(c *cli.Context) {
-        println("added task: ", c.Args().First())
+        println("Pending")
       },
     },
     {
       Name:      "deployments:mongostat",
       Usage:     "realtime mongostat",
       Action: func(c *cli.Context) {
-        println("added task: ", c.Args().First())
+        println("Pending")
       },
     },
     {
       Name:      "deployments:logs",
       Usage:     "tail logs",
       Action: func(c *cli.Context) {
-        println("added task: ", c.Args().First())
+        println("Pending")
       },
     },
     {
