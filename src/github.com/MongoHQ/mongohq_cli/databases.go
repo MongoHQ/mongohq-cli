@@ -14,6 +14,9 @@ func Databases() {
     fmt.Println("=== My Databases")
     for _, database := range databases {
       fmt.Println(database.Name)
+      fmt.Println("  status:        " + database.Status)
+      fmt.Println("  plan:          " + database.Plan)
+      fmt.Println("  deployment_id: " + database.Deployment_id)
     }
   }
 }

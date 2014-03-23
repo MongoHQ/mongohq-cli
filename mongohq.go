@@ -21,7 +21,7 @@ func main() {
       },
     },
     {
-      Name:      "databases:info",
+      Name:      "databases:info (pending)",
       Usage:     "information on database",
       Flags:     []cli.Flag {
         cli.StringFlag { "db", "database-name", ""},
@@ -38,7 +38,7 @@ func main() {
       },
     },
     {
-      Name:      "deployments:info",
+      Name:      "deployments:info (pending)",
       Usage:     "information on deployment",
       Flags:     []cli.Flag {
         cli.StringFlag { "dp", "host:port", ""},
@@ -48,14 +48,14 @@ func main() {
       },
     },
     {
-      Name:      "deployments:mongostat",
+      Name:      "deployments:mongostat (pending)",
       Usage:     "realtime mongostat",
       Action: func(c *cli.Context) {
         println("Pending")
       },
     },
     {
-      Name:      "deployments:logs",
+      Name:      "deployments:logs (pending)",
       Usage:     "tail logs",
       Action: func(c *cli.Context) {
         println("Pending")
