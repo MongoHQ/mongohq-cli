@@ -11,19 +11,13 @@ func main() {
   app := cli.NewApp()
   app.Name = "mongohq"
   app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
+  app.Before = mongohq_cli.RequireAuth
   app.Commands = []cli.Command{
-    {
-      Name:      "login",
-      Usage:     "authenticate CLI",
-      Action:    func(c *cli.Context) {
-        mongohq_cli.Login()
-      },
-    },
     {
       Name:      "databases",
       Usage:     "list databases",
       Action: func(c *cli.Context) {
-        println("added task: ", c.Args().First())
+        mongohq_cli.Databases()
       },
     },
     {
@@ -65,6 +59,13 @@ func main() {
       Usage:     "tail logs",
       Action: func(c *cli.Context) {
         println("added task: ", c.Args().First())
+      },
+    },
+    {
+      Name:      "logout",
+      Usage:     "remove stored auth",
+      Action:    func(c *cli.Context) {
+        mongohq_cli.Logout()
       },
     },
   }

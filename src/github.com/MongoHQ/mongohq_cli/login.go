@@ -1,18 +1,21 @@
 package mongohq_cli
 
 import (
+  //"fmt"
   "github.com/MongoHQ/mongohq_api"
-  "fmt"
   "encoding/json"
   "io/ioutil"
   "os"
   "errors"
+  "github.com/codegangsta/cli"
 )
 
-var credential_path = os.Getenv("HOME") + "/.mongohq"
-var credential_file = credential_path + "/credentials"
+var credentialPath = os.Getenv("HOME") + "/.mongohq"
+var credentialFile = credentialPath + "/credentials"
 
-func Login() {
+var Email, OauthToken string
+
+func login() (string, string, error) {
   username := prompt("Username")
   password := prompt("Password")
 
@@ -22,18 +25,17 @@ func Login() {
   //if err != nil {
     //fmt.Println("Error: ", err)
   //}
-  oauth_token, err := mongohq_api.Authenticate(username, password)
+  oauthToken, err := mongohq_api.Authenticate(username, password)
 
   if err != nil {
-    fmt.Println("Error authenticating")
-    //fmt.Println("Error: ", err.Error())
+    return username, "", errors.New("Error authenticating given username / password")
   } else {
-    err = storeCredentials(username, oauth_token)
+    err = storeCredentials(username, oauthToken)
 
     if err != nil {
-      fmt.Println(err)
+      return username, oauthToken, err
     } else {
-      fmt.Println("Authentication complete.")
+      return username, oauthToken, nil
     }
   }
 }
@@ -45,23 +47,56 @@ func storeCredentials(username, oauth string) (error) {
 
   jsonText, _ := json.Marshal(credentials)
 
-  err := os.MkdirAll(credential_path, 0700)
+  err := os.MkdirAll(credentialPath, 0700)
 
   if err != nil {
-    return errors.New("Error creating directory " + credential_path)
+    return errors.New("Error creating directory " + credentialPath)
   }
 
-  err = ioutil.WriteFile(credential_file, jsonText, 0500)
+  err = ioutil.WriteFile(credentialFile, jsonText, 0500)
 
   if err != nil {
-    err = errors.New("Error writing credential_file to " + credential_file)
+    err = errors.New("Error writing credentials to " + credentialFile)
   }
 
   return err
 }
 
-func GetCredentials() (jsonResponse map[string]interface{}, err error) {
-  jsonText, err := ioutil.ReadFile(credential_file)
-  _ = json.Unmarshal(jsonText, &jsonResponse)
-  return jsonResponse, err
+func readCredentialFile() (jsonResponse map[string]interface{}, err error) {
+  if _, err := os.Stat(credentialFile); os.IsNotExist(err) { // check if file exists
+    return nil, errors.New("Credential file does not exist.")
+  } else {
+    jsonText, err := ioutil.ReadFile(credentialFile)
+    _ = json.Unmarshal(jsonText, &jsonResponse)
+
+    return jsonResponse, err
+  }
+}
+
+func RequireAuth(*cli.Context) (err error) {
+  for !verifyAuth() {}
+  return err
+}
+
+func Logout() {
+  os.Remove(credentialFile)
+}
+
+func verifyAuth() (bool) {
+  userMap, err := readCredentialFile()
+  if err != nil {
+    username, oauthToken, err := login()
+
+    if err != nil {
+      return false
+    } else {
+      Email = username
+      OauthToken = oauthToken
+      return true
+    }
+  } else {
+     Email = userMap["email"].(string)
+     OauthToken = userMap["oauth_token"].(string)
+     return true
+  }
 }
