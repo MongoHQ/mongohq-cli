@@ -48,10 +48,19 @@ func main() {
       },
     },
     {
-      Name:      "deployments:mongostat (pending)",
+      Name:      "deployments:mongostat",
       Usage:     "realtime mongostat",
+      Flags:     []cli.Flag {
+        cli.StringFlag{"deployment,dp", "<bson_id>", "deployment id"},
+        cli.StringFlag{"database,db", "<string>", "database name"},
+      },
       Action: func(c *cli.Context) {
-        println("Pending")
+        if c.String("deployment") != "<bson_id>" {
+          mongohq_cli.MongoStat(c.String("deployment"), c.String("database"))
+        } else {
+          println("Deployment is required")
+          os.Exit(1)
+        }
       },
     },
     {

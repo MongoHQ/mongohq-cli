@@ -12,6 +12,10 @@ func rest_url_for(path string) (string) {
    return "https://dblayer-api.herokuapp.com" + path;
 }
 
+func socket_url_for(path string, oauthToken string) (string) {
+   return "wss://new-api.mongohq.com" + path + "?token=Bearer%20" + oauthToken
+}
+
 func rest_get(path string, oauthToken string) ([]byte, error) {
   client := &http.Client{}
   request, err := http.NewRequest("GET", rest_url_for(path), nil)
