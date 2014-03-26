@@ -34,6 +34,7 @@ installMongoHQCli() {
   if [[ -w "/usr/local/bin/mongohq" ]]; then
     mv $workingdir/mongohq /usr/local/bin/mongohq
   else
+    echo "Please enter your sudo password to move the document to /usr/local/bin/mongohq:"
     sudo mv $workingdir/mongohq /usr/local/bin/mongohq
   fi
 
