@@ -9,9 +9,10 @@ import (
 
 type Deployment struct {
     Id   string
-    Current_primary string
+    CurrentPrimary string `json:"current_primary"`
     Version string
     Members []string
+    AllowMultipleDatabases bool `json:"allow_multiple_deployments"`
 }
 
 type SocketMessage struct {
@@ -31,12 +32,21 @@ func GetDeployments(oauthToken string) ([]Deployment, error) {
 
   if err != nil {
     return nil, err
-  } else {
-    var deploymentsSlice []Deployment
-    _ = json.Unmarshal(body, &deploymentsSlice)
-
-    return deploymentsSlice, err
   }
+  var deploymentsSlice []Deployment
+  err = json.Unmarshal(body, &deploymentsSlice)
+  return deploymentsSlice, err
+}
+
+func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
+  body, err := rest_get("/deployments/" + deploymentId, oauthToken)
+
+  if err != nil {
+    return Deployment{}, err
+  }
+  var deployment Deployment
+  err = json.Unmarshal(body, &deployment)
+  return deployment, err
 }
 
 func DeploymentMongostat(deployment_id string, database_name string, oauthToken string, outputFormatter func(string)) {

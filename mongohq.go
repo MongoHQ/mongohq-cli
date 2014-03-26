@@ -26,10 +26,10 @@ func main() {
       Name:      "databases:info",
       Usage:     "information on database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "db", "database-name", ""},
+        cli.StringFlag { "database,db", "database-name", ""},
       },
       Action: func(c *cli.Context) {
-        controllers.Database(c.String("db"))
+        controllers.Database(c.String("database"))
       },
     },
     {
@@ -40,13 +40,13 @@ func main() {
       },
     },
     {
-      Name:      "deployments:info (pending)",
+      Name:      "deployments:info",
       Usage:     "information on deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "dp", "host:port", ""},
+        cli.StringFlag { "deployment,dp", "host:port", ""},
       },
       Action: func(c *cli.Context) {
-        println("Pending")
+        controllers.Deployment(c.String("deployment"))
       },
     },
     {
