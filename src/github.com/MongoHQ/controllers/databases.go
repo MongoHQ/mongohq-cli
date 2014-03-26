@@ -1,12 +1,12 @@
-package mongohq_cli
+package controllers
 
 import (
   "fmt"
-  "github.com/MongoHQ/mongohq_api"
+  "github.com/MongoHQ/api"
 )
 
 func Databases() {
-  databases, err := mongohq_api.GetDatabases(OauthToken)
+  databases, err := api.GetDatabases(OauthToken)
 
   if err != nil {
     fmt.Println("Error retrieving databases: " + err.Error())

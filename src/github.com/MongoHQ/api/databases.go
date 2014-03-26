@@ -1,4 +1,4 @@
-package mongohq_api
+package api
 
 import (
   "encoding/json"

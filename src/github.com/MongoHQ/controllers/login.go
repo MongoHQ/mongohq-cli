@@ -1,8 +1,8 @@
-package mongohq_cli
+package controllers
 
 import (
   //"fmt"
-  "github.com/MongoHQ/mongohq_api"
+  "github.com/MongoHQ/api"
   "encoding/json"
   "io/ioutil"
   "os"
@@ -25,7 +25,7 @@ func login() (string, string, error) {
   //if err != nil {
     //fmt.Println("Error: ", err)
   //}
-  oauthToken, err := mongohq_api.Authenticate(username, password)
+  oauthToken, err := api.Authenticate(username, password)
 
   if err != nil {
     return username, "", errors.New("Error authenticating given username / password")

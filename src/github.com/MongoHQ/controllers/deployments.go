@@ -1,13 +1,13 @@
-package mongohq_cli
+package controllers
 
 import (
   "fmt"
-  "github.com/MongoHQ/mongohq_api"
+  "github.com/MongoHQ/api"
   "strings"
 )
 
 func Deployments() {
-  deployments, err := mongohq_api.GetDeployments(OauthToken)
+  deployments, err := api.GetDeployments(OauthToken)
 
   if err != nil {
     fmt.Println("Error retrieving deployments: " + err.Error())
@@ -26,5 +26,5 @@ func MongoStat(deployment_id, database_name string) {
   outputFormatter := func(msg string) {
   }
 
-  mongohq_api.DeploymentMongostat(deployment_id, database_name, OauthToken, outputFormatter)
+  api.DeploymentMongostat(deployment_id, database_name, OauthToken, outputFormatter)
 }

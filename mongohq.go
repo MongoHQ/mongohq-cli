@@ -4,20 +4,20 @@ import (
   //"fmt"
   "os"
   "github.com/codegangsta/cli"
-  "github.com/MongoHQ/mongohq_cli"  // MongoHQ CLI functions
+  "github.com/MongoHQ/controllers"  // MongoHQ CLI functions
 )
 
 func main() {
   app := cli.NewApp()
   app.Name = "mongohq"
   app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
-  app.Before = mongohq_cli.RequireAuth
+  app.Before = controllers.RequireAuth
   app.Commands = []cli.Command{
     {
       Name:      "databases",
       Usage:     "list databases",
       Action: func(c *cli.Context) {
-        mongohq_cli.Databases()
+        controllers.Databases()
       },
     },
     {
@@ -34,7 +34,7 @@ func main() {
       Name:      "deployments",
       Usage:     "list deployments",
       Action: func(c *cli.Context) {
-        mongohq_cli.Deployments()
+        controllers.Deployments()
       },
     },
     {
@@ -56,7 +56,7 @@ func main() {
       },
       Action: func(c *cli.Context) {
         if c.String("deployment") != "<bson_id>" {
-          mongohq_cli.MongoStat(c.String("deployment"), c.String("database"))
+          controllers.MongoStat(c.String("deployment"), c.String("database"))
         } else {
           println("Deployment is required")
           os.Exit(1)
@@ -74,7 +74,7 @@ func main() {
       Name:      "logout",
       Usage:     "remove stored auth",
       Action:    func(c *cli.Context) {
-        mongohq_cli.Logout()
+        controllers.Logout()
       },
     },
   }

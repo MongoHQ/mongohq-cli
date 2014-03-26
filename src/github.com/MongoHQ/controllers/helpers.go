@@ -1,4 +1,4 @@
-package mongohq_cli
+package controllers
 
 import (
   "fmt"
