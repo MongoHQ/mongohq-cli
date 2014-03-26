@@ -8,6 +8,14 @@ projects.  The purpose of this project is to:
   * Stats monitoring from the command line, which is much nicer than
 * Allow MongoHQ developers to give access to features without the need for UI features.
 
+## Installation
+
+To install, run:
+
+```
+curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh
+```
+
 ## Files
 
 * `mongohq.go` is a router for commands
