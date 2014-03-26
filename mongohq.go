@@ -23,13 +23,13 @@ func main() {
       },
     },
     {
-      Name:      "databases:info (pending)",
+      Name:      "databases:info",
       Usage:     "information on database",
       Flags:     []cli.Flag {
         cli.StringFlag { "db", "database-name", ""},
       },
       Action: func(c *cli.Context) {
-        println("Pending")
+        controllers.Database(c.String("db"))
       },
     },
     {

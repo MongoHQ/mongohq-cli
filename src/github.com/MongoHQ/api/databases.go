@@ -17,10 +17,19 @@ func GetDatabases(oauthToken string) ([]Database, error) {
 
   if err != nil {
     return nil, err
-  } else {
-    var databasesSlice []Database
-    _ = json.Unmarshal(body, &databasesSlice)
-
-    return databasesSlice, err
   }
+  var databasesSlice []Database
+  err = json.Unmarshal(body, &databasesSlice)
+  return databasesSlice, err
+}
+
+func GetDatabase(name string, oauthToken string) (Database, error) {
+  body, err := rest_get("/databases/" + name, oauthToken)
+
+  if err != nil {
+    return Database{}, err
+  }
+  var database Database
+  err = json.Unmarshal(body, &database)
+  return database, err
 }
