@@ -44,9 +44,10 @@ func DeploymentMongostat(deployment_id string, database_name string, oauthToken 
 
   dialer := websocket.Dialer{}
   header := http.Header{}
+  header.Add("User-Agent", userAgent())
   client, _, err := dialer.Dial(socket_url_for("/ws", oauthToken), header)
   if err != nil {
-    println("Error initiating connection to websocket.")
+    println("Error initiating connection to websocket: " + err.Error())
     os.Exit(1)
   }
   jsonMessage, err := json.Marshal(message)

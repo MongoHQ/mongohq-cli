@@ -3,6 +3,7 @@ package api
 import (
   "net/http"
   "io/ioutil"
+  "github.com/MongoHQ/mongohq-cli"
 )
 
 var oauth_client_id = "6fb9368538ef061ed73be71cc291e65b"
@@ -13,13 +14,18 @@ func rest_url_for(path string) (string) {
 }
 
 func socket_url_for(path string, oauthToken string) (string) {
-   return "wss://new-api.mongohq.com" + path + "?token=Bearer%20" + oauthToken
+   return "wss://beta-api.mongohq.com/mongo" + path + "?token=Bearer%20" + oauthToken
+}
+
+func userAgent() string {
+  return "MongoHQ CLI Version " + mongohq_cli.Version()
 }
 
 func rest_get(path string, oauthToken string) ([]byte, error) {
   client := &http.Client{}
   request, err := http.NewRequest("GET", rest_url_for(path), nil)
   request.Header.Add("Authorization", "Bearer " + oauthToken)
+  request.Header.Add("User-Agent", userAgent())
   response, err := client.Do(request)
 
   if err != nil {

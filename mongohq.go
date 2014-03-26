@@ -4,6 +4,7 @@ import (
   //"fmt"
   "os"
   "github.com/codegangsta/cli"
+  "github.com/MongoHQ/mongohq-cli"
   "github.com/MongoHQ/controllers"  // MongoHQ CLI functions
 )
 
@@ -12,6 +13,7 @@ func main() {
   app.Name = "mongohq"
   app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
   app.Before = controllers.RequireAuth
+  app.Version = mongohq_cli.Version()
   app.Commands = []cli.Command{
     {
       Name:      "databases",
