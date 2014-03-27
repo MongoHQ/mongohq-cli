@@ -40,7 +40,7 @@ func Deployment(deploymentId string) {
   }
 }
 
-func MongoStat(deployment_id, database_name string) {
+func MongoStat(deployment_id string) {
   hostRegex  := regexp.MustCompile(".(?:mongohq|mongolayer).com")
   loopCount  := 0
   var priorStat []map[string]api.MongoStat
@@ -93,7 +93,7 @@ func MongoStat(deployment_id, database_name string) {
     loopCount += 1
   }
 
-  err := api.DeploymentMongostat(deployment_id, database_name, OauthToken, outputFormatter)
+  err := api.DeploymentMongostat(deployment_id, OauthToken, outputFormatter)
 
   if err != nil {
     fmt.Println("Error: " + err.Error())

@@ -54,11 +54,10 @@ func main() {
       Usage:     "realtime mongostat",
       Flags:     []cli.Flag {
         cli.StringFlag{"deployment,dp", "<bson_id>", "deployment id"},
-        cli.StringFlag{"database,db", "<string>", "database name"},
       },
       Action: func(c *cli.Context) {
         if c.String("deployment") != "<bson_id>" {
-          controllers.MongoStat(c.String("deployment"), c.String("database"))
+          controllers.MongoStat(c.String("deployment"))
         } else {
           println("Deployment is required")
           os.Exit(1)

@@ -21,7 +21,6 @@ type SocketMessage struct {
 
 type Message struct {
   DeploymentId string `json:"deployment_id"`
-  DatabaseName string `json:"database_name"`
   Type string `json:"type"`
 }
 
@@ -86,8 +85,8 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
   return deployment, err
 }
 
-func DeploymentMongostat(deployment_id string, database_name string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) error {
-  message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, DatabaseName: database_name, Type: "mongo.stats"}}
+func DeploymentMongostat(deployment_id string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) error {
+  message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.stats"}}
   socket, err := open_websocket(message, oauthToken)
 
   if err != nil {
