@@ -33,41 +33,6 @@ func main() {
       },
     },
     {
-      Name:      "databases:users",
-      Usage:     "users on a database",
-      Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dp", "<deployment id>", ""},
-        cli.StringFlag { "database,db", "<database name>", ""},
-      },
-      Action: func(c *cli.Context) {
-        controllers.DatabaseUsers(c.String("deployment"), c.String("database"))
-      },
-    },
-    {
-      Name:      "databases:users:create",
-      Usage:     "add user to a database",
-      Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dp", "<deployment id>", ""},
-        cli.StringFlag { "database,db", "<database name>", ""},
-        cli.StringFlag { "username,u", "<user>", ""},
-      },
-      Action: func(c *cli.Context) {
-        controllers.DatabaseCreateUser(c.String("deployment"), c.String("database"), c.String("username"))
-      },
-    },
-    {
-      Name:      "databases:users:remove",
-      Usage:     "remove user from database",
-      Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dp", "<deployment id>", ""},
-        cli.StringFlag { "database,db", "<database name>", ""},
-        cli.StringFlag { "username,u", "<user>", ""},
-      },
-      Action: func(c *cli.Context) {
-        controllers.DatabaseRemoveUser(c.String("deployment"), c.String("database"), c.String("username"))
-      },
-    },
-    {
       Name:      "deployments",
       Usage:     "list deployments",
       Action: func(c *cli.Context) {
@@ -78,7 +43,7 @@ func main() {
       Name:      "deployments:info",
       Usage:     "information on deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dp", "host:port", ""},
+        cli.StringFlag { "deployment,dep", "host:port", ""},
       },
       Action: func(c *cli.Context) {
         controllers.Deployment(c.String("deployment"))
@@ -88,7 +53,7 @@ func main() {
       Name:      "deployments:mongostat",
       Usage:     "realtime mongostat",
       Flags:     []cli.Flag {
-        cli.StringFlag{"deployment,dp", "<bson_id>", "deployment id"},
+        cli.StringFlag{"deployment,dep", "<bson_id>", "deployment id"},
       },
       Action: func(c *cli.Context) {
         if c.String("deployment") != "<bson_id>" {
@@ -110,7 +75,7 @@ func main() {
       Name:      "deployments:oplog",
       Usage:     "tail oplog",
       Flags:     []cli.Flag {
-        cli.StringFlag{"deployment,dp", "<bson_id>", "deployment id"},
+        cli.StringFlag{"deployment,dep", "<bson_id>", "deployment id"},
       },
       Action: func(c *cli.Context) {
         if c.String("deployment") != "<bson_id>" {
@@ -120,6 +85,41 @@ func main() {
           os.Exit(1)
         }
 
+      },
+    },
+    {
+      Name:      "users",
+      Usage:     "list users on a database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dep", "<deployment id>", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
+      },
+      Action: func(c *cli.Context) {
+        controllers.DatabaseUsers(c.String("deployment"), c.String("database"))
+      },
+    },
+    {
+      Name:      "users:create",
+      Usage:     "add user to a database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dep", "<deployment id>", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
+        cli.StringFlag { "username,u", "<user>", ""},
+      },
+      Action: func(c *cli.Context) {
+        controllers.DatabaseCreateUser(c.String("deployment"), c.String("database"), c.String("username"))
+      },
+    },
+    {
+      Name:      "users:remove",
+      Usage:     "remove user from database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dep", "<deployment id>", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
+        cli.StringFlag { "username,u", "<user>", ""},
+      },
+      Action: func(c *cli.Context) {
+        controllers.DatabaseRemoveUser(c.String("deployment"), c.String("database"), c.String("username"))
       },
     },
     {

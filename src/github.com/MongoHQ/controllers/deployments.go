@@ -18,7 +18,7 @@ func Deployments() {
   } else {
     fmt.Println("=== My Deployments")
     for _, deployment := range deployments {
-      fmt.Println(deployment.CurrentPrimary + " :: " + deployment.Id)
+      fmt.Println(deployment.Id + " : " + deployment.CurrentPrimary)
     }
   }
 }
