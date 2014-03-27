@@ -4,6 +4,9 @@ import (
   "net/http"
   "io/ioutil"
   "github.com/MongoHQ/mongohq-cli"
+  "github.com/gorilla/websocket"
+  "errors"
+  "encoding/json"
 )
 
 var oauth_client_id = "6fb9368538ef061ed73be71cc291e65b"
@@ -35,4 +38,23 @@ func rest_get(path string, oauthToken string) ([]byte, error) {
     response.Body.Close()
     return responseBody, err
   }
+}
+
+func open_websocket(message SocketMessage, oauthToken string) (*websocket.Conn, error) {
+  dialer := websocket.Dialer{}
+  header := http.Header{}
+  header.Add("User-Agent", userAgent())
+  client, _, err := dialer.Dial(socket_url_for("/ws", oauthToken), header)
+  if err != nil {
+    return client, errors.New("Error initiating connection to websocket.")
+  }
+  jsonMessage, err := json.Marshal(message)
+  if err != nil {
+    return client, errors.New("Error marshalling websocket message.")
+  }
+  err = client.WriteMessage(websocket.TextMessage, jsonMessage)
+  if err != nil {
+    return client, errors.New("Error subscribing to websocket feed.")
+  }
+  return client, nil
 }

@@ -52,7 +52,7 @@ func MongoStat(deployment_id, database_name string) {
     }
 
     hostLength := 0
-    lockLength   := 0
+    lockLength := 0
 
     // Preformatting run
     for _, mapMongoStat := range mongoStats {
@@ -93,5 +93,10 @@ func MongoStat(deployment_id, database_name string) {
     loopCount += 1
   }
 
-  api.DeploymentMongostat(deployment_id, database_name, OauthToken, outputFormatter)
+  err := api.DeploymentMongostat(deployment_id, database_name, OauthToken, outputFormatter)
+
+  if err != nil {
+    fmt.Println("Error: " + err.Error())
+    os.Exit(1)
+  }
 }

@@ -2,9 +2,6 @@ package api
 
 import (
   "encoding/json"
-  "github.com/gorilla/websocket"
-  "net/http"
-  "os"
   "strings"
 )
 
@@ -89,30 +86,16 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
   return deployment, err
 }
 
-func DeploymentMongostat(deployment_id string, database_name string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) {
+func DeploymentMongostat(deployment_id string, database_name string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) error {
   message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, DatabaseName: database_name, Type: "mongo.stats"}}
+  socket, err := open_websocket(message, oauthToken)
 
-  dialer := websocket.Dialer{}
-  header := http.Header{}
-  header.Add("User-Agent", userAgent())
-  client, _, err := dialer.Dial(socket_url_for("/ws", oauthToken), header)
   if err != nil {
-    println("Error initiating connection to websocket: " + err.Error())
-    os.Exit(1)
-  }
-  jsonMessage, err := json.Marshal(message)
-  if err != nil {
-    println("Error marshalling JSON: " + err.Error())
-    os.Exit(1)
-  }
-  err = client.WriteMessage(websocket.TextMessage, jsonMessage)
-  if err != nil {
-    println("Error subscribing to feed: " + err.Error())
-    os.Exit(1)
+    return err
   }
 
   for {
-    _, msg, err := client.ReadMessage()
+    _, msg, err := socket.ReadMessage()
     if err != nil {
       outputFormatter(make([]map[string]MongoStat, 0), err)
     }
