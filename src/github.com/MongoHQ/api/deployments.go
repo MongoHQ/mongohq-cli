@@ -11,6 +11,7 @@ type Deployment struct {
     Version string
     Members []string
     AllowMultipleDatabases bool `json:"allow_multiple_deployments"`
+    Databases []Database
 }
 
 type SocketMessage struct {
@@ -75,7 +76,7 @@ func GetDeployments(oauthToken string) ([]Deployment, error) {
 }
 
 func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
-  body, err := rest_get("/deployments/" + deploymentId, oauthToken)
+  body, err := rest_get("/deployments/" + deploymentId + "?embed=databases", oauthToken)
 
   if err != nil {
     return Deployment{}, err

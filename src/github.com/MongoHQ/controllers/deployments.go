@@ -37,6 +37,11 @@ func Deployment(deploymentId string) {
     if deployment.AllowMultipleDatabases { 
       fmt.Println("  multiple databases?: true")
     }
+
+    fmt.Println("  == Databases")
+    for _, database := range deployment.Databases {
+      fmt.Println("    " + database.Name)
+    }
   }
 }
 
