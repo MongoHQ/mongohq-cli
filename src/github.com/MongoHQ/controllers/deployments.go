@@ -46,29 +46,31 @@ func MongoStat(deployment_id, database_name string) {
   var priorStat []map[string]api.MongoStat
 
   outputFormatter := func(mongoStats []map[string]api.MongoStat, err error) {
-    headerFormat  := "%7s%7s%7s%7s%8s%8s%8s%7s%7s%7s%7s%" + strconv.Itoa(len(database_name)) + "s%11s%6s|%-3s%6s|%-3s%7s%7s%6s%11s\n"
-    sprintfFormat := "%7s%7s%7s%7s%8s%8s%8d%7d%7d%7d%7d%" + strconv.Itoa(len(database_name)) + "s%11d%6d|%-3d%6d|%-3d%7.0f%7.0f%6d%11s\n"
-
     if err != nil {
       fmt.Println("Error parsing stats: " + err.Error())
       os.Exit(1)
     }
 
     hostLength := 0
+    lockLength   := 0
 
     // Preformatting run
     for _, mapMongoStat := range mongoStats {
-      for host, _ := range mapMongoStat {
+      for host, stats := range mapMongoStat {
         host = hostRegex.ReplaceAllLiteralString(host, "")
         if len(host) > hostLength {
           hostLength = len(host)
         }
+
+        if len(stats.Locked) > lockLength {
+          lockLength = len(stats.Locked) + 1
+        }
       }
     }
 
-    // Print Run
-    headerFormat  = "%" + strconv.Itoa(hostLength) + "s" + headerFormat
-    sprintfFormat = "%" + strconv.Itoa(hostLength) + "s" + sprintfFormat
+    headerFormat  := "%" + strconv.Itoa(hostLength) + "s" + "%7s%7s%7s%7s%8s%8s%8s%7s%7s%7s%7s%" + strconv.Itoa(lockLength) + "s%11s%6s|%-3s%6s|%-3s%7s%7s%6s%11s\n"
+    sprintfFormat := "%" + strconv.Itoa(hostLength) + "s" + "%7s%7s%7s%7s%8s%8s%8d%7d%7d%7d%7d%" + strconv.Itoa(lockLength) + "s%11d%6d|%-3d%6d|%-3d%7.0f%7.0f%6d%11s\n"
+
     if loopCount % 5 == 0 {
       fmt.Printf(headerFormat, "host", "insert", "query", "update", "delete", "getmore", "command", "flush", "mapped", "vsize", "res", "faults", "locked %", "idx miss %", "qr", "qw", "ar", "aw", "netIn", "netOut", "conn", "time")
     }
