@@ -7,6 +7,7 @@ import (
   "os"
   "regexp"
   "strconv"
+  "time"
 )
 
 func Deployments() {
@@ -72,6 +73,8 @@ func MongoStat(deployment_id, database_name string) {
       fmt.Printf(headerFormat, "host", "insert", "query", "update", "delete", "getmore", "command", "flush", "mapped", "vsize", "res", "faults", "locked %", "idx miss %", "qr", "qw", "ar", "aw", "netIn", "netOut", "conn", "time")
     }
 
+    now := time.Now()
+
     for position, mapMongoStat := range mongoStats {
       for host, stat := range mapMongoStat {
         var netIn, netOut float64
@@ -80,7 +83,7 @@ func MongoStat(deployment_id, database_name string) {
           netOut = stat.NetOut - priorStat[position][host].NetOut
         }
 
-        fmt.Printf(sprintfFormat, hostRegex.ReplaceAllLiteralString(host, ""), stat.Inserts, stat.Query, stat.Update, stat.Delete, stat.Getmore, stat.Command, stat.Flushes, stat.Mapped, stat.Vsize, stat.Res, stat.Faults, stat.Locked, stat.IdxMiss, stat.Qr, stat.Qw, stat.Ar, stat.Aw, netIn, netOut, stat.Conn, "time")
+        fmt.Printf(sprintfFormat, hostRegex.ReplaceAllLiteralString(host, ""), stat.Inserts, stat.Query, stat.Update, stat.Delete, stat.Getmore, stat.Command, stat.Flushes, stat.Mapped, stat.Vsize, stat.Res, stat.Faults, stat.Locked, stat.IdxMiss, stat.Qr, stat.Qw, stat.Ar, stat.Aw, netIn, netOut, stat.Conn, now.Format("15:04:05"))
       }
     }
 
