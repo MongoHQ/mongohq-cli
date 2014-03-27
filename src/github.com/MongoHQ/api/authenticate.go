@@ -21,7 +21,7 @@ func Authenticate(username, password string) (string, error) {
   data.Set("client_id", oauth_client_id)
   data.Set("client_secret", oauth_secret)
 
-  response, err := http.PostForm(rest_url_for("/login/oauth/access_token"), data)
+  response, err := http.PostForm(api_url("/login/oauth/access_token"), data)
 
   if err != nil {
     authenticationError = errors.New("Error authenticating against MongoHQ.")

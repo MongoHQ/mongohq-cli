@@ -65,7 +65,7 @@ type MongoStat struct {
 }
 
 func GetDeployments(oauthToken string) ([]Deployment, error) {
-  body, err := rest_get("/deployments", oauthToken)
+  body, err := rest_get(api_url("/deployments"), oauthToken)
 
   if err != nil {
     return nil, err
@@ -76,7 +76,7 @@ func GetDeployments(oauthToken string) ([]Deployment, error) {
 }
 
 func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
-  body, err := rest_get("/deployments/" + deploymentId + "?embed=databases", oauthToken)
+  body, err := rest_get(api_url("/deployments/" + deploymentId) + "?embed=databases", oauthToken)
 
   if err != nil {
     return Deployment{}, err

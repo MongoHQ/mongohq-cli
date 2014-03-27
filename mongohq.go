@@ -26,10 +26,45 @@ func main() {
       Name:      "databases:info",
       Usage:     "information on database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "database,db", "database-name", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
       },
       Action: func(c *cli.Context) {
         controllers.Database(c.String("database"))
+      },
+    },
+    {
+      Name:      "databases:users",
+      Usage:     "users on a database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dp", "<deployment id>", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
+      },
+      Action: func(c *cli.Context) {
+        controllers.DatabaseUsers(c.String("deployment"), c.String("database"))
+      },
+    },
+    {
+      Name:      "databases:users:create",
+      Usage:     "add user to a database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dp", "<deployment id>", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
+        cli.StringFlag { "username,u", "<user>", ""},
+      },
+      Action: func(c *cli.Context) {
+        controllers.DatabaseCreateUser(c.String("deployment"), c.String("database"), c.String("username"))
+      },
+    },
+    {
+      Name:      "databases:users:remove",
+      Usage:     "remove user from database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dp", "<deployment id>", ""},
+        cli.StringFlag { "database,db", "<database name>", ""},
+        cli.StringFlag { "username,u", "<user>", ""},
+      },
+      Action: func(c *cli.Context) {
+        controllers.DatabaseRemoveUser(c.String("deployment"), c.String("database"), c.String("username"))
       },
     },
     {
