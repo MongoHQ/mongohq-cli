@@ -57,7 +57,7 @@ func main() {
       },
       Action: func(c *cli.Context) {
         if c.String("deployment") != "<bson_id>" {
-          controllers.MongoStat(c.String("deployment"))
+          controllers.DeploymentMongoStat(c.String("deployment"))
         } else {
           println("Deployment is required")
           os.Exit(1)
@@ -69,6 +69,22 @@ func main() {
       Usage:     "tail logs",
       Action: func(c *cli.Context) {
         println("Pending")
+      },
+    },
+    {
+      Name:      "deployments:oplog",
+      Usage:     "tail oplog",
+      Flags:     []cli.Flag {
+        cli.StringFlag{"deployment,dp", "<bson_id>", "deployment id"},
+      },
+      Action: func(c *cli.Context) {
+        if c.String("deployment") != "<bson_id>" {
+          controllers.DeploymentOplog(c.String("deployment"))
+        } else {
+          println("Deployment is required")
+          os.Exit(1)
+        }
+
       },
     },
     {

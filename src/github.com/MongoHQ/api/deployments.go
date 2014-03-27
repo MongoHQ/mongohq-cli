@@ -88,7 +88,6 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
 func DeploymentMongostat(deployment_id string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) error {
   message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.stats"}}
   socket, err := open_websocket(message, oauthToken)
-
   if err != nil {
     return err
   }
@@ -113,5 +112,18 @@ func DeploymentMongostat(deployment_id string, oauthToken string, outputFormatte
     mongoStatMessage := MongoStatMessage{}
     err = json.Unmarshal(msg, &mongoStatMessage)
     outputFormatter(mongoStatMessage.Message, err)
+  }
+}
+
+func DeploymentOplog(deployment_id string, oauthToken string, outputFormatter func(string, error)) error {
+  message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.oplog"}}
+  socket, err := open_websocket(message, oauthToken)
+  if err != nil {
+    return err
+  }
+
+  for {
+    _, msg, err := socket.ReadMessage()
+    outputFormatter(string(msg), err)
   }
 }
