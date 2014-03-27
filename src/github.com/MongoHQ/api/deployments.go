@@ -5,6 +5,7 @@ import (
   "github.com/gorilla/websocket"
   "net/http"
   "os"
+  "strings"
 )
 
 type Deployment struct {
@@ -25,6 +26,45 @@ type Message struct {
   DeploymentId string `json:"deployment_id"`
   DatabaseName string `json:"database_name"`
   Type string `json:"type"`
+}
+
+type MongoStatMessage struct {
+  Type string
+  Ts string
+  Error string
+  Message []map[string]MongoStat
+}
+
+type MongoStat struct {
+  Version string
+  Inserts string
+  RawInserts int `json:"raw_inserts"`
+  Query string
+  RawQuery int `json:"raw_query"`
+  Update string
+  RawUpdate int `json:"raw_update"`
+  Delete string
+  RawDelete int `json:"raw_delete"`
+  Getmore string
+  RawGetmore int `json:"raw_getmore"`
+  Command string
+  RawCommand int `json:"raw_command"`
+  Flushes int
+  Mapped int
+  Vsize int
+  Res int
+  Faults int
+  Locked string
+  IdxMiss int `json:"idx_miss"`
+  Qr int
+  Qw int
+  Ar int
+  Aw int
+  NetIn float64 `json:"net_in"`
+  NetOut float64 `json:"net_out"`
+  Conn int
+  Set string
+  Repl string
 }
 
 func GetDeployments(oauthToken string) ([]Deployment, error) {
@@ -49,7 +89,7 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
   return deployment, err
 }
 
-func DeploymentMongostat(deployment_id string, database_name string, oauthToken string, outputFormatter func(string)) {
+func DeploymentMongostat(deployment_id string, database_name string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) {
   message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, DatabaseName: database_name, Type: "mongo.stats"}}
 
   dialer := websocket.Dialer{}
@@ -72,12 +112,24 @@ func DeploymentMongostat(deployment_id string, database_name string, oauthToken 
   }
 
   for {
-    messageType, p, err := client.ReadMessage()
+    _, msg, err := client.ReadMessage()
     if err != nil {
-      println("Error receiving message: " + err.Error())
-      os.Exit(1)
+      outputFormatter(make([]map[string]MongoStat, 0), err)
     }
-    println(string(messageType))
-    println(string(p))
+
+    // catch the first success response
+    if strings.Index(string(msg), "successful") > -1 {
+      continue
+    }
+
+    // null is bad news for Go, and gopher has an outstanding issue with
+    // the first response: https://github.com/MongoHQ/gopher/issues/14
+    if strings.Index(string(msg), "null") > -1 {
+      continue
+    }
+
+    mongoStatMessage := MongoStatMessage{}
+    err = json.Unmarshal(msg, &mongoStatMessage)
+    outputFormatter(mongoStatMessage.Message, err)
   }
 }
