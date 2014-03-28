@@ -86,7 +86,7 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
   return deployment, err
 }
 
-func CreateDeployment(deploymentName, databaseName, region, oauthToken string) (Database, error) {
+func CreateDeployment(databaseName, region, oauthToken string) (Database, error) {
   type DatabaseCreateOptions struct {
     Region string `json:"region"`
   }

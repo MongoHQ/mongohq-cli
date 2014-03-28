@@ -26,9 +26,19 @@ func main() {
       Name:      "databases:info",
       Usage:     "information on database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "database,db", "<database name>", ""},
+        cli.StringFlag { "database,db", "", "<database name>"},
       },
       Action: func(c *cli.Context) {
+        err := false
+        if c.String("database") == "" {
+          err = true
+          fmt.Println("--database is required")
+        }
+
+        if err {
+          os.Exit(1)
+        }
+
         controllers.Database(c.String("database"))
       },
     },
@@ -43,16 +53,11 @@ func main() {
       Name:      "deployments:create",
       Usage:     "create a new Elastic Deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "", "<deployment-name>"},
         cli.StringFlag { "database,db", "", "<database-name>"},
         cli.StringFlag { "region,r", "", "[for a list of regions, run 'mongohq regions']"},
       },
       Action: func(c *cli.Context) {
         err := false
-        if c.String("deployment") == "" {
-          err = true
-          fmt.Println("--deployment is required")
-        }
         if c.String("database") == "" {
           err = true
           fmt.Println("--database is required")
@@ -62,22 +67,32 @@ func main() {
           fmt.Println("--region is required")
         }
 
-        if !err {
-          controllers.CreateDeployment(c.String("deployment"), c.String("database"), c.String("region"))
-        } else {
+        if err {
           fmt.Println("")
           fmt.Println("For more information, run deployments:create --help")
           os.Exit(1)
         }
+
+        controllers.CreateDeployment(c.String("database"), c.String("region"))
       },
     },
     {
       Name:      "deployments:info",
       Usage:     "information on deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "host:port", ""},
+        cli.StringFlag { "deployment,dep", "", "<deployment id>"},
       },
       Action: func(c *cli.Context) {
+        err := false
+        if c.String("deployment") == "" {
+          err = true
+          fmt.Println("--deployment is required")
+        }
+
+        if err {
+          os.Exit(1)
+        }
+
         controllers.Deployment(c.String("deployment"))
       },
     },
@@ -107,16 +122,20 @@ func main() {
       Name:      "deployments:oplog",
       Usage:     "tail oplog",
       Flags:     []cli.Flag {
-        cli.StringFlag{"deployment,dep", "<bson_id>", "deployment id"},
+        cli.StringFlag{"deployment,dep", "", "<deployment id>"},
       },
       Action: func(c *cli.Context) {
-        if c.String("deployment") != "<bson_id>" {
-          controllers.DeploymentOplog(c.String("deployment"))
-        } else {
-          fmt.Println("Deployment is required")
+        err := false
+        if c.String("deployment") == "" {
+          err = true
+          fmt.Println("--deployment is required")
+        }
+
+        if err {
           os.Exit(1)
         }
 
+        controllers.DeploymentOplog(c.String("deployment"))
       },
     },
     {

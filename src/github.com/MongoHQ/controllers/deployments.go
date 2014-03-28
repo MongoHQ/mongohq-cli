@@ -45,8 +45,8 @@ func Deployment(deploymentId string) {
   }
 }
 
-func CreateDeployment(deploymentName, databaseName, region string) {
-  database, err := api.CreateDeployment(deploymentName, databaseName, region, OauthToken)
+func CreateDeployment(databaseName, region string) {
+  database, err := api.CreateDeployment(databaseName, region, OauthToken)
 
   if err != nil {
     fmt.Println("Error creating deployment: " + err.Error())
