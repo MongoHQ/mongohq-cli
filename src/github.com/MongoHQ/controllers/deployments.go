@@ -51,15 +51,36 @@ func CreateDeployment(databaseName, region string) {
   if err != nil {
     fmt.Println("Error creating deployment: " + err.Error())
   } else {
-    fmt.Println("=== New Database Name:" + database.Name)
-    fmt.Println("  id:    " + database.Id)
-    fmt.Println("  state: " + database.Status)
+    fmt.Println("=== Building database:" + database.Name)
+
+    status := database.Status
+    for status == "new" {
+      fmt.Print(".")
+      database, err := api.GetDatabase(database.Name, OauthToken)
+      if err != nil {
+        fmt.Println("\nError pulling database information.  For a manual update, please run:\n\n mongohq databases:info --database " + databaseName)
+        os.Exit(1)
+      }
+      status = database.Status
+    }
+
+    deployment, err := api.GetDeployment(database.Deployment_id, OauthToken)
+
+    if err != nil {
+      fmt.Println("\nError pulling new deployment information.  For a manual update, please run:\n\n mongohq databases:info --database " + databaseName)
+      os.Exit(1)
+    }
+
+    fmt.Print("\n")
+    fmt.Println("Your database is ready. To add a user to your database, run:")
+    fmt.Println("  mongohq users:create --deployment " + database.Deployment_id + " --database " + database.Name + " -u <username>")
     fmt.Println("")
-    fmt.Println("When your database state changes to status changes to 'connected', your database will be ready.")
-    fmt.Println("To get the status of your new database, run:")
+    fmt.Println("To connect to your database, run:")
+    fmt.Println("  mongo " + deployment.CurrentPrimary + "/" + database.Name + " -u <username>" + " -p")
     fmt.Println("")
-    fmt.Println("mongohq databases:info --database " + database.Name)
-    fmt.Println("")
+    fmt.Println("Your applications should use the following URI to connect:")
+    fmt.Println("  mongodb://<username>:<password>@" + strings.Join(deployment.Members, ",") + "/" + database.Name)
+    fmt.Println("\nEnjoy!")
   }
 }
 

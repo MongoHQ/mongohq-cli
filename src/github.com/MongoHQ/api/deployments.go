@@ -94,7 +94,7 @@ func CreateDeployment(databaseName, region, oauthToken string) (Database, error)
   type DatabaseCreate struct {
     Name string `json:"name"`
     Slug string `json:"slug"`
-    Options DatabaseCreateOptions
+    Options DatabaseCreateOptions `json:"options"`
   }
 
   databaseCreate := DatabaseCreate{Name: databaseName, Slug: "mongohq:elastic", Options: DatabaseCreateOptions{Region: region}}
