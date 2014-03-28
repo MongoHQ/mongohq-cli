@@ -106,7 +106,7 @@ func main() {
         if c.String("deployment") != "<bson_id>" {
           controllers.DeploymentMongoStat(c.String("deployment"))
         } else {
-          fmt.Println("Deployment is required")
+          fmt.Println("--deployment is required")
           os.Exit(1)
         }
       },
