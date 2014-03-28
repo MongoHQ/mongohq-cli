@@ -8,12 +8,22 @@ projects.  The purpose of this project is to:
   * Stats monitoring from the command line, which is much nicer than
 * Allow MongoHQ developers to give access to features without the need for UI features.
 
-## Installation
+## Installation 
 
 To install, run:
 
 ```
 curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh
+```
+
+## Using in Dev Mode
+
+```
+git clone git@github.com:MongoHQ/mongohq-cli.git
+cd mongohq-cli
+source .env
+git submodule foreach git pull
+go run mongohq.go
 ```
 
 ## Files
