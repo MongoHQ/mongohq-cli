@@ -45,7 +45,7 @@ func main() {
       Flags:     []cli.Flag {
         cli.StringFlag { "deployment,dep", "", "<deployment-name>"},
         cli.StringFlag { "database,db", "", "<database-name>"},
-        cli.StringFlag { "region,r", "", "[us-east-1|eu-west-1|ap-southeast-2]"},
+        cli.StringFlag { "region,r", "", "[for a list of regions, run 'mongohq regions']"},
       },
       Action: func(c *cli.Context) {
         err := false
@@ -67,6 +67,7 @@ func main() {
         } else {
           fmt.Println("")
           fmt.Println("For more information, run deployments:create --help")
+          os.Exit(1)
         }
       },
     },
@@ -116,6 +117,13 @@ func main() {
           os.Exit(1)
         }
 
+      },
+    },
+    {
+      Name:      "regions",
+      Usage:     "list available regions",
+      Action: func(c *cli.Context) {
+        controllers.Regions()
       },
     },
     {
