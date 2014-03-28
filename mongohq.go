@@ -1,7 +1,7 @@
 package main
 
 import (
-  //"fmt"
+  "fmt"
   "os"
   "github.com/codegangsta/cli"
   "github.com/MongoHQ/mongohq-cli"
@@ -40,6 +40,37 @@ func main() {
       },
     },
     {
+      Name:      "deployments:create",
+      Usage:     "create a new Elastic Deployment",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dep", "", "<deployment-name>"},
+        cli.StringFlag { "database,db", "", "<database-name>"},
+        cli.StringFlag { "region,r", "", "[us-east-1|eu-west-1|ap-southeast-2]"},
+      },
+      Action: func(c *cli.Context) {
+        err := false
+        if c.String("deployment") == "" {
+          err = true
+          fmt.Println("--deployment is required")
+        }
+        if c.String("database") == "" {
+          err = true
+          fmt.Println("--database is required")
+        }
+        if c.String("region") == "" {
+          err = true
+          fmt.Println("--region is required")
+        }
+
+        if !err {
+          controllers.CreateDeployment(c.String("deployment"), c.String("database"), c.String("region"))
+        } else {
+          fmt.Println("")
+          fmt.Println("For more information, run deployments:create --help")
+        }
+      },
+    },
+    {
       Name:      "deployments:info",
       Usage:     "information on deployment",
       Flags:     []cli.Flag {
@@ -59,7 +90,7 @@ func main() {
         if c.String("deployment") != "<bson_id>" {
           controllers.DeploymentMongoStat(c.String("deployment"))
         } else {
-          println("Deployment is required")
+          fmt.Println("Deployment is required")
           os.Exit(1)
         }
       },
@@ -68,7 +99,7 @@ func main() {
       Name:      "deployments:logs (pending)",
       Usage:     "tail logs",
       Action: func(c *cli.Context) {
-        println("Pending")
+        fmt.Println("Pending")
       },
     },
     {
@@ -81,7 +112,7 @@ func main() {
         if c.String("deployment") != "<bson_id>" {
           controllers.DeploymentOplog(c.String("deployment"))
         } else {
-          println("Deployment is required")
+          fmt.Println("Deployment is required")
           os.Exit(1)
         }
 

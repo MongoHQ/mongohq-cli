@@ -45,6 +45,24 @@ func Deployment(deploymentId string) {
   }
 }
 
+func CreateDeployment(deploymentName, databaseName, region string) {
+  database, err := api.CreateDeployment(deploymentName, databaseName, region, OauthToken)
+
+  if err != nil {
+    fmt.Println("Error creating deployment: " + err.Error())
+  } else {
+    fmt.Println("=== New Database Name:" + database.Name)
+    fmt.Println("  id:    " + database.Id)
+    fmt.Println("  state: " + database.Status)
+    fmt.Println("")
+    fmt.Println("When your database state changes to status changes to 'connected', your database will be ready.")
+    fmt.Println("To get the status of your new database, run:")
+    fmt.Println("")
+    fmt.Println("mongohq databases:info --database " + database.Name)
+    fmt.Println("")
+  }
+}
+
 func DeploymentMongoStat(deployment_id string) {
   hostRegex  := regexp.MustCompile(".(?:mongohq|mongolayer).com")
   loopCount  := 0

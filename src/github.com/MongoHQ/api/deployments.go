@@ -86,6 +86,33 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
   return deployment, err
 }
 
+func CreateDeployment(deploymentName, databaseName, region, oauthToken string) (Database, error) {
+  type DatabaseCreateOptions struct {
+    Region string `json:"region"`
+  }
+
+  type DatabaseCreate struct {
+    Name string `json:"name"`
+    Slug string `json:"slug"`
+    Options DatabaseCreateOptions
+  }
+
+  databaseCreate := DatabaseCreate{Name: databaseName, Slug: "mongohq:elastic", Options: DatabaseCreateOptions{Region: region}}
+  data, err := json.Marshal(databaseCreate)
+  if err != nil {
+    return Database{}, err
+  }
+
+  body, err := rest_post(api_url("/databases"), data, oauthToken)
+
+  if err != nil {
+    return Database{}, err
+  }
+  var database Database
+  err = json.Unmarshal(body, &database)
+  return database, err
+}
+
 func DeploymentMongostat(deployment_id string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) error {
   message := SocketMessage {Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.stats"}}
   socket, err := open_websocket(message, oauthToken)
