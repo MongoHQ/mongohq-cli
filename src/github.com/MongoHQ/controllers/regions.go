@@ -7,16 +7,19 @@ import (
 )
 
 func Regions() {
-  regions, err := api.GetRegions(OauthToken)
+  providersRegions, err := api.GetRegions(OauthToken)
 
   if err != nil {
     fmt.Println("Error returning regions: " + err.Error())
     os.Exit(1)
   }
 
-  fmt.Println("== Regions")
-  for _, region := range regions {
-    fmt.Println(region)
+  fmt.Println("== providers & regions")
+  for provider, regions := range providersRegions {
+    fmt.Println("  " + provider)
+    for _, region := range regions {
+      fmt.Println("   - " + region)
+    }
   }
 }
 
