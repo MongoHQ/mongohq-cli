@@ -37,65 +37,56 @@ func userAgent() string {
   return "MongoHQ CLI Version " + mongohq_cli.Version()
 }
 
-func rest_get(urlString, oauthToken string) ([]byte, error) {
+func sendRequest(request *http.Request, oauthToken string) ([]byte, error) {
   client := &http.Client{}
-  request, err := http.NewRequest("GET", urlString, nil)
-  request.Header.Add("Authorization", "Bearer " + oauthToken)
-  request.Header.Add("User-Agent", userAgent())
-  response, err := client.Do(request)
 
-  if err != nil {
-    return nil, err
-  } else {
-    responseBody, _ := ioutil.ReadAll(response.Body)
-    response.Body.Close()
-    return responseBody, err
-  }
-}
-
-func rest_post(urlString string, data []byte, oauthToken string) ([]byte, error) {
-  client := &http.Client{}
-  request, err := http.NewRequest("POST", urlString, bytes.NewReader(data))
   request.Header.Add("Authorization", "Bearer " + oauthToken)
   request.Header.Add("User-Agent", userAgent())
   request.Header.Add("Content-Type", "application/json")
-
   response, err := client.Do(request)
 
   if err != nil {
     return nil, err
-  } else {
-    responseBody, _ := ioutil.ReadAll(response.Body)
-    response.Body.Close()
-
-    if response.StatusCode >= 400 {
-      var errorResponse ErrorResponse
-      err := json.Unmarshal(responseBody, &errorResponse)
-
-      if err != nil {
-        return responseBody, err
-      }
-      return responseBody, errors.New("Response status " + response.Status + " with error " + errorResponse.Error)
-    }
-
-    return responseBody, err
   }
+
+  responseBody, _ := ioutil.ReadAll(response.Body)
+  response.Body.Close()
+
+  if response.StatusCode >= 400 {
+    var errorResponse ErrorResponse
+    err := json.Unmarshal(responseBody, &errorResponse)
+
+    if err != nil {
+      return responseBody, err
+    }
+    return responseBody, errors.New("Response status " + response.Status + " with error " + errorResponse.Error)
+  }
+
+  return responseBody, nil
+}
+
+func rest_get(urlString, oauthToken string) ([]byte, error) {
+  request, err := http.NewRequest("GET", urlString, nil)
+  if err != nil {
+    return nil, err
+  }
+  return sendRequest(request, oauthToken)
+}
+
+func rest_post(urlString string, data []byte, oauthToken string) ([]byte, error) {
+  request, err := http.NewRequest("POST", urlString, bytes.NewReader(data))
+  if err != nil {
+    return nil, err
+  }
+  return sendRequest(request, oauthToken)
 }
 
 func rest_delete(urlString, oauthToken string) ([]byte, error) {
-  client := &http.Client{}
   request, err := http.NewRequest("DELETE", urlString, nil)
-  request.Header.Add("Authorization", "Bearer " + oauthToken)
-  request.Header.Add("User-Agent", userAgent())
-  response, err := client.Do(request)
-
   if err != nil {
     return nil, err
-  } else {
-    responseBody, _ := ioutil.ReadAll(response.Body)
-    response.Body.Close()
-    return responseBody, err
   }
+  return sendRequest(request, oauthToken)
 }
 
 func open_websocket(message SocketMessage, oauthToken string) (*websocket.Conn, error) {
