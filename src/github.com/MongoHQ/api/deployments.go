@@ -87,18 +87,18 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
 }
 
 func CreateDeployment(databaseName, region, oauthToken string) (Database, error) {
-  type DatabaseCreateOptions struct {
+  type DeploymentCreateOptions struct {
     Region string `json:"region"`
   }
 
-  type DatabaseCreate struct {
+  type DeploymentCreate struct {
     Name string `json:"name"`
     Slug string `json:"slug"`
-    Options DatabaseCreateOptions `json:"options"`
+    Options DeploymentCreateOptions `json:"options"`
   }
 
-  databaseCreate := DatabaseCreate{Name: databaseName, Slug: "mongohq:elastic", Options: DatabaseCreateOptions{Region: region}}
-  data, err := json.Marshal(databaseCreate)
+  deploymentCreate := DeploymentCreate{Name: databaseName, Slug: "mongohq:elastic", Options: DeploymentCreateOptions{Region: region}}
+  data, err := json.Marshal(deploymentCreate)
   if err != nil {
     return Database{}, err
   }

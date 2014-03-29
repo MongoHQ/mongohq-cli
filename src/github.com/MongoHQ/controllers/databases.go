@@ -33,6 +33,21 @@ func Database(name string) {
   }
 }
 
+func CreateDatabase(deploymentId, databaseName string) {
+  database, err := api.CreateDatabase(deploymentId, databaseName, OauthToken)
+
+  if err != nil {
+    fmt.Println("Error retrieiving database: " + err.Error())
+  } else {
+    fmt.Println("=== " + database.Name)
+    fmt.Println(" id:            " + database.Id)
+    fmt.Println(" name:          " + database.Name)
+    fmt.Println(" plan:          " + database.Plan)
+    fmt.Println(" status:        " + database.Status)
+    fmt.Println(" deployment_id: " + database.Deployment_id)
+  }
+}
+
 func DatabaseUsers(deploymentId, databaseName string) {
   databaseUsersSlice, err := api.GetDatabaseUsers(deploymentId, databaseName, OauthToken)
 

@@ -40,6 +40,29 @@ func GetDatabase(name string, oauthToken string) (Database, error) {
   return database, err
 }
 
+func CreateDatabase(deploymentId, databaseName, oauthToken string) (Database, error) {
+  type DatabaseCreate struct {
+    DeploymentId string `json:"deployment_id"`
+    Name string `json:"name"`
+    Slug string `json:"slug"`
+  }
+
+  databaseCreate := DatabaseCreate{Name: databaseName, Slug: "general:on_existing", DeploymentId: deploymentId}
+  data, err := json.Marshal(databaseCreate)
+  if err != nil {
+    return Database{}, err
+  }
+
+  body, err := rest_post(api_url("/databases"), data, oauthToken)
+
+  if err != nil {
+    return Database{}, err
+  }
+  var database Database
+  err = json.Unmarshal(body, &database)
+  return database, err
+}
+
 func GetDatabaseUsers(deployment_id, database_name, oauthToken string) ([]DatabaseUser, error) {
   body, err := rest_get(gopher_url("/" + deployment_id + "/" + database_name + "/users"), oauthToken)
   if err != nil {

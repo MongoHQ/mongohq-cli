@@ -42,6 +42,18 @@ func main() {
       },
     },
     {
+      Name:      "databases:create",
+      Usage:     "create database on a deployment",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "deployment,dep", "<string>", "Deployment to create database on"},
+        cli.StringFlag { "database,db", "<string>", "Name of new database to create"},
+      },
+      Action: func(c *cli.Context) {
+        requireArguments("databases:create", c, []string{"deployment", "database"}, []string{})
+        controllers.CreateDatabase(c.String("deployment"), c.String("database"))
+      },
+    },
+    {
       Name:      "databases:info",
       Usage:     "information on database",
       Flags:     []cli.Flag {
