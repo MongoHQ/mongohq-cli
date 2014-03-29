@@ -43,7 +43,7 @@ func main() {
     },
     {
       Name:      "databases:create",
-      Usage:     "create database on a deployment",
+      Usage:     "create database on an existing deployment",
       Flags:     []cli.Flag {
         cli.StringFlag { "deployment,dep", "<string>", "Deployment to create database on"},
         cli.StringFlag { "database,db", "<string>", "Name of new database to create"},
