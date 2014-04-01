@@ -5,11 +5,11 @@ import (
 )
 
 type Database struct {
-    Id   string
-    Name string
-    Status string
-    Plan string
-    Deployment_id string
+    Id   string `json:"id"`
+    Name string `json:"name"`
+    Status string `json:"status"`
+    Plan string `json:"plan"`
+    Deployment_id string `json:"deployment_id"`
 }
 
 type DatabaseUser struct {
@@ -61,6 +61,11 @@ func CreateDatabase(deploymentId, databaseName, oauthToken string) (Database, er
   var database Database
   err = json.Unmarshal(body, &database)
   return database, err
+}
+
+func RemoveDatabase(databaseName, oauthToken string) error {
+  _, err := rest_delete(api_url("/databases/" + databaseName), oauthToken)
+  return err
 }
 
 func GetDatabaseUsers(deployment_id, database_name, oauthToken string) ([]DatabaseUser, error) {

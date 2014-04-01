@@ -53,34 +53,7 @@ func CreateDeployment(databaseName, region string) {
   } else {
     fmt.Println("=== Building database:" + database.Name)
 
-    status := database.Status
-    for status == "new" {
-      fmt.Print(".")
-      database, err := api.GetDatabase(database.Name, OauthToken)
-      if err != nil {
-        fmt.Println("\nError pulling database information.  For a manual update, please run:\n\n mongohq databases:info --database " + databaseName)
-        os.Exit(1)
-      }
-      status = database.Status
-    }
-
-    deployment, err := api.GetDeployment(database.Deployment_id, OauthToken)
-
-    if err != nil {
-      fmt.Println("\nError pulling new deployment information.  For a manual update, please run:\n\n mongohq databases:info --database " + databaseName)
-      os.Exit(1)
-    }
-
-    fmt.Print("\n")
-    fmt.Println("Your database is ready. To add a user to your database, run:")
-    fmt.Println("  mongohq users:create --deployment " + database.Deployment_id + " --database " + database.Name + " -u <username>")
-    fmt.Println("")
-    fmt.Println("To connect to your database, run:")
-    fmt.Println("  mongo " + deployment.CurrentPrimary + "/" + database.Name + " -u <username>" + " -p")
-    fmt.Println("")
-    fmt.Println("Your applications should use the following URI to connect:")
-    fmt.Println("  mongodb://<username>:<password>@" + strings.Join(deployment.Members, ",") + "/" + database.Name)
-    fmt.Println("\nEnjoy!")
+    pollNewDeployment(database)
   }
 }
 
@@ -155,4 +128,39 @@ func DeploymentOplog(deployment_id string) {
     fmt.Println("Error: " + err.Error())
     os.Exit(1)
   }
+}
+
+func pollNewDeployment(databaseRecord api.Database) {
+  var database api.Database // Schope database just in case
+  var err error
+  status, database := databaseRecord.Status, databaseRecord
+
+  for status == "new" {
+    fmt.Print(".")
+    database, err = api.GetDatabase(database.Name, OauthToken)
+    if err != nil {
+      fmt.Println(err.Error())
+      fmt.Println("\nError pulling database information.  For a manual update, please run:\n\n mongohq databases:info --database " + database.Name)
+      os.Exit(1)
+    }
+    status = database.Status
+  }
+
+  deployment, err := api.GetDeployment(database.Deployment_id, OauthToken)
+
+  if err != nil {
+    fmt.Println("\nError pulling new deployment information.  For a manual update, please run:\n\n mongohq databases:info --database " + database.Name)
+    os.Exit(1)
+  }
+
+  fmt.Print("\n")
+  fmt.Println("Your database is ready. To add a user to your database, run:")
+  fmt.Println("  mongohq users:create --deployment " + database.Deployment_id + " --database " + database.Name + " -u <username>")
+  fmt.Println("")
+  fmt.Println("To connect to your database, run:")
+  fmt.Println("  mongo " + deployment.CurrentPrimary + "/" + database.Name + " -u <username>" + " -p")
+  fmt.Println("")
+  fmt.Println("Your applications should use the following URI to connect:")
+  fmt.Println("  mongodb://<username>:<password>@" + strings.Join(deployment.Members, ",") + "/" + database.Name)
+  fmt.Println("\nEnjoy!")
 }

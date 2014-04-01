@@ -8,6 +8,7 @@ import (
   "github.com/gorilla/websocket"
   "errors"
   "encoding/json"
+  "strconv"
 )
 
 type OkResponse struct {
@@ -22,7 +23,7 @@ var oauth_client_id = "6fb9368538ef061ed73be71cc291e65b"
 var oauth_secret    = "028d31d8ca253cc3004b3ae4470c21bb23c3011e2fc8b442ad72f259be7879ce5c66bfda4ff26d5a0ba8d23369ef3355ef4579f6e7a977ba933dc1a37fd2880c"
 
 func api_url(path string) (string) {
-   return "https://dblayer-api.herokuapp.com" + path;
+  return "https://dblayer-api.herokuapp.com" + path;
 }
 
 func gopher_url(path string) (string) {
@@ -30,7 +31,7 @@ func gopher_url(path string) (string) {
 }
 
 func gopher_socket_url(path string, oauthToken string) (string) {
-   return "wss://beta-api.mongohq.com/mongo" + path + "?token=Bearer%20" + oauthToken
+  return "wss://beta-api.mongohq.com/mongo" + path + "?token=Bearer%20" + oauthToken
 }
 
 func userAgent() string {
@@ -52,7 +53,9 @@ func sendRequest(request *http.Request, oauthToken string) ([]byte, error) {
   responseBody, _ := ioutil.ReadAll(response.Body)
   response.Body.Close()
 
-  if response.StatusCode >= 400 {
+  if string(responseBody) == "NOT FOUND" {
+    return responseBody, errors.New("Object not found")
+  } else if response.StatusCode >= 400 {
     var errorResponse ErrorResponse
     err := json.Unmarshal(responseBody, &errorResponse)
 
@@ -106,4 +109,23 @@ func open_websocket(message SocketMessage, oauthToken string) (*websocket.Conn, 
     return client, errors.New("Error subscribing to websocket feed.")
   }
   return client, nil
+}
+
+var kb = 1024.0
+var mb = kb * 1024.0
+var gb = mb * 1024.0
+var tb = gb * 1024.0
+
+func prettySize(size float64) string {
+  if size < kb {
+    return strconv.FormatFloat(size, 'f', 0, 64) + "b"
+  } else if size < mb {
+    return strconv.FormatFloat(size / kb, 'f', 0, 64) + "kb"
+  } else if size < gb {
+    return strconv.FormatFloat(size / mb, 'f', 0, 64) + "mb"
+  } else if size < tb {
+    return strconv.FormatFloat(size / gb, 'f', 0, 64) + "gb"
+  } else {
+    return strconv.FormatFloat(size / tb, 'f', 0, 64) + "tb"
+  }
 }

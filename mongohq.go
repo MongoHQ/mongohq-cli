@@ -35,6 +35,44 @@ func main() {
   app.Version = mongohq_cli.Version()
   app.Commands = []cli.Command{
     {
+      Name:      "backups",
+      Usage:     "List backups on a database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "database,db", "<string>", "(optional) Name of database to list backups for"},
+        cli.StringFlag { "deployment,dep", "<string>", "(optional) Id of deployment to list backups for"},
+      },
+      Action: func(c *cli.Context) {
+        filter := map[string]string{}
+        if c.IsSet("database") { filter["database"] = c.String("database") }
+        if c.IsSet("deployment") { filter["deployment"] = c.String("deployment") }
+        controllers.Backups(filter)
+      },
+    },
+    {
+      Name:      "backups:info",
+      Usage:     "List backups on a database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "backup,b", "<string>", "File name of backup"},
+      },
+      Action: func(c *cli.Context) {
+        requireArguments("backups:info", c, []string{"backup"}, []string{})
+        controllers.Backup(c.String("backup"))
+      },
+    },
+    {
+      Name:      "backups:restore",
+      Usage:     "Restore backup to a database to a new deployment",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "backup,b", "<string>", "File name of backup"},
+        cli.StringFlag { "source-database,source", "<string>", "Original database name"},
+        cli.StringFlag { "destination-database,destination", "<string>", "New database name"},
+      },
+      Action: func(c *cli.Context) {
+        requireArguments("backups:restore", c, []string{"backup", "source-database", "destination-database"}, []string{})
+        controllers.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
+      },
+    },
+    {
       Name:      "databases",
       Usage:     "list databases",
       Action: func(c *cli.Context) {
@@ -62,6 +100,18 @@ func main() {
       Action: func(c *cli.Context) {
         requireArguments("databases:info", c, []string{"database"}, []string{})
         controllers.Database(c.String("database"))
+      },
+    },
+    {
+      Name:      "databases:remove",
+      Usage:     "remove database",
+      Flags:     []cli.Flag {
+        cli.StringFlag { "database,db", "<string>", "Name of new database to remove"},
+        cli.BoolFlag { "force,f", "Force delete without confirmation" },
+      },
+      Action: func(c *cli.Context) {
+        requireArguments("databases:remove", c, []string{"database"}, []string{})
+        controllers.RemoveDatabase(c.String("database"), c.Bool("force"))
       },
     },
     {
