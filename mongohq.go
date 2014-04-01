@@ -36,10 +36,10 @@ func main() {
   app.Commands = []cli.Command{
     {
       Name:      "backups",
-      Usage:     "List backups on a database",
+      Usage:     "list backups with optional filters",
       Flags:     []cli.Flag {
-        cli.StringFlag { "database,db", "<string>", "(optional) Name of database to list backups for"},
-        cli.StringFlag { "deployment,dep", "<string>", "(optional) Id of deployment to list backups for"},
+        cli.StringFlag { "database,db", "<string>", "(optional) database to list backups for"},
+        cli.StringFlag { "deployment,dep", "<string>", "(optional) deployment to list backups for"},
       },
       Action: func(c *cli.Context) {
         filter := map[string]string{}
@@ -50,9 +50,9 @@ func main() {
     },
     {
       Name:      "backups:info",
-      Usage:     "List backups on a database",
+      Usage:     "information on backup",
       Flags:     []cli.Flag {
-        cli.StringFlag { "backup,b", "<string>", "File name of backup"},
+        cli.StringFlag { "backup,b", "<string>", "file name of backup"},
       },
       Action: func(c *cli.Context) {
         requireArguments("backups:info", c, []string{"backup"}, []string{})
@@ -61,11 +61,11 @@ func main() {
     },
     {
       Name:      "backups:restore",
-      Usage:     "Restore backup to a database to a new deployment",
+      Usage:     "restore backup to a new database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "backup,b", "<string>", "File name of backup"},
-        cli.StringFlag { "source-database,source", "<string>", "Original database name"},
-        cli.StringFlag { "destination-database,destination", "<string>", "New database name"},
+        cli.StringFlag { "backup,b", "<string>", "file name of backup"},
+        cli.StringFlag { "source-database,source", "<string>", "original database name"},
+        cli.StringFlag { "destination-database,destination", "<string>", "new database name"},
       },
       Action: func(c *cli.Context) {
         requireArguments("backups:restore", c, []string{"backup", "source-database", "destination-database"}, []string{})
@@ -83,8 +83,8 @@ func main() {
       Name:      "databases:create",
       Usage:     "create database on an existing deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "<string>", "Deployment to create database on"},
-        cli.StringFlag { "database,db", "<string>", "Name of new database to create"},
+        cli.StringFlag { "deployment,dep", "<string>", "deployment to create database on"},
+        cli.StringFlag { "database,db", "<string>", "new database to create"},
       },
       Action: func(c *cli.Context) {
         requireArguments("databases:create", c, []string{"deployment", "database"}, []string{})
@@ -95,7 +95,7 @@ func main() {
       Name:      "databases:info",
       Usage:     "information on database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "database,db", "<string>", "Database name for more information"},
+        cli.StringFlag { "database,db", "<string>", " database for more information"},
       },
       Action: func(c *cli.Context) {
         requireArguments("databases:info", c, []string{"database"}, []string{})
@@ -106,8 +106,8 @@ func main() {
       Name:      "databases:remove",
       Usage:     "remove database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "database,db", "<string>", "Name of new database to remove"},
-        cli.BoolFlag { "force,f", "Force delete without confirmation" },
+        cli.StringFlag { "database,db", "<string>", "database to remove"},
+        cli.BoolFlag { "force,f", "delete without confirmation" },
       },
       Action: func(c *cli.Context) {
         requireArguments("databases:remove", c, []string{"database"}, []string{})
@@ -125,8 +125,8 @@ func main() {
       Name:      "deployments:create",
       Usage:     "create a new Elastic Deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "database,db", "<string>", "New database name to be created on your new deployment"},
-        cli.StringFlag { "region,r", "<string>", "Region for deployment. For a list of regions, run 'mongohq regions'"},
+        cli.StringFlag { "database,db", "<string>", "new database name"},
+        cli.StringFlag { "region,r", "<string>", "region of deployment (for list of regions, run 'mongohq regions')"},
       },
       Action: func(c *cli.Context) {
         requireArguments("deployments:create", c, []string{"database", "region"}, []string{})
@@ -137,7 +137,7 @@ func main() {
       Name:      "deployments:info",
       Usage:     "information on deployment",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "<bson_id>", "The id for the deployment for more information"},
+        cli.StringFlag { "deployment,dep", "<bson_id>", "deployment for more information"},
       },
       Action: func(c *cli.Context) {
         requireArguments("deployments:info", c, []string{"deployment"}, []string{})
@@ -148,7 +148,7 @@ func main() {
       Name:      "deployments:mongostat",
       Usage:     "realtime mongostat",
       Flags:     []cli.Flag {
-        cli.StringFlag{"deployment,dep", "<bson_id>", "The id for the deployment for tailing mongostats"},
+        cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for watching mongostats"},
       },
       Action: func(c *cli.Context) {
         requireArguments("deployments:mongostat", c, []string{"deployment"}, []string{})
@@ -159,7 +159,7 @@ func main() {
       Name:      "deployments:logs (pending)",
       Usage:     "tail logs",
       Flags:     []cli.Flag {
-        cli.StringFlag{"deployment,dep", "<bson_id>", "The id for the deployment for tailing logs"},
+        cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for tailing database logs"},
       },
       Action: func(c *cli.Context) {
         requireArguments("deployments:logs", c, []string{"deployment"}, []string{})
@@ -170,7 +170,7 @@ func main() {
       Name:      "deployments:oplog",
       Usage:     "tail oplog",
       Flags:     []cli.Flag {
-        cli.StringFlag{"deployment,dep", "<bson_id>", "The id for the deployment to tail an oplog"},
+        cli.StringFlag{"deployment,dep", "<bson_id>", "deployment to tail the oplog"},
       },
       Action: func(c *cli.Context) {
         requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
@@ -188,8 +188,8 @@ func main() {
       Name:      "users",
       Usage:     "list users on a database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "<bson_id>", "The deployment id the database is on"},
-        cli.StringFlag { "database,db", "<string>", "The specific database to list users"},
+        cli.StringFlag { "deployment,dep", "<bson_id>", "deployment id the database is on"},
+        cli.StringFlag { "database,db", "<string>", "database to list users"},
       },
       Action: func(c *cli.Context) {
         requireArguments("users", c, []string{"deployment", "database"}, []string{})
@@ -200,9 +200,9 @@ func main() {
       Name:      "users:create",
       Usage:     "add user to a database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "<bson_id>", "The deployment id the database is on"},
-        cli.StringFlag { "database,db", "<string>", "The database name to create the user on"},
-        cli.StringFlag { "username,u", "<string>", "The new user to create"},
+        cli.StringFlag { "deployment,dep", "<bson_id>", "deployment id the database is on"},
+        cli.StringFlag { "database,db", "<string>", "atabase name to create the user on"},
+        cli.StringFlag { "username,u", "<string>", "user to create"},
       },
       Action: func(c *cli.Context) {
         requireArguments("users:create", c, []string{"deployment", "database", "username"}, []string{})
@@ -213,9 +213,9 @@ func main() {
       Name:      "users:remove",
       Usage:     "remove user from database",
       Flags:     []cli.Flag {
-        cli.StringFlag { "deployment,dep", "<bson_id>", "The deployment id the database is on"},
-        cli.StringFlag { "database,db", "<string>", "The database name to remove the user from"},
-        cli.StringFlag { "username,u", "<string>", "The user to remove from the deployment"},
+        cli.StringFlag { "deployment,dep", "<bson_id>", "deployment id the database is on"},
+        cli.StringFlag { "database,db", "<string>", "database name to remove the user from"},
+        cli.StringFlag { "username,u", "<string>", "user to remove from the deployment"},
       },
       Action: func(c *cli.Context) {
         requireArguments("users:remove", c, []string{"deployment", "database", "username"}, []string{})
