@@ -8,6 +8,7 @@ import (
   "os"
   "errors"
   "github.com/codegangsta/cli"
+  "fmt"
 )
 
 var credentialPath = os.Getenv("HOME") + "/.mongohq"
@@ -19,16 +20,19 @@ func login() (string, string, error) {
   username := prompt("Username")
   password := prompt("Password")
 
-  //println("2fa access required.  Enter your 2fa token: ")
-  //var 2fa string
-  //_, err = fmt.Scanln(&2fa)
-  //if err != nil {
-    //fmt.Println("Error: ", err)
-  //}
-  oauthToken, err := api.Authenticate(username, password)
+  oauthToken, err := api.Authenticate(username, password, "")
+  return processAuthenticationResponse(username, password, oauthToken, err) 
+}
 
+func processAuthenticationResponse(username, password, oauthToken string, err error) (string, string, error) { 
   if err != nil {
-    return username, "", errors.New("Error authenticating given username / password")
+    if err.Error() == "2fa token required" {
+      twoFactorToken := prompt("2fa token")
+      oauthToken, err := api.Authenticate(username, password, twoFactorToken)
+      return processAuthenticationResponse(username, password, oauthToken, err) 
+    } else {
+      return username, "", err
+    }
   } else {
     err = storeCredentials(username, oauthToken)
 
@@ -88,6 +92,7 @@ func verifyAuth() (bool) {
     username, oauthToken, err := login()
 
     if err != nil {
+      fmt.Println("\n"+err.Error()+"\n")
       return false
     } else {
       Email = username
