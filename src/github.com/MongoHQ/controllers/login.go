@@ -8,6 +8,7 @@ import (
   "os"
   "errors"
   "github.com/codegangsta/cli"
+  "code.google.com/p/gopass"
   "fmt"
 )
 
@@ -17,8 +18,13 @@ var credentialFile = credentialPath + "/credentials"
 var Email, OauthToken string
 
 func login() (string, string, error) {
-  username := prompt("Username")
-  password := prompt("Password")
+  fmt.Println("Enter your MongoHQ credentials.")
+  username := prompt("Email")
+  password, err := gopass.GetPass("Password (typing will be hidden): ")
+
+  if err != nil {
+    return "", "", errors.New("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
+  }
 
   oauthToken, err := api.Authenticate(username, password, "")
   return processAuthenticationResponse(username, password, oauthToken, err) 
@@ -39,6 +45,7 @@ func processAuthenticationResponse(username, password, oauthToken string, err er
     if err != nil {
       return username, oauthToken, err
     } else {
+      fmt.Println("\nAuthentication complete.\n\n")
       return username, oauthToken, nil
     }
   }
