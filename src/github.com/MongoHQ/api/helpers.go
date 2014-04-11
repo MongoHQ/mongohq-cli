@@ -115,16 +115,26 @@ var mb = kb * 1024.0
 var gb = mb * 1024.0
 var tb = gb * 1024.0
 
+func includeSignificantDigits(size float64) string {
+  if size < 10 {
+    return strconv.FormatFloat(size, 'f', 2, 64)
+  } else if size < 100 {
+    return strconv.FormatFloat(size, 'f', 1, 64)
+  } else {
+    return strconv.FormatFloat(size, 'f', 0, 64)
+  }
+}
+
 func prettySize(size float64) string {
   if size < kb {
-    return strconv.FormatFloat(size, 'f', 0, 64) + "b"
+    return includeSignificantDigits(size) + "b"
   } else if size < mb {
-    return strconv.FormatFloat(size / kb, 'f', 0, 64) + "kb"
+    return includeSignificantDigits(size / kb) + "k"
   } else if size < gb {
-    return strconv.FormatFloat(size / mb, 'f', 0, 64) + "mb"
+    return includeSignificantDigits(size / mb) + "m"
   } else if size < tb {
-    return strconv.FormatFloat(size / gb, 'f', 0, 64) + "gb"
+    return includeSignificantDigits(size / gb) + "g"
   } else {
-    return strconv.FormatFloat(size / tb, 'f', 0, 64) + "tb"
+    return includeSignificantDigits(size / tb) + "t"
   }
 }

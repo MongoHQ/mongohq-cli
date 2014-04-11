@@ -85,8 +85,8 @@ func DeploymentMongoStat(deployment_id string) {
       }
     }
 
-    headerFormat  := "%" + strconv.Itoa(hostLength) + "s" + "%7s%7s%7s%7s%8s%8s%8s%7s%7s%7s%7s%" + strconv.Itoa(lockLength) + "s%11s%6s|%-3s%6s|%-3s%7s%7s%6s%11s\n"
-    sprintfFormat := "%" + strconv.Itoa(hostLength) + "s" + "%7s%7s%7s%7s%8s%8s%8d%7d%7d%7d%7d%" + strconv.Itoa(lockLength) + "s%11d%6d|%-3d%6d|%-3d%7.0f%7.0f%6d%11s\n"
+    headerFormat  := "%" + strconv.Itoa(hostLength) + "s" + "%7s%7s%7s%7s%8s%8s%8s%8s%8s%8s%7s%" + strconv.Itoa(lockLength) + "s%11s%6s|%-3s%6s|%-3s%7s%7s%6s%11s\n"
+    sprintfFormat := "%" + strconv.Itoa(hostLength) + "s" + "%7s%7s%7s%7s%8s%8s%8d%8s%8s%8s%7d%" + strconv.Itoa(lockLength) + "s%11d%6d|%-3d%6d|%-3d%7s%7s%6d%11s\n"
 
     if loopCount % 5 == 0 {
       fmt.Printf(headerFormat, "host", "insert", "query", "update", "delete", "getmore", "command", "flush", "mapped", "vsize", "res", "faults", "locked %", "idx miss %", "qr", "qw", "ar", "aw", "netIn", "netOut", "conn", "time")
@@ -94,15 +94,9 @@ func DeploymentMongoStat(deployment_id string) {
 
     now := time.Now()
 
-    for position, mapMongoStat := range mongoStats {
+    for _, mapMongoStat := range mongoStats {
       for host, stat := range mapMongoStat {
-        var netIn, netOut float64
-        if len(priorStat) > 0 && len(priorStat[position]) > 0 {
-          netIn  = stat.NetIn - priorStat[position][host].NetIn
-          netOut = stat.NetOut - priorStat[position][host].NetOut
-        }
-
-        fmt.Printf(sprintfFormat, hostRegex.ReplaceAllLiteralString(host, ""), stat.Inserts, stat.Query, stat.Update, stat.Delete, stat.Getmore, stat.Command, stat.Flushes, stat.Mapped, stat.Vsize, stat.Res, stat.Faults, stat.Locked, stat.IdxMiss, stat.Qr, stat.Qw, stat.Ar, stat.Aw, netIn, netOut, stat.Conn, now.Format("15:04:05"))
+        fmt.Printf(sprintfFormat, hostRegex.ReplaceAllLiteralString(host, ""), stat.Inserts, stat.Query, stat.Update, stat.Delete, stat.Getmore, stat.Command, stat.Flushes, stat.PrettyMapped(), stat.PrettyVsize(), stat.PrettyRes(), stat.Faults, stat.Locked, stat.IdxMiss, stat.Qr, stat.Qw, stat.Ar, stat.Aw, stat.PrettyNetIn(), stat.PrettyNetOut(), stat.Conn, now.Format("15:04:05"))
       }
     }
 

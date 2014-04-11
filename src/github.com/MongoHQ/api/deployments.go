@@ -64,6 +64,26 @@ type MongoStat struct {
   Repl string
 }
 
+func (m *MongoStat) PrettyNetIn() string {
+  return prettySize(float64(m.NetIn))
+}
+
+func (m *MongoStat) PrettyNetOut() string {
+  return prettySize(float64(m.NetOut))
+}
+
+func (m *MongoStat) PrettyMapped() string {
+  return prettySize(float64(m.Mapped * 1024 * 1024))
+}
+
+func (m *MongoStat) PrettyVsize() string {
+  return prettySize(float64(m.Vsize * 1024 * 1024))
+}
+
+func (m *MongoStat) PrettyRes() string {
+  return prettySize(float64(m.Res * 1024 * 1024))
+}
+
 func GetDeployments(oauthToken string) ([]Deployment, error) {
   body, err := rest_get(api_url("/deployments"), oauthToken)
 
