@@ -80,7 +80,7 @@ func main() {
 			Name:  "databases",
 			Usage: "list databases",
 			Action: func(c *cli.Context) {
-				controllers.Databases()
+        controllers.Databases()
 			},
 		},
 		{
@@ -149,7 +149,7 @@ func main() {
 			},
 		},
 		{
-			Name:  "deployments:mongostat",
+			Name:  "mongostat",
 			Usage: "realtime mongostat",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for watching mongostats"},
@@ -160,27 +160,27 @@ func main() {
 			},
 		},
 		{
-			Name:  "historical_logs",
+			Name:  "logs",
 			Usage: "query historical logs",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for querying logs"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("historical_logs", c, []string{"deployment"}, []string{})
+				requireArguments("logs", c, []string{"deployment"}, []string{})
 				controllers.HistoricalLogs(c.String("deployment"))
 			},
 		},
-		{
-			Name:  "deployments:oplog",
-			Usage: "tail oplog",
-			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment to tail the oplog"},
-			},
-			Action: func(c *cli.Context) {
-				requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
-				controllers.DeploymentOplog(c.String("deployment"))
-			},
-		},
+		//{
+			//Name:  "deployments:oplog",
+			//Usage: "tail oplog",
+			//Flags: []cli.Flag{
+				//cli.StringFlag{"deployment,dep", "<bson_id>", "deployment to tail the oplog"},
+			//},
+			//Action: func(c *cli.Context) {
+				//requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
+				//controllers.DeploymentOplog(c.String("deployment"))
+			//},
+		//},
 		{
 			Name:  "regions",
 			Usage: "list available regions",
