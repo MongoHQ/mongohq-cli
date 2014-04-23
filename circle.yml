@@ -2,7 +2,8 @@ checkout:
   post:
     - git submodule sync
 test:
-  override: go test
+  override:
+    - go test
 
 deployment:
   master:
