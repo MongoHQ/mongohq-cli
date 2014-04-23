@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func requireArguments(command string, c *cli.Context, argumentsSlice []string, errorMessages []string) {
+func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []string) {
 	err := false
 
 	for _, argument := range argumentsSlice {
@@ -19,7 +19,7 @@ func requireArguments(command string, c *cli.Context, argumentsSlice []string, e
 	}
 
 	if err {
-		fmt.Println("\nMissing arguments, for more information, run: mongohq " + command + " --help\n")
+		fmt.Println("\nMissing arguments, for more information, run: mongohq " + c.Command.Name + " --help\n")
 		for _, errorMessage := range errorMessages {
 			fmt.Println(errorMessage)
 		}
@@ -59,7 +59,7 @@ func main() {
 				cli.StringFlag{"backup,b", "<string>", "file name of backup"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("backups:info", c, []string{"backup"}, []string{})
+				requireArguments(c, []string{"backup"}, []string{})
 				controllers.Backup(c.String("backup"))
 			},
 		},
@@ -72,7 +72,7 @@ func main() {
 				cli.StringFlag{"destination-database,destination", "<string>", "new database name"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("backups:restore", c, []string{"backup", "source-database", "destination-database"}, []string{})
+				requireArguments(c, []string{"backup", "source-database", "destination-database"}, []string{})
 				controllers.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
@@ -91,7 +91,7 @@ func main() {
 				cli.StringFlag{"database,db", "<string>", "new database to create"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("databases:create", c, []string{"deployment", "database"}, []string{})
+				requireArguments(c, []string{"deployment", "database"}, []string{})
 				controllers.CreateDatabase(c.String("deployment"), c.String("database"))
 			},
 		},
@@ -102,7 +102,7 @@ func main() {
 				cli.StringFlag{"database,db", "<string>", " database for more information"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("databases:info", c, []string{"database"}, []string{})
+				requireArguments(c, []string{"database"}, []string{})
 				controllers.Database(c.String("database"))
 			},
 		},
@@ -114,7 +114,7 @@ func main() {
 				cli.BoolFlag{"force,f", "delete without confirmation"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("databases:remove", c, []string{"database"}, []string{})
+				requireArguments(c, []string{"database"}, []string{})
 				controllers.RemoveDatabase(c.String("database"), c.Bool("force"))
 			},
 		},
@@ -133,7 +133,7 @@ func main() {
 				cli.StringFlag{"region,r", "<string>", "region of deployment (for list of regions, run 'mongohq regions')"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("deployments:create", c, []string{"database", "region"}, []string{})
+				requireArguments(c, []string{"database", "region"}, []string{})
 				controllers.CreateDeployment(c.String("database"), c.String("region"))
 			},
 		},
@@ -144,7 +144,7 @@ func main() {
 				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for more information"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("deployments:info", c, []string{"deployment"}, []string{})
+				requireArguments(c, []string{"deployment"}, []string{})
 				controllers.Deployment(c.String("deployment"))
 			},
 		},
@@ -155,7 +155,7 @@ func main() {
 				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for watching mongostats"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("deployments:mongostat", c, []string{"deployment"}, []string{})
+				requireArguments(c, []string{"deployment"}, []string{})
 				controllers.DeploymentMongoStat(c.String("deployment"))
 			},
 		},
@@ -166,7 +166,7 @@ func main() {
 				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for querying logs"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("logs", c, []string{"deployment"}, []string{})
+				requireArguments(c, []string{"deployment"}, []string{})
 				controllers.HistoricalLogs(c.String("deployment"))
 			},
 		},
@@ -196,7 +196,7 @@ func main() {
 				cli.StringFlag{"database,db", "<string>", "database to list users"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("users", c, []string{"deployment", "database"}, []string{})
+				requireArguments(c, []string{"deployment", "database"}, []string{})
 				controllers.DatabaseUsers(c.String("deployment"), c.String("database"))
 			},
 		},
@@ -209,7 +209,7 @@ func main() {
 				cli.StringFlag{"username,u", "<string>", "user to create"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("users:create", c, []string{"deployment", "database", "username"}, []string{})
+				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				controllers.DatabaseCreateUser(c.String("deployment"), c.String("database"), c.String("username"))
 			},
 		},
@@ -222,7 +222,7 @@ func main() {
 				cli.StringFlag{"username,u", "<string>", "user to remove from the deployment"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments("users:remove", c, []string{"deployment", "database", "username"}, []string{})
+				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				controllers.DatabaseRemoveUser(c.String("deployment"), c.String("database"), c.String("username"))
 			},
 		},
