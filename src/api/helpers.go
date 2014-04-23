@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/MongoHQ/mongohq-cli"
+	"mongohq-cli"
 	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"net/http"

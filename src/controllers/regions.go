@@ -2,7 +2,7 @@ package controllers
 
 import (
   "fmt"
-  "github.com/MongoHQ/api"
+  "api"
   "os"
 )
 

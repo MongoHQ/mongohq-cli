@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/MongoHQ/controllers" // MongoHQ CLI functions
-	"github.com/MongoHQ/mongohq-cli"
+	"controllers" // MongoHQ CLI functions
+	"mongohq-cli"
 	"github.com/codegangsta/cli"
 	"os"
 )

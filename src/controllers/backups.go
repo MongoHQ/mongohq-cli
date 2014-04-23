@@ -1,7 +1,7 @@
 package controllers
 
 import (
-  "github.com/MongoHQ/api"
+  "api"
   "fmt"
   "os"
   "strings"
