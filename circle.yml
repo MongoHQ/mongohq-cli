@@ -1,0 +1,11 @@
+checkout:
+  post:
+    - git submodule sync
+test:
+  override: go test
+
+deployment:
+  master:
+    branch: master
+    commands:
+      - build_and_deploy.sh
