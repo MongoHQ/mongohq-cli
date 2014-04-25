@@ -18,7 +18,7 @@ func Deployments() {
   } else {
     fmt.Println("=== My Deployments")
     for _, deployment := range deployments {
-      fmt.Println(deployment.Id + " : " + deployment.CurrentPrimary)
+      fmt.Println(deployment.NameOrId() + " : " + deployment.CurrentPrimary)
     }
   }
 }
@@ -29,7 +29,7 @@ func Deployment(deploymentId string) {
   if err != nil {
     fmt.Println("Error retrieving deployments: " + err.Error())
   } else {
-    fmt.Println("=== " + deployment.Id)
+    fmt.Println("=== " + deployment.NameOrId())
     fmt.Println("  current primary:     " + deployment.CurrentPrimary)
     fmt.Println("  members:             " + strings.Join(deployment.Members, ","))
     fmt.Println("  version:             " + deployment.Version)
@@ -45,13 +45,23 @@ func Deployment(deploymentId string) {
   }
 }
 
-func CreateDeployment(databaseName, region string) {
-  database, err := api.CreateDeployment(databaseName, region, OauthToken)
+func DeploymentRename(deploymentId, name string) {
+  _, err := api.RenameDeployment(deploymentId, name, OauthToken)
+
+  if err != nil {
+    fmt.Println("Error renaming deployment: " + err.Error())
+  } else {
+    fmt.Println("Renamed deployment to " + name + ".  You will need to reference it by the new name.")
+  }
+}
+
+func CreateDeployment(deploymentName, databaseName, region string) {
+  database, err := api.CreateDeployment(deploymentName, databaseName, region, OauthToken)
 
   if err != nil {
     fmt.Println("Error creating deployment: " + err.Error())
   } else {
-    fmt.Println("=== Building database:" + database.Name)
+    fmt.Println("=== Building deployment " + deploymentName + " with database " + database.Name)
 
     pollNewDeployment(database)
   }

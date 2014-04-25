@@ -130,18 +130,19 @@ func main() {
 			Usage: "create a new Elastic Deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", "new database name"},
+				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
 				cli.StringFlag{"region,r", "<string>", "region of deployment (for list of regions, run 'mongohq regions')"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments(c, []string{"database", "region"}, []string{})
-				controllers.CreateDeployment(c.String("database"), c.String("region"))
+				requireArguments(c, []string{"deployment", "database", "region"}, []string{})
+				controllers.CreateDeployment(c.String("deployment"), c.String("database"), c.String("region"))
 			},
 		},
 		{
 			Name:  "deployments:info",
 			Usage: "information on deployment",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for more information"},
+				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
@@ -149,10 +150,22 @@ func main() {
 			},
 		},
 		{
+			Name:  "deployments:rename",
+			Usage: "rename a deployment",
+			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
+				cli.StringFlag{"name,n", "<string>", "new name for deployment"},
+			},
+			Action: func(c *cli.Context) {
+				requireArguments(c, []string{"deployment", "name"}, []string{})
+				controllers.DeploymentRename(c.String("deployment"), c.String("name"))
+			},
+		},
+		{
 			Name:  "mongostat",
 			Usage: "realtime mongostat",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for watching mongostats"},
+				cli.StringFlag{"deployment,dep", "<string>", "deployment for watching mongostats"},
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
@@ -163,7 +176,7 @@ func main() {
 			Name:  "logs",
 			Usage: "query historical logs",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment for querying logs"},
+				cli.StringFlag{"deployment,dep", "<string>", "deployment for querying logs"},
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
@@ -174,7 +187,7 @@ func main() {
 			//Name:  "deployments:oplog",
 			//Usage: "tail oplog",
 			//Flags: []cli.Flag{
-				//cli.StringFlag{"deployment,dep", "<bson_id>", "deployment to tail the oplog"},
+				//cli.StringFlag{"deployment,dep", "<string>", "deployment to tail the oplog"},
 			//},
 			//Action: func(c *cli.Context) {
 				//requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
@@ -192,7 +205,7 @@ func main() {
 			Name:  "users",
 			Usage: "list users on a database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment id the database is on"},
+				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "database to list users"},
 			},
 			Action: func(c *cli.Context) {
@@ -204,7 +217,7 @@ func main() {
 			Name:  "users:create",
 			Usage: "add user to a database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment id the database is on"},
+				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "atabase name to create the user on"},
 				cli.StringFlag{"username,u", "<string>", "user to create"},
 			},
@@ -217,7 +230,7 @@ func main() {
 			Name:  "users:remove",
 			Usage: "remove user from database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<bson_id>", "deployment id the database is on"},
+				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "database name to remove the user from"},
 				cli.StringFlag{"username,u", "<string>", "user to remove from the deployment"},
 			},

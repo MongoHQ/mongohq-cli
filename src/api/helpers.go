@@ -83,6 +83,14 @@ func rest_post(urlString string, data []byte, oauthToken string) ([]byte, error)
 	return sendRequest(request, oauthToken)
 }
 
+func rest_patch(urlString string, data []byte, oauthToken string) ([]byte, error) {
+	request, err := http.NewRequest("PATCH", urlString, bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	return sendRequest(request, oauthToken)
+}
+
 func rest_delete(urlString, oauthToken string) ([]byte, error) {
 	request, err := http.NewRequest("DELETE", urlString, nil)
 	if err != nil {

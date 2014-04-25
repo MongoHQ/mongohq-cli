@@ -7,11 +7,20 @@ import (
 
 type Deployment struct {
     Id   string
+    Name string `json:"name"`
     CurrentPrimary string `json:"current_primary"`
     Version string
     Members []string
     AllowMultipleDatabases bool `json:"allow_multiple_deployments"`
     Databases []Database
+}
+
+func (d *Deployment) NameOrId () string {
+  if d.Name != "" {
+    return d.Name
+  } else {
+    return d.Id
+  }
 }
 
 type SocketMessage struct {
@@ -106,18 +115,19 @@ func GetDeployment(deploymentId string, oauthToken string) (Deployment, error) {
   return deployment, err
 }
 
-func CreateDeployment(databaseName, region, oauthToken string) (Database, error) {
+func CreateDeployment(deploymentName, databaseName, region, oauthToken string) (Database, error) {
   type DeploymentCreateOptions struct {
     Region string `json:"region"`
   }
 
   type DeploymentCreate struct {
-    Name string `json:"name"`
+    Name string `json:"deployment_name"`
+    DatabaseName string `json:"name"`
     Slug string `json:"slug"`
     Options DeploymentCreateOptions `json:"options"`
   }
 
-  deploymentCreate := DeploymentCreate{Name: databaseName, Slug: "mongohq:elastic", Options: DeploymentCreateOptions{Region: region}}
+  deploymentCreate := DeploymentCreate{Name: deploymentName, DatabaseName: databaseName, Slug: "mongohq:elastic", Options: DeploymentCreateOptions{Region: region}}
   data, err := json.Marshal(deploymentCreate)
   if err != nil {
     return Database{}, err
@@ -131,6 +141,25 @@ func CreateDeployment(databaseName, region, oauthToken string) (Database, error)
   var database Database
   err = json.Unmarshal(body, &database)
   return database, err
+}
+
+func RenameDeployment(deploymentId, name, oauthToken string) (Deployment, error) {
+  type DeploymentRenameParams struct {
+    Name string `json:"name"`
+  }
+
+  data, err := json.Marshal(DeploymentRenameParams{Name: name})
+  if err != nil {
+    return Deployment{}, err
+  }
+
+  body, err := rest_patch(api_url("/deployments/" + deploymentId + "/rename"), data, oauthToken)
+  if err != nil {
+    return Deployment{}, err
+  }
+  var deployment Deployment
+  err = json.Unmarshal(body, &deployment)
+  return deployment, err
 }
 
 func DeploymentMongostat(deployment_id string, oauthToken string, outputFormatter func([]map[string]MongoStat, error)) error {
