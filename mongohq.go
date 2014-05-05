@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"controllers" // MongoHQ CLI functions
-	"mongohq-cli"
 	"github.com/codegangsta/cli"
 	"os"
 )
@@ -27,12 +25,24 @@ func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []s
 	}
 }
 
+var api *Api
+var controller Controller
+
 func main() {
+  loginController := new(LoginController)
+
 	app := cli.NewApp()
 	app.Name = "mongohq"
 	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
-	app.Before = controllers.RequireAuth
-	app.Version = mongohq_cli.Version()
+	app.Before = func(c *cli.Context) error {
+    err := loginController.RequireAuth(c)
+    if err != nil {
+      return err
+    }
+    controller = Controller{Api: loginController.Api}
+    return nil
+  }
+	app.Version = Version()
 	app.Commands = []cli.Command{
 		{
 			Name:  "backups",
@@ -49,7 +59,8 @@ func main() {
 				if c.IsSet("deployment") {
 					filter["deployment"] = c.String("deployment")
 				}
-				controllers.Backups(filter)
+        controller = Controller{Api: loginController.Api}
+				controller.ListBackups(filter)
 			},
 		},
 		{
@@ -60,7 +71,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"backup"}, []string{})
-				controllers.Backup(c.String("backup"))
+				controller.ShowBackup(c.String("backup"))
 			},
 		},
 		{
@@ -73,14 +84,14 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"backup", "source-database", "destination-database"}, []string{})
-				controllers.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
+				controller.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
 		{
 			Name:  "databases",
 			Usage: "list databases",
 			Action: func(c *cli.Context) {
-        controllers.Databases()
+        controller.ListDatabases()
 			},
 		},
 		{
@@ -92,7 +103,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database"}, []string{})
-				controllers.CreateDatabase(c.String("deployment"), c.String("database"))
+				controller.CreateDatabase(c.String("deployment"), c.String("database"))
 			},
 		},
 		{
@@ -103,7 +114,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"database"}, []string{})
-				controllers.Database(c.String("database"))
+				controller.ShowDatabase(c.String("database"))
 			},
 		},
 		{
@@ -115,14 +126,14 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"database"}, []string{})
-				controllers.RemoveDatabase(c.String("database"), c.Bool("force"))
+				controller.DeleteDatabase(c.String("database"), c.Bool("force"))
 			},
 		},
 		{
 			Name:  "deployments",
 			Usage: "list deployments",
 			Action: func(c *cli.Context) {
-				controllers.Deployments()
+				controller.ListDeployments()
 			},
 		},
 		{
@@ -135,7 +146,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database", "region"}, []string{})
-				controllers.CreateDeployment(c.String("deployment"), c.String("database"), c.String("region"))
+				controller.CreateDeployment(c.String("deployment"), c.String("database"), c.String("region"))
 			},
 		},
 		{
@@ -146,7 +157,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
-				controllers.Deployment(c.String("deployment"))
+				controller.ShowDeployment(c.String("deployment"))
 			},
 		},
 		{
@@ -158,7 +169,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "name"}, []string{})
-				controllers.DeploymentRename(c.String("deployment"), c.String("name"))
+				controller.RenameDeployment(c.String("deployment"), c.String("name"))
 			},
 		},
 		{
@@ -169,7 +180,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
-				controllers.DeploymentMongoStat(c.String("deployment"))
+				controller.DeploymentMongoStat(c.String("deployment"))
 			},
 		},
 		{
@@ -180,7 +191,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
-				controllers.HistoricalLogs(c.String("deployment"))
+				controller.HistoricalLogs(c.String("deployment"))
 			},
 		},
 		//{
@@ -191,14 +202,14 @@ func main() {
 			//},
 			//Action: func(c *cli.Context) {
 				//requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
-				//controllers.DeploymentOplog(c.String("deployment"))
+				//controller.DeploymentOplog(c.String("deployment"))
 			//},
 		//},
 		{
 			Name:  "regions",
 			Usage: "list available regions",
 			Action: func(c *cli.Context) {
-				controllers.Regions()
+				controller.ListRegions()
 			},
 		},
 		{
@@ -210,7 +221,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database"}, []string{})
-				controllers.DatabaseUsers(c.String("deployment"), c.String("database"))
+				controller.ListDatabaseUsers(c.String("deployment"), c.String("database"))
 			},
 		},
 		{
@@ -223,7 +234,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
-				controllers.DatabaseCreateUser(c.String("deployment"), c.String("database"), c.String("username"))
+				controller.CreateDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
 			},
 		},
 		{
@@ -236,14 +247,14 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
-				controllers.DatabaseRemoveUser(c.String("deployment"), c.String("database"), c.String("username"))
+				controller.DeleteDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
 			},
 		},
 		{
 			Name:  "logout",
 			Usage: "remove stored auth",
 			Action: func(c *cli.Context) {
-				controllers.Logout()
+				loginController.Logout()
 			},
 		},
 	}
