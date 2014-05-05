@@ -12,19 +12,19 @@ installMongoHQCli() {
   unamestr=`uname -sm`
 
   if [[ "$unamestr" == 'Linux x86_64' ]]; then
-    curl https://mongohq-cli.s3.amazonaws.com/linux/amd64/mongohq -o $workingdir/mongohq
-    curl https://mongohq-cli.s3.amazonaws.com/linux/amd64/checksum -o $workingdir/checksum
+    curl https://mongohq-cli.s3.amazonaws.com/builds/linux/amd64/mongohq -o $workingdir/mongohq
+    curl https://mongohq-cli.s3.amazonaws.com/builds/linux/amd64/checksum -o $workingdir/checksum
   elif [[ "$unamestr" == 'Darwin x86_64' ]]; then
-    curl https://mongohq-cli.s3.amazonaws.com/darwin/amd64/mongohq -o $workingdir/mongohq
-    curl https://mongohq-cli.s3.amazonaws.com/darwin/amd64/checksum -o $workingdir/checksum
+    curl https://mongohq-cli.s3.amazonaws.com/builds/darwin/amd64/mongohq -o $workingdir/mongohq
+    curl https://mongohq-cli.s3.amazonaws.com/builds/darwin/amd64/checksum -o $workingdir/checksum
   else
     unamestr=`uname -s`
     if [[ "$unamestr" == 'Linux' ]]; then
-      curl https://mongohq-cli.s3.amazonaws.com/darwin/386/mongohq -o $workingdir/mongohq
-      curl https://mongohq-cli.s3.amazonaws.com/darwin/386/checksum -o $workingdir/checksum
+      curl https://mongohq-cli.s3.amazonaws.com/builds/linux/386/mongohq -o $workingdir/mongohq
+      curl https://mongohq-cli.s3.amazonaws.com/builds/linux/386/checksum -o $workingdir/checksum
     elif [[ "$unamestr" == 'Darwin' ]]; then
-      curl https://mongohq-cli.s3.amazonaws.com/darwin/386/mongohq -o $workingdir/mongohq
-      curl https://mongohq-cli.s3.amazonaws.com/darwin/386/checksum -o $workingdir/checksum
+      curl https://mongohq-cli.s3.amazonaws.com/builds/darwin/386/mongohq -o $workingdir/mongohq
+      curl https://mongohq-cli.s3.amazonaws.com/builds/darwin/386/checksum -o $workingdir/checksum
     else
       echo "We currently only build the CLI for Linux and MacOSX. Please check back later."
       exit 1
