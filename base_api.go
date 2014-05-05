@@ -26,7 +26,7 @@ type ErrorResponse struct {
 var oauth_client_id = "5347253b33936795b1000001"
 
 func (api *Api) apiUrl(path string) string {
-	return "https://beta-api.mongohq.com/" + path
+	return "https://beta-api.mongohq.com" + path
 }
 
 func (api *Api) gopherUrl(path string) string {

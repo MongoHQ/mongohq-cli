@@ -38,7 +38,6 @@ func (api *Api) Authenticate(username, password, token string) (string, error) {
   response, err := client.Do(request)
 
   if err != nil {
-    println(err.Error())
     authenticationError = errors.New("Error authenticating against MongoHQ.")
   } else if response.StatusCode >= 400 {
     if response.Header.Get("X-Mongohq-Otp") == "required; sms" {

@@ -98,9 +98,8 @@ func (c *LoginController) readCredentialFile() (jsonResponse map[string]interfac
   }
 }
 
-func (c *LoginController) RequireAuth(*cli.Context) (err error) {
-  for !c.verifyAuth() {}
-  return err
+func (c *LoginController) RequireAuth(*cli.Context) {
+  c.verifyAuth()
 }
 
 func (c *LoginController) Logout() {
@@ -108,18 +107,14 @@ func (c *LoginController) Logout() {
   fmt.Println("Logout success.")
 }
 
-func (c *LoginController) verifyAuth() (bool) {
+func (c *LoginController) verifyAuth() {
   _, err := c.readCredentialFile()
   if err != nil {
     err := c.login()
 
     if err != nil {
       fmt.Println("\n"+err.Error()+"\n")
-      return false
-    } else {
-      return true
+      os.Exit(1)
     }
-  } else {
-     return true
   }
 }
