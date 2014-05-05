@@ -1,12 +1,15 @@
-checkout:
-  post:
-    - git submodule sync
-test:
-  override:
-    - go test
-
 deployment:
   master:
     branch: master
     commands:
-      - build_and_deploy.sh
+      - mkdir -p builds/{linux,darwin}/{amd64,386}
+      - GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build -o builds/linux/amd64/mongohq
+      - GOOS=linux  GOARCH=386   CGO_ENABLED=0 go build -o builds/linux/386/mongohq
+      - GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -o builds/darwin/amd64/mongohq
+      - GOOS=darwin GOARCH=386   CGO_ENABLED=0 go build -o builds/darwin/386/mongohq
+      - echo "[default]" > .s3cmd
+      - echo "access_key = $KEY" >> .s3cmd
+      - echo "secret_key = $SECRET" >> .s3cmd
+      - echo "host_base = s3.amazonaws.com" >> .s3cmd
+      - s3cmd -c .s3cmd sync builds s3://mongohq-cli/builds
+      - s3cmd -c .s3cmd put install.sh s3://mongohq-cli/
