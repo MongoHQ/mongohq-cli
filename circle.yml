@@ -2,6 +2,7 @@ deployment:
   master:
     branch: master
     commands:
+      - echo "package main; func Version() string { patch := '$CIRCLE_BUILD_NUM'; return '0.0.' + patch }" > version.go
       - GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build -o builds/linux/amd64/mongohq
       - shasum builds/linux/amd64/mongohq | awk '{print $1}' > builds/linux/amd64/checksum
       - GOOS=linux  GOARCH=386   CGO_ENABLED=0 go build -o builds/linux/386/mongohq
