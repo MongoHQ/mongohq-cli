@@ -1,8 +1,6 @@
 #!/bin/sh
 
-source .env
-
-go build mongohq.go
+go build
 shasum mongohq | awk '{print $1}' > checksum
 
 unamestr=`uname`
