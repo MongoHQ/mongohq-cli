@@ -35,7 +35,7 @@ func (c *LoginController) login() (error) {
   oauthToken, err := c.Api.Authenticate(username, password, "")
 
   if err == nil {
-    c.Api = Api{OauthToken: oauthToken}
+    c.Api = Api{OauthToken: oauthToken, UserAgent: "MongoHQ-CLI " + Version()}
   }
 
   return c.processAuthenticationResponse(username, password, oauthToken, err)
@@ -92,7 +92,7 @@ func (c *LoginController) readCredentialFile() (jsonResponse map[string]interfac
     jsonText, err := ioutil.ReadFile(credentialFile)
     _ = json.Unmarshal(jsonText, &jsonResponse)
 
-    c.Api = Api{OauthToken: jsonResponse["oauth_token"].(string)}
+    c.Api = Api{OauthToken: jsonResponse["oauth_token"].(string), UserAgent: "MongoHQ-CLI " + Version()}
 
     return jsonResponse, err
   }
