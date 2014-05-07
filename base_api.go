@@ -66,6 +66,8 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 			return responseBody, err
 		}
 		return responseBody, errors.New("Response status " + response.Status + " with error " + errorResponse.Error)
+  } else if response.Header.Get("X-User-Agent-Deprecated") == "true" {
+    return responseBody, errors.New(response.Header.Get("X-User-Agent-Deprecation-Message"))
 	}
 
 	return responseBody, nil
