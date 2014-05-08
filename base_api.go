@@ -23,8 +23,6 @@ type ErrorResponse struct {
 	Error string
 }
 
-var oauth_client_id = "5347253b33936795b1000001"
-
 func (api *Api) apiUrl(path string) string {
 	return "https://beta-api.mongohq.com" + path
 }
