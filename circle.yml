@@ -1,6 +1,6 @@
 deployment:
-  master:
-    branch: master
+  to_s3:
+    branch: /.*/
     commands:
       - echo "package main; func Version() string { return \"0.0.$CIRCLE_BUILD_NUM\" }" > version.go
       - echo "package main; var oauth_client_id = \"$OAUTH_CLIENT_ID\"" > oauth_client.go

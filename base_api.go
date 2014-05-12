@@ -7,6 +7,9 @@ import (
 	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"net/http"
+  "crypto/tls"
+  "crypto/x509"
+  "encoding/pem"
 	"strconv"
 )
 
@@ -35,8 +38,39 @@ func (api *Api) gopherSocketUrl(path string) string {
 	return "wss://beta-api.mongohq.com/mongo" + path + "?token=Bearer%20" + api.OauthToken
 }
 
+func decodePem(certInput string) tls.Certificate {
+  var cert tls.Certificate
+  certPEMBlock := []byte(certInput)
+  var certDERBlock *pem.Block
+  for {
+    certDERBlock, certPEMBlock = pem.Decode(certPEMBlock)
+    if certDERBlock == nil {
+      break
+    }
+    if certDERBlock != nil && certDERBlock.Type == "CERTIFICATE" {
+      cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
+    }
+  }
+  return cert
+}
+
 func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
-	client := &http.Client{}
+  certChain := decodePem(chain)
+  conf := tls.Config{}
+  conf.RootCAs = x509.NewCertPool()
+
+
+  for _, cert := range certChain.Certificate {
+    x509Cert, err := x509.ParseCertificate(cert)
+    if err != nil {
+      return nil, err
+    }
+    conf.RootCAs.AddCert(x509Cert)
+  }
+  conf.BuildNameToCertificate()
+
+  tr := http.Transport{TLSClientConfig: &conf}
+  client := &http.Client{Transport: &tr}
 
   if api.OauthToken == "" {
     return nil, errors.New("Unknown oauth token.  Please run `mongohq logout`, then rerun your command.")
