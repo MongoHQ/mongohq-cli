@@ -55,6 +55,7 @@ installMongoHQCli() {
   echo "  mongohq --help "
   echo ""
   echo "This application is still in beta, and still actively changing.  Please test appropriately."
+  echo "For documentation on the CLI, please see: http://docs.mongohq.com/getting-started/cli.html"
 }
 
 
