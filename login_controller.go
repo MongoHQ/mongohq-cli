@@ -34,10 +34,6 @@ func (c *LoginController) login() (error) {
 
   oauthToken, err := c.Api.Authenticate(username, password, "")
 
-  if err == nil {
-    c.Api = Api{OauthToken: oauthToken, UserAgent: "MongoHQ-CLI " + Version()}
-  }
-
   return c.processAuthenticationResponse(username, password, oauthToken, err)
 }
 
@@ -57,7 +53,7 @@ func (c *LoginController) processAuthenticationResponse(username, password, oaut
       return err
     } else {
       fmt.Println("\nAuthentication complete.\n\n")
-      c.OauthToken, c.Username = username, oauthToken
+      c.Api = Api{OauthToken: oauthToken, UserAgent: "MongoHQ-CLI " + Version()}
       return nil
     }
   }
