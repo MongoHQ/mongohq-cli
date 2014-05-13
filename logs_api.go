@@ -30,7 +30,7 @@ func (hl HistoricalLogs) Less(i, j int) bool {
 }
 
 func (api *Api) GetHistoricalLogs(deploymentId string) (historicalLogs HistoricalLogs, err error) {
-	body, err := api.restGet(api.apiUrl("/deployments/"+deploymentId+"/historical_logs?size=200&sort=desc&grep_o=connection&grep=query"))
+	body, err := api.restGet(api.apiUrl("/deployments/"+deploymentId+"/historical_logs?size=200&sort=desc"))
 	if err != nil {
 		return nil, err
 	}
