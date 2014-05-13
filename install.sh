@@ -26,7 +26,7 @@ installMongoHQCli() {
       curl https://mongohq-cli.s3.amazonaws.com/builds/master/darwin/386/mongohq -o $workingdir/mongohq
       curl https://mongohq-cli.s3.amazonaws.com/builds/master/darwin/386/checksum -o $workingdir/checksum
     else
-      echo "We currently only build the CLI for Linux and MacOSX. Please check back later."
+      echo "We currently only build the CLI for Linux and MacOSX. To request builds for another platform, email support@mongohq.com."
       exit 1
     fi
   fi
@@ -51,10 +51,11 @@ installMongoHQCli() {
   echo ""
   echo "Install complete.  To get started, run:"
   echo ""
-  echo "  mongohq databases "
+  echo "  mongohq deployments "
   echo "  mongohq --help "
   echo ""
   echo "This application is still in beta, and still actively changing.  Please test appropriately."
+  echo ""
   echo "For documentation on the CLI, please see: http://docs.mongohq.com/getting-started/cli.html"
 }
 
