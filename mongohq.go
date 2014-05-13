@@ -66,13 +66,6 @@ func main() {
 			},
 		},
 		{
-			Name:  "databases",
-			Usage: "list databases",
-			Action: func(c *cli.Context) {
-        controller.ListDatabases()
-			},
-		},
-		{
 			Name:  "databases:create",
 			Usage: "create database on an existing deployment",
 			Flags: []cli.Flag{
