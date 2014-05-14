@@ -46,7 +46,7 @@ func (api *Api) GetBackups(filter map[string]string, oauthToken string) ([]Backu
   return databaseBackupSlice, err
 }
 
-func (backup *Backup) Restore(source, destination, oauthToken string) (Database, error) {
+func (api *Api) RestoreBackup(backup Backup, source, destination string) (Database, error) {
   type RestoreBackupParams struct {
     DestinationDatabase string `json:"name"`
     SourceDatabase string `json:"source_name"`
@@ -58,7 +58,7 @@ func (backup *Backup) Restore(source, destination, oauthToken string) (Database,
     return Database{}, err
   }
 
-  body, err := backup.Api.restPost(backup.Api.apiUrl("/backups/" + backup.Id + "/restore"), data)
+  body, err := api.restPost(api.apiUrl("/backups/" + backup.Id + "/restore"), data)
   if err != nil {
     return Database{}, err
   }

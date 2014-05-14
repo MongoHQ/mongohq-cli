@@ -28,7 +28,6 @@ func (c *Controller) ShowBackup(filename string) {
     os.Exit(1)
   }
   fmt.Println("== Backup " + filename)
-  fmt.Println(" id            : " + backup.Id)
   fmt.Println(" created at    : " + backup.CreatedAt)
   fmt.Println(" databases     : " + strings.Join(backup.DatabaseNames, ", "))
   fmt.Println(" type          : " + backup.Type)
@@ -42,7 +41,7 @@ func (c *Controller) RestoreBackup(filename, source, destination string) {
     os.Exit(1)
   }
 
-  database, err := backup.Restore(source, destination, OauthToken)
+  database, err := c.Api.RestoreBackup(backup, source, destination)
   if err != nil {
     fmt.Println("Error restoring backup: " + err.Error())
     os.Exit(1)
