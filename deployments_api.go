@@ -8,6 +8,9 @@ import (
 type Deployment struct {
     Id   string
     Name string `json:"name"`
+    Plan string `json:"plan"`
+    Provider string `json:"provider"`
+    Region string `json:"region"`
     CurrentPrimary string `json:"current_primary"`
     Version string
     Members []string
@@ -105,7 +108,7 @@ func (api *Api) GetDeployments() ([]Deployment, error) {
 }
 
 func (api *Api) GetDeployment(deploymentId string) (Deployment, error) {
-  body, err := api.restGet(api.apiUrl("/deployments/" + deploymentId) + "?embed=databases")
+  body, err := api.restGet(api.apiUrl("/deployments/" + deploymentId) + "?embed=databases,plan")
 
   if err != nil {
     return Deployment{}, err

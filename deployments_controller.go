@@ -29,6 +29,9 @@ func (c *Controller) ShowDeployment(deploymentId string) {
     fmt.Println("Error retrieving deployments: " + err.Error())
   } else {
     fmt.Println("=== " + deployment.NameOrId())
+    fmt.Println("  plan:                " + deployment.Plan)
+    fmt.Println("  provider:            " + deployment.Provider)
+    fmt.Println("  region:              " + deployment.Region)
     fmt.Println("  current primary:     " + deployment.CurrentPrimary)
     fmt.Println("  members:             " + strings.Join(deployment.Members, ","))
     fmt.Println("  version:             " + deployment.Version)
