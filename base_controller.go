@@ -54,7 +54,7 @@ func (c *Controller) pollNewDeployment(databaseRecord Database) {
 
   fmt.Print("\n")
   fmt.Println("Your database is ready. To add a user to your database, run:")
-  fmt.Println("  mongohq users:create --deployment " + database.Deployment_id + " --database " + database.Name + " -u <username>")
+  fmt.Println("  mongohq users:create --deployment " + deployment.Name + " --database " + database.Name + " -u <username>")
   fmt.Println("")
   fmt.Println("To connect to your database, run:")
   fmt.Println("  mongo " + deployment.CurrentPrimary + "/" + database.Name + " -u <username>" + " -p")

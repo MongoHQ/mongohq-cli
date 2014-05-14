@@ -60,7 +60,7 @@ func (c *Controller) CreateDeployment(deploymentName, databaseName, region strin
   if err != nil {
     fmt.Println("Error creating deployment: " + err.Error())
   } else {
-    fmt.Println("=== Building deployment " + deploymentName + " with database " + database.Name)
+    fmt.Println("=== Building deployment " + deploymentName + " with database " + database.Name + " in region " + region)
 
     c.pollNewDeployment(database)
   }
