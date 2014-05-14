@@ -7,8 +7,8 @@ import (
   "errors"
 )
 
-func (c *Controller) ListBackups(filter map[string]string) {
-  backupsSlice, err := c.Api.GetBackups(filter, OauthToken)
+func (c *Controller) ListBackups(deploymentName string) {
+  backupsSlice, err := c.Api.GetBackups(deploymentName)
 
   if err != nil {
     fmt.Println("Error retreiving backups: " + err.Error())
@@ -27,9 +27,11 @@ func (c *Controller) ShowBackup(filename string) {
     fmt.Println("Error retreiving backup: " + err.Error())
     os.Exit(1)
   }
+  deployment, _ := c.Api.GetDeployment(backup.DeploymentId)
   fmt.Println("== Backup " + filename)
-  fmt.Println(" created at    : " + backup.CreatedAt)
+  fmt.Println(" deployment    : " + deployment.Name)
   fmt.Println(" databases     : " + strings.Join(backup.DatabaseNames, ", "))
+  fmt.Println(" created at    : " + backup.CreatedAt)
   fmt.Println(" type          : " + backup.Type)
   fmt.Println(" size          : " + backup.PrettySize())
 }
@@ -52,7 +54,7 @@ func (c *Controller) RestoreBackup(filename, source, destination string) {
 }
 
 func (c *Controller) findBackupByFilename(filename string) (Backup, error) {
-  backups, err := c.Api.GetBackups(map[string]string{}, OauthToken)
+  backups, err := c.Api.GetBackups("")
   if err != nil {
     return Backup{}, err
   }

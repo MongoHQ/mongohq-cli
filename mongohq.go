@@ -26,19 +26,10 @@ func main() {
 			Name:  "backups",
 			Usage: "list backups with optional filters",
 			Flags: []cli.Flag{
-				cli.StringFlag{"database,db", "<string>", "(optional) database to list backups for"},
 				cli.StringFlag{"deployment,dep", "<string>", "(optional) deployment to list backups for"},
 			},
 			Action: func(c *cli.Context) {
-				filter := map[string]string{}
-				if c.IsSet("database") {
-					filter["database"] = c.String("database")
-				}
-				if c.IsSet("deployment") {
-					filter["deployment"] = c.String("deployment")
-				}
-        controller = Controller{Api: loginController.Api}
-				controller.ListBackups(filter)
+				controller.ListBackups(c.String("deployment"))
 			},
 		},
 		{

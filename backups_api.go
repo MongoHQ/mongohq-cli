@@ -13,6 +13,7 @@ type Backup struct {
   Id string `json:"id"`
   CreatedAt string `json:"created_at"`
   DatabaseNames []string `json:"database_names"`
+  DeploymentId string `json:"deployment_id"`
   Type string `json:"type"`
   Filename string `json:"filename"`
   Size float64 `json:"size"`
@@ -31,12 +32,15 @@ func (b *Backup) PrettySize() string {
   return prettySize(b.Size)
 }
 
-func (api *Api) GetBackups(filter map[string]string, oauthToken string) ([]Backup, error) {
-  queryString := "?"
-  for key, value := range filter {
-    queryString += key + "=" + value
+func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
+  var path string
+
+  if deploymentName != "" {
+    path = "/deployments/" + deploymentName + "/backups"
+  } else {
+    path = "/backups"
   }
-  body, err := api.restGet(api.apiUrl("/backups" + queryString))
+  body, err := api.restGet(api.apiUrl(path))
 
   if err != nil {
     return []Backup{}, err
