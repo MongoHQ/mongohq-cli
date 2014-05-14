@@ -17,7 +17,7 @@ func (c *Controller) ListDeployments() {
   } else {
     fmt.Println("=== My Deployments")
     for _, deployment := range deployments {
-      fmt.Println(deployment.NameOrId() + " : " + deployment.CurrentPrimary)
+      fmt.Println(deployment.NameOrId())
     }
   }
 }
