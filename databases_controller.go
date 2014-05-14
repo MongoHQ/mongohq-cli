@@ -55,8 +55,8 @@ func (c *Controller) DeleteDatabase(databaseName string, force bool) {
   fmt.Println("Removed database named: " + databaseName)
 }
 
-func (c *Controller) CreateDatabase(deploymentId, databaseName string) {
-  database, err := c.Api.CreateDatabase(deploymentId, databaseName)
+func (c *Controller) CreateDatabase(deploymentName, databaseName string) {
+  database, err := c.Api.CreateDatabase(deploymentName, databaseName)
 
   if err != nil {
     fmt.Println("Error retrieiving database: " + err.Error())
@@ -64,11 +64,8 @@ func (c *Controller) CreateDatabase(deploymentId, databaseName string) {
   }
 
   fmt.Println("=== " + database.Name)
-  fmt.Println(" id:            " + database.Id)
-  fmt.Println(" name:          " + database.Name)
-  fmt.Println(" plan:          " + database.Plan)
   fmt.Println(" status:        " + database.Status)
-  fmt.Println(" deployment_id: " + database.Deployment_id)
+  fmt.Println(" deployment:    " + deploymentName)
 }
 
 func (c *Controller) ListDatabaseUsers(deploymentId, databaseName string) {

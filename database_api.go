@@ -40,20 +40,19 @@ func (api *Api) GetDatabase(name string) (Database, error) {
   return database, err
 }
 
-func (api *Api) CreateDatabase(deploymentId, databaseName string) (Database, error) {
+func (api *Api) CreateDatabase(deploymentName, databaseName string) (Database, error) {
   type DatabaseCreate struct {
-    DeploymentId string `json:"deployment_id"`
     Name string `json:"name"`
     Slug string `json:"slug"`
   }
 
-  databaseCreate := DatabaseCreate{Name: databaseName, Slug: "general:on_existing", DeploymentId: deploymentId}
+  databaseCreate := DatabaseCreate{Name: databaseName, Slug: "general:on_existing"}
   data, err := json.Marshal(databaseCreate)
   if err != nil {
     return Database{}, err
   }
 
-  body, err := api.restPost(api.apiUrl("/databases"), data)
+  body, err := api.restPost(api.apiUrl("/deployments/" + deploymentName + "/databases"), data)
 
   if err != nil {
     return Database{}, err
