@@ -46,13 +46,18 @@ func main() {
 		{
 			Name:  "backups:restore",
 			Usage: "restore backup to a new database",
+      Description: `
+      Restores a backup of a database to a new, fresh deployment. The new
+      deployment will be created in the same datacenter as the source database.
+      `,
 			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
 				cli.StringFlag{"backup,b", "<string>", "file name of backup"},
 				cli.StringFlag{"source-database,source", "<string>", "original database name"},
 				cli.StringFlag{"destination-database,destination", "<string>", "new database name"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments(c, []string{"backup", "source-database", "destination-database"}, []string{})
+				requireArguments(c, []string{"deployment", "backup", "source-database", "destination-database"}, []string{})
 				controller.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
