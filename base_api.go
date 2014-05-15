@@ -11,6 +11,9 @@ import (
   "crypto/x509"
   "encoding/pem"
 	"strconv"
+  "fmt"
+  "os"
+  "regexp"
 )
 
 type Api struct {
@@ -82,7 +85,13 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	response, err := client.Do(request)
 
 	if err != nil {
-		return nil, err
+    noConnection := regexp.MustCompile("no such host")
+    if noConnection.Match([]byte(err.Error())) {
+      fmt.Println("We couldn't find the MongoHQ host.  Typically, this means your internet connections has gone AWOL.")
+      os.Exit(1)
+    } else {
+      return nil, err
+    }
 	}
 
 	responseBody, _ := ioutil.ReadAll(response.Body)
@@ -90,6 +99,8 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 
 	if string(responseBody) == "NOT FOUND" {
 		return responseBody, errors.New("Object not found")
+  } else if response.StatusCode == 500 {
+    return responseBody, errors.New("MongoHQ service returned an error. Please try again, or check our status page: https://status.mongohq.com.")
 	} else if response.StatusCode >= 400 {
 		var errorResponse ErrorResponse
 		err := json.Unmarshal(responseBody, &errorResponse)
