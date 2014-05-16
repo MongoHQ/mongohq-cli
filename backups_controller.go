@@ -54,7 +54,7 @@ func (c *Controller) RestoreBackup(filename, source, destination string) {
 }
 
 func (c *Controller) findBackupByFilename(filename string) (Backup, error) {
-  backups, err := c.Api.GetBackups("")
+  backups, err := c.Api.GetBackups("<string>") // <string> is a default that will be ignored, thus requesting all backups
   if err != nil {
     return Backup{}, err
   }
