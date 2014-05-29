@@ -1,5 +1,7 @@
 # MongoHQ CLI
 
+For usage instructions see the [documentation](http://docs.mongohq.com/getting-started/cli.html).
+
 This is a test MongoHQ cli project.  It works using the API and Gopher
 projects.  The purpose of this project is to:
 
