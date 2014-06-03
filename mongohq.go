@@ -23,6 +23,25 @@ func main() {
 	app.Version = Version()
 	app.Commands = []cli.Command{
 		{
+			Name:  "accounts",
+			Usage: "list accounts",
+			Flags: []cli.Flag{
+			},
+			Action: func(c *cli.Context) {
+				controller.ListAccounts()
+			},
+		},
+		{
+      Name:  "accounts:info",
+			Usage: "account information",
+			Flags: []cli.Flag{
+				cli.StringFlag{"account,a", "<string>", "account slug"},
+			},
+			Action: func(c *cli.Context) {
+				controller.ShowAccount(c.String("account"))
+			},
+		},
+		{
 			Name:  "backups",
 			Usage: "list backups with optional filters",
 			Flags: []cli.Flag{

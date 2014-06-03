@@ -82,6 +82,7 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	request.Header.Add("Authorization", "Bearer "+api.OauthToken)
 	request.Header.Add("User-Agent", api.UserAgent)
 	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Accept-Version", "2014-06")
 	response, err := client.Do(request)
 
 	if err != nil {
