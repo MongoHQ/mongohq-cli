@@ -59,22 +59,11 @@ func decodePem(certInput string) tls.Certificate {
 }
 
 func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
-  certChain := decodePem(chain)
-  conf := tls.Config{}
-  conf.RootCAs = x509.NewCertPool()
+  client, err := buildHttpClient()
 
-
-  for _, cert := range certChain.Certificate {
-    x509Cert, err := x509.ParseCertificate(cert)
-    if err != nil {
-      return nil, err
-    }
-    conf.RootCAs.AddCert(x509Cert)
+  if err != nil {
+    return nil, errors.New("Error building HTTPS transport process.")
   }
-  conf.BuildNameToCertificate()
-
-  tr := http.Transport{TLSClientConfig: &conf}
-  client := &http.Client{Transport: &tr}
 
   if api.OauthToken == "" {
     return nil, errors.New("Unknown oauth token.  Please run `mongohq logout`, then rerun your command.")
@@ -196,4 +185,23 @@ func prettySize(size float64) string {
 	} else {
 		return includeSignificantDigits(size/tb) + "t"
 	}
+}
+
+func buildHttpClient() (http.Client, error) {
+  certChain := decodePem(chain)
+  conf := tls.Config{}
+  conf.RootCAs = x509.NewCertPool()
+
+  for _, cert := range certChain.Certificate {
+    x509Cert, err := x509.ParseCertificate(cert)
+    if err != nil {
+      return http.Client{}, err
+    }
+    conf.RootCAs.AddCert(x509Cert)
+  }
+  conf.BuildNameToCertificate()
+
+  tr := http.Transport{TLSClientConfig: &conf}
+
+  return http.Client{Transport: &tr}, nil
 }

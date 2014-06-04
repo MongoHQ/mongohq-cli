@@ -25,6 +25,10 @@ func (api *Api) Authenticate(username, password, token string) (string, error) {
     return oauthToken, errors.New("Error creating MongoHQ authentication request.")
   }
 
+  client, err := buildHttpClient()
+  if err != nil {
+    return "", errors.New("Error building HTTPS transport process.")
+  }
   request, err := http.NewRequest("POST", api.apiUrl("/oauth/token"), bytes.NewReader(data))
 
   if token != "" {
@@ -34,7 +38,6 @@ func (api *Api) Authenticate(username, password, token string) (string, error) {
   request.Header.Add("User-Agent", api.UserAgent)
   request.Header.Add("Content-Type", "application/json")
 
-  client := &http.Client{}
   response, err := client.Do(request)
 
   if err != nil {
