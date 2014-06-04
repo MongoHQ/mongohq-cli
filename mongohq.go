@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/codegangsta/cli"
 	"os"
+  "fmt"
 )
 
 var api *Api
@@ -255,6 +256,13 @@ func main() {
 				loginController.Logout()
 			},
 		},
+    {
+      Name: "update",
+      Usage: "script to update the MongoHQ CLI binary",
+      Action: func(c *cli.Context) {
+        fmt.Println("To update, run: `curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh`")
+      },
+    },
 	}
 
 	app.Run(os.Args)
