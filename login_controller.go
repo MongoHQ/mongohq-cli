@@ -18,8 +18,8 @@ type LoginController struct {
   Username string
 }
 
-var credentialPath = os.Getenv("HOME") + "/.mongohq"
-var credentialFile = credentialPath + "/credentials"
+var configPath = os.Getenv("HOME") + "/.mongohq"
+var credentialFile = configPath + "/credentials"
 
 var Email, OauthToken string
 
@@ -66,13 +66,13 @@ func (c *LoginController) storeCredentials(username, oauth string) (error) {
 
   jsonText, _ := json.Marshal(credentials)
 
-  err := os.MkdirAll(credentialPath, 0700)
+  err := os.MkdirAll(configPath, 0700)
 
   if err != nil {
-    return errors.New("Error creating directory " + credentialPath)
+    return errors.New("Error creating directory " + configPath)
   }
 
-  err = ioutil.WriteFile(credentialFile, jsonText, 0500)
+  err = ioutil.WriteFile(credentialFile, jsonText, 0400)
 
   if err != nil {
     err = errors.New("Error writing credentials to " + credentialFile)
@@ -100,6 +100,7 @@ func (c *LoginController) RequireAuth(*cli.Context) {
 
 func (c *LoginController) Logout() {
   os.Remove(credentialFile)
+  os.Remove(defaultsFile)
   fmt.Println("Logout success.")
 }
 

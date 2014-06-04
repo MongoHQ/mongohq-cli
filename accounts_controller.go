@@ -23,7 +23,7 @@ func (c *Controller) ShowAccount(slug string) {
   account, err := c.Api.GetAccount(slug)
 
   if err != nil {
-    fmt.Println("Error retreiving accounts: " + err.Error())
+    fmt.Println("Error retreiving account: " + err.Error())
     os.Exit(1)
   }
 
@@ -31,4 +31,20 @@ func (c *Controller) ShowAccount(slug string) {
   fmt.Println(" slug:    " + account.Slug)
   fmt.Println(" name:    " + account.Name)
   fmt.Println(" owner:   " + account.OwnerName)
+}
+
+func (c *Controller) SetDefaultAccount(slug string) {
+  account, err := c.Api.GetAccount(slug)
+
+  if err != nil {
+    fmt.Println("Error retreiving account: " + err.Error())
+    os.Exit(1)
+  }
+
+  if err := SetDefaultAccount(account.Slug); err != nil {
+    fmt.Println("Error setting default account: " + err.Error())
+    os.Exit(1)
+  }
+
+  fmt.Println("Set default account to " + account.Slug)
 }

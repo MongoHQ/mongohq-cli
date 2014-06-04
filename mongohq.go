@@ -16,6 +16,7 @@ func main() {
 	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
 	app.Before = func(c *cli.Context) error {
     loginController.RequireAuth(c) // Exits process if auth fails
+    loginController.Api.Defaults = getDefaults()
     controller = Controller{Api: loginController.Api}
     return nil
   }
@@ -80,6 +81,17 @@ func main() {
 				controller.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
+    {
+      Name: "config:account",
+      Usage: "set a default account context",
+      Flags: []cli.Flag{
+        cli.StringFlag{"account,a", "<string>", "slug for default account"},
+      },
+      Action: func(c *cli.Context) {
+				requireArguments(c, []string{"account"}, []string{})
+        controller.SetDefaultAccount(c.String("account"))
+      },
+    },
 		{
 			Name:  "databases:create",
 			Usage: "create database on an existing deployment",

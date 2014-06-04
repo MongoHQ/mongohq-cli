@@ -38,14 +38,14 @@ func (api *Api) Authenticate(username, password, token string) (string, error) {
   response, err := client.Do(request)
 
   if err != nil {
-    authenticationError = errors.New("Error authenticating against MongoHQ.")
+    authenticationError = errors.New("Error authenticating against MongoHQ: " + err.Error())
   } else if response.StatusCode >= 400 {
     if response.Header.Get("X-Mongohq-Otp") == "required; sms" {
       authenticationError = errors.New("2fa token required")
     } else if response.Header.Get("X-Mongohq-Otp") == "required; unconfigured" {
       authenticationError = errors.New("Account requires 2fa authentication.  Go to https://app.mongohq.com to configure")
     } else {
-      authenticationError = errors.New("Error authenticating against MongoHQ.")
+      authenticationError = errors.New("Error authenticating against MongoHQ: " + err.Error())
     }
   } else {
     responseBody, _ := ioutil.ReadAll(response.Body)

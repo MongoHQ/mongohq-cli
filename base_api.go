@@ -19,6 +19,7 @@ import (
 type Api struct {
   OauthToken string
   UserAgent string
+  Defaults Defaults
 }
 
 type OkResponse struct {
