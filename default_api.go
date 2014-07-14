@@ -1,43 +1,51 @@
 package main
 
 import (
-  "encoding/json"
-  "io/ioutil"
-  "os"
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+	"os"
 )
 
 var defaultsFile = configPath + "/defaults"
 
 type Defaults struct {
-  Account string `json:"account-slug"`
-  Deployment string `json:"deployment"`
+	Account    string `json:"account-slug"`
+	Deployment string `json:"deployment"`
 }
 
-func getDefaults() (Defaults) {
-  if _, err := os.Stat(defaultsFile); os.IsNotExist(err) {
-    return Defaults{}
-  } else {
-    var defaults Defaults
+func getDefaults() Defaults {
+	if _, err := os.Stat(defaultsFile); os.IsNotExist(err) {
+		return Defaults{}
+	} else {
+		var defaults Defaults
 
-    jsonText, err := ioutil.ReadFile(defaultsFile)
+		jsonText, err := ioutil.ReadFile(defaultsFile)
 
-    if err != nil {
-      return Defaults{}
-    }
+		if err != nil {
+			return Defaults{}
+		}
 
-    _ = json.Unmarshal(jsonText, &defaults)
+		_ = json.Unmarshal(jsonText, &defaults)
 
-    return defaults
-  }
+		return defaults
+	}
 }
 
-func (d *Defaults) Save () (error) {
-  jsonText, _ := json.Marshal(d)
-  return ioutil.WriteFile(defaultsFile, jsonText, 0600)
+func (d *Defaults) Save() error {
+	jsonText, _ := json.Marshal(d)
+	return ioutil.WriteFile(defaultsFile, jsonText, 0600)
 }
 
-func SetDefaultAccount(slug string) (error) {
-  defaults := getDefaults()
-  defaults.Account = slug
-  return defaults.Save()
+func SetDefaultAccount(slug string) error {
+	defaults := getDefaults()
+	defaults.Account = slug
+	return defaults.Save()
+}
+
+func (d *Defaults) requireAccount() error {
+	if d.Account == "" {
+		return errors.New("Default account is required.  Please run `mongohq accounts` and `mongohq config:account -a <account-slug>` to set a default acount.")
+	}
+	return nil
 }

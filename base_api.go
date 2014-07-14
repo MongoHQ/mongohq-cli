@@ -2,24 +2,24 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"net/http"
-  "crypto/tls"
-  "crypto/x509"
-  "encoding/pem"
+	"os"
+	"regexp"
 	"strconv"
-  "fmt"
-  "os"
-  "regexp"
 )
 
 type Api struct {
-  OauthToken string
-  UserAgent string
-  Defaults Defaults
+	OauthToken string
+	UserAgent  string
+	Defaults   Defaults
 }
 
 type OkResponse struct {
@@ -43,31 +43,31 @@ func (api *Api) gopherSocketUrl(path string) string {
 }
 
 func decodePem(certInput string) tls.Certificate {
-  var cert tls.Certificate
-  certPEMBlock := []byte(certInput)
-  var certDERBlock *pem.Block
-  for {
-    certDERBlock, certPEMBlock = pem.Decode(certPEMBlock)
-    if certDERBlock == nil {
-      break
-    }
-    if certDERBlock != nil && certDERBlock.Type == "CERTIFICATE" {
-      cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
-    }
-  }
-  return cert
+	var cert tls.Certificate
+	certPEMBlock := []byte(certInput)
+	var certDERBlock *pem.Block
+	for {
+		certDERBlock, certPEMBlock = pem.Decode(certPEMBlock)
+		if certDERBlock == nil {
+			break
+		}
+		if certDERBlock != nil && certDERBlock.Type == "CERTIFICATE" {
+			cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
+		}
+	}
+	return cert
 }
 
 func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
-  client, err := buildHttpClient()
+	client, err := buildHttpClient()
 
-  if err != nil {
-    return nil, errors.New("Error building HTTPS transport process.")
-  }
+	if err != nil {
+		return nil, errors.New("Error building HTTPS transport process.")
+	}
 
-  if api.OauthToken == "" {
-    return nil, errors.New("Unknown oauth token.  Please run `mongohq logout`, then rerun your command.")
-  }
+	if api.OauthToken == "" {
+		return nil, errors.New("Unknown oauth token.  Please run `mongohq logout`, then rerun your command.")
+	}
 
 	request.Header.Add("Authorization", "Bearer "+api.OauthToken)
 	request.Header.Add("User-Agent", api.UserAgent)
@@ -76,13 +76,13 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	response, err := client.Do(request)
 
 	if err != nil {
-    noConnection := regexp.MustCompile("no such host")
-    if noConnection.Match([]byte(err.Error())) {
-      fmt.Println("We couldn't find the MongoHQ host.  Typically, this means your internet connections has gone AWOL.")
-      os.Exit(1)
-    } else {
-      return nil, err
-    }
+		noConnection := regexp.MustCompile("no such host")
+		if noConnection.Match([]byte(err.Error())) {
+			fmt.Println("We couldn't find the MongoHQ host.  Typically, this means your internet connections has gone AWOL.")
+			os.Exit(1)
+		} else {
+			return nil, err
+		}
 	}
 
 	responseBody, _ := ioutil.ReadAll(response.Body)
@@ -90,8 +90,10 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 
 	if string(responseBody) == "NOT FOUND" {
 		return responseBody, errors.New("Object not found")
-  } else if response.StatusCode == 500 {
-    return responseBody, errors.New("MongoHQ service returned an error. Please try again, or check our status page: https://status.mongohq.com.")
+	} else if response.StatusCode == 500 {
+		return responseBody, errors.New("MongoHQ service returned an error. Please try again, or check our status page: https://status.mongohq.com.")
+	} else if response.StatusCode >= 401 {
+		return responseBody, errors.New("Service returned 'forbidden'.  Run `mongohq logout` and re-run the prior command.")
 	} else if response.StatusCode >= 400 {
 		var errorResponse ErrorResponse
 		err := json.Unmarshal(responseBody, &errorResponse)
@@ -100,8 +102,8 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 			return responseBody, err
 		}
 		return responseBody, errors.New("Response status " + response.Status + " with error " + errorResponse.Error)
-  } else if response.Header.Get("X-User-Agent-Deprecated") == "true" {
-    return responseBody, errors.New(response.Header.Get("X-User-Agent-Deprecation-Message"))
+	} else if response.Header.Get("X-User-Agent-Deprecated") == "true" {
+		return responseBody, errors.New(response.Header.Get("X-User-Agent-Deprecation-Message"))
 	}
 
 	return responseBody, nil
@@ -188,20 +190,20 @@ func prettySize(size float64) string {
 }
 
 func buildHttpClient() (http.Client, error) {
-  certChain := decodePem(chain)
-  conf := tls.Config{}
-  conf.RootCAs = x509.NewCertPool()
+	certChain := decodePem(chain)
+	conf := tls.Config{}
+	conf.RootCAs = x509.NewCertPool()
 
-  for _, cert := range certChain.Certificate {
-    x509Cert, err := x509.ParseCertificate(cert)
-    if err != nil {
-      return http.Client{}, err
-    }
-    conf.RootCAs.AddCert(x509Cert)
-  }
-  conf.BuildNameToCertificate()
+	for _, cert := range certChain.Certificate {
+		x509Cert, err := x509.ParseCertificate(cert)
+		if err != nil {
+			return http.Client{}, err
+		}
+		conf.RootCAs.AddCert(x509Cert)
+	}
+	conf.BuildNameToCertificate()
 
-  tr := http.Transport{TLSClientConfig: &conf}
+	tr := http.Transport{TLSClientConfig: &conf}
 
-  return http.Client{Transport: &tr}, nil
+	return http.Client{Transport: &tr}, nil
 }

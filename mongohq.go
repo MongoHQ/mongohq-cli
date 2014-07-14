@@ -1,40 +1,40 @@
 package main
 
 import (
+	"fmt"
 	"github.com/codegangsta/cli"
 	"os"
-  "fmt"
 )
 
 var api *Api
 var controller Controller
 
 func main() {
-  loginController := new(LoginController)
+	loginController := new(LoginController)
 
 	app := cli.NewApp()
 	app.Name = "mongohq"
 	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
 	app.Before = func(c *cli.Context) error {
-    loginController.RequireAuth(c) // Exits process if auth fails
-    loginController.Api.Defaults = getDefaults()
-    controller = Controller{Api: loginController.Api}
-    return nil
-  }
-  app.CommandNotFound = findClosestCommand
+		loginController.RequireAuth(c) // Exits process if auth fails
+		loginController.Api.Defaults = getDefaults()
+
+		controller = Controller{Api: loginController.Api}
+		return nil
+	}
+	app.CommandNotFound = findClosestCommand
 	app.Version = Version()
 	app.Commands = []cli.Command{
 		{
 			Name:  "accounts",
 			Usage: "list accounts",
-			Flags: []cli.Flag{
-			},
+			Flags: []cli.Flag{},
 			Action: func(c *cli.Context) {
 				controller.ListAccounts()
 			},
 		},
 		{
-      Name:  "accounts:info",
+			Name:  "accounts:info",
 			Usage: "account information",
 			Flags: []cli.Flag{
 				cli.StringFlag{"account,a", "<string>", "account slug"},
@@ -67,7 +67,7 @@ func main() {
 		{
 			Name:  "backups:restore",
 			Usage: "restore backup to a new database",
-      Description: `
+			Description: `
       Restores a backup of a database to a new, fresh deployment. The new
       deployment will be created in the same datacenter as the source database.
       `,
@@ -82,17 +82,17 @@ func main() {
 				controller.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
-    {
-      Name: "config:account",
-      Usage: "set a default account context",
-      Flags: []cli.Flag{
-        cli.StringFlag{"account,a", "<string>", "slug for default account"},
-      },
-      Action: func(c *cli.Context) {
+		{
+			Name:  "config:account",
+			Usage: "set a default account context",
+			Flags: []cli.Flag{
+				cli.StringFlag{"account,a", "<string>", "slug for default account"},
+			},
+			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"account"}, []string{})
-        controller.SetDefaultAccount(c.String("account"))
-      },
-    },
+				controller.SetDefaultAccount(c.String("account"))
+			},
+		},
 		{
 			Name:  "databases:create",
 			Usage: "create database on an existing deployment",
@@ -110,10 +110,11 @@ func main() {
 			Usage: "information on database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", " database for more information"},
+				cli.StringFlag{"deployment,dep", "<string>", " deployment containing database"},
 			},
 			Action: func(c *cli.Context) {
-				requireArguments(c, []string{"database"}, []string{})
-				controller.ShowDatabase(c.String("database"))
+				requireArguments(c, []string{"database", "deployment"}, []string{})
+				controller.ShowDatabase(c.String("deployment"), c.String("database"))
 			},
 		},
 		{
@@ -194,15 +195,15 @@ func main() {
 			},
 		},
 		//{
-			//Name:  "deployments:oplog",
-			//Usage: "tail oplog",
-			//Flags: []cli.Flag{
-				//cli.StringFlag{"deployment,dep", "<string>", "deployment to tail the oplog"},
-			//},
-			//Action: func(c *cli.Context) {
-				//requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
-				//controller.DeploymentOplog(c.String("deployment"))
-			//},
+		//Name:  "deployments:oplog",
+		//Usage: "tail oplog",
+		//Flags: []cli.Flag{
+		//cli.StringFlag{"deployment,dep", "<string>", "deployment to tail the oplog"},
+		//},
+		//Action: func(c *cli.Context) {
+		//requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
+		//controller.DeploymentOplog(c.String("deployment"))
+		//},
 		//},
 		{
 			Name:  "regions",
@@ -256,13 +257,13 @@ func main() {
 				loginController.Logout()
 			},
 		},
-    {
-      Name: "update",
-      Usage: "script to update the MongoHQ CLI binary",
-      Action: func(c *cli.Context) {
-        fmt.Println("To update, run: `curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh`")
-      },
-    },
+		{
+			Name:  "update",
+			Usage: "script to update the MongoHQ CLI binary",
+			Action: func(c *cli.Context) {
+				fmt.Println("To update, run: `curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh`")
+			},
+		},
 	}
 
 	app.Run(os.Args)

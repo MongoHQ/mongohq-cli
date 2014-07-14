@@ -1,9 +1,9 @@
 package main
 
 import (
-  "fmt"
-  "os"
+	"fmt"
 	"github.com/codegangsta/cli"
+	"os"
 )
 
 func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []string) {
@@ -26,5 +26,5 @@ func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []s
 }
 
 func findClosestCommand(context *cli.Context, command string) {
-  fmt.Println(command)
+	fmt.Println(command)
 }

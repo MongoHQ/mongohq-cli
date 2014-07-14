@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-  "strconv"
+	"strconv"
 )
 
 func (c *Controller) HistoricalLogs(deployment string) {
@@ -12,7 +12,7 @@ func (c *Controller) HistoricalLogs(deployment string) {
 		fmt.Println("Error retrieving deployments: " + err.Error())
 	} else {
 		for _, log := range historicalLogs {
-			fmt.Println(fmt.Sprintf("%-" + strconv.Itoa(hostLength + 2) + "s%s", formatHostname(log.Host), log.Message))
+			fmt.Println(fmt.Sprintf("%-"+strconv.Itoa(hostLength+2)+"s%s", formatHostname(log.Host), log.Message))
 		}
 	}
 }
