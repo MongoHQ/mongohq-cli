@@ -98,8 +98,9 @@ func main() {
 			Name:  "backups:restore",
 			Usage: "restore backup to a new database",
 			Description: `
-      Restores a backup of a database to a new, fresh deployment. The new
-      deployment will be created in the same datacenter as the source database.
+   Restores a backup of a database to a new, fresh deployment. The new
+   deployment will be created in the same datacenter with the same version
+   as the source database.
       `,
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
@@ -109,7 +110,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "backup", "source-database", "destination-database"}, []string{})
-				controller.RestoreBackup(c.String("backup"), c.String("source-database"), c.String("destination-database"))
+				controller.RestoreBackup(c.String("backup"), c.String("deployment"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
 		{
@@ -162,8 +163,18 @@ func main() {
 		{
 			Name:  "deployments",
 			Usage: "list deployments",
+			Description: `
+   List the slugs for all deployments.
+      `,
+			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "optional deployment name; if included runs deployments:info"},
+			},
 			Action: func(c *cli.Context) {
-				controller.ListDeployments()
+				if c.String("deployment") == "<string>" {
+					controller.ListDeployments()
+				} else {
+					controller.ShowDeployment(c.String("deployment"))
+				}
 			},
 		},
 		{

@@ -5,15 +5,16 @@ import (
 )
 
 type Backup struct {
-	Id            string   `json:"id"`
-	CreatedAt     string   `json:"created_at"`
-	DatabaseNames []string `json:"database_names"`
-	DeploymentId  string   `json:"deployment_id"`
-	Type          string   `json:"type"`
-	Filename      string   `json:"filename"`
-	Size          float64  `json:"size"`
-	Links         []Hateos `json:"links"`
-	Api           Api
+	Id             string   `json:"id"`
+	CreatedAt      string   `json:"created_at"`
+	DatabaseNames  []string `json:"database_names"`
+	Status         string   `json:"status"`
+	DeploymentSlug string   `json:"deployment"`
+	Type           string   `json:"type"`
+	Filename       string   `json:"filename"`
+	Size           float64  `json:"size"`
+	Links          []Hateos `json:"links"`
+	Api            Api
 }
 
 func (b *Backup) DownloadLink() string {
@@ -47,13 +48,14 @@ func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
 	return databaseBackupSlice, err
 }
 
-func (api *Api) RestoreBackup(backup Backup, source, destination string) (Deployment, error) {
+func (api *Api) RestoreBackup(backup Backup, deploymentName, source, destination string) (Deployment, error) {
 	type RestoreBackupParams struct {
-		DestinationDatabase string `json:"name"`
-		SourceDatabase      string `json:"source_name"`
+		Name           string `json:"name"`
+		DatabaseName   string `json:"database_name"`
+		SourceDatabase string `json:"source_database"`
 	}
 
-	restoreParams := RestoreBackupParams{DestinationDatabase: destination, SourceDatabase: source}
+	restoreParams := RestoreBackupParams{Name: deploymentName, DatabaseName: destination, SourceDatabase: source}
 	data, err := json.Marshal(restoreParams)
 	if err != nil {
 		return Deployment{}, err

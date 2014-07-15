@@ -27,30 +27,31 @@ func (c *Controller) ShowBackup(filename string) {
 		fmt.Println("Error retreiving backup: " + err.Error())
 		os.Exit(1)
 	}
-	deployment, _ := c.Api.GetDeployment(backup.DeploymentId)
+	deployment, _ := c.Api.GetDeployment(backup.DeploymentSlug)
 	fmt.Println("== Backup " + filename)
 	fmt.Println(" deployment    : " + deployment.Name)
 	fmt.Println(" databases     : " + strings.Join(backup.DatabaseNames, ", "))
+	fmt.Println(" status        : " + backup.Status)
 	fmt.Println(" created at    : " + backup.CreatedAt)
 	fmt.Println(" type          : " + backup.Type)
 	fmt.Println(" size          : " + backup.PrettySize())
 	fmt.Println(" download      : " + backup.DownloadLink())
 }
 
-func (c *Controller) RestoreBackup(filename, source, destination string) {
+func (c *Controller) RestoreBackup(filename, deploymentName, source, destination string) {
 	backup, err := c.findBackupByFilename(filename)
 	if err != nil {
 		fmt.Println("Error retreiving backup: " + err.Error())
 		os.Exit(1)
 	}
 
-	deployment, err := c.Api.RestoreBackup(backup, source, destination)
+	deployment, err := c.Api.RestoreBackup(backup, deploymentName, source, destination)
 	if err != nil {
 		fmt.Println("Error restoring backup: " + err.Error())
 		os.Exit(1)
 	}
 
-	fmt.Println("=== Restoring from database " + source + " in backup file " + filename + " to new database " + destination)
+	fmt.Println("=== Restoring from database " + source + " on deployment " + backup.DeploymentSlug + " from backup " + filename + " to new deployment " + deploymentName)
 	c.pollNewDeployment(deployment)
 }
 
