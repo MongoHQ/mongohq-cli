@@ -22,6 +22,11 @@ type Api struct {
 	Config     Config
 }
 
+type Hateos struct {
+	Rel  string `json:"rel"`
+	Href string `json:"href"`
+}
+
 type OkResponse struct {
 	Ok int
 }

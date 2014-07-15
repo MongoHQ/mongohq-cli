@@ -26,5 +26,7 @@ func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []s
 }
 
 func findClosestCommand(context *cli.Context, command string) {
-	fmt.Println(command)
+	fmt.Println(" ! `" + command + "` is not a mongohq command.")
+	fmt.Println(" ! See `mongohq help` for a list of available commands")
+	os.Exit(1)
 }

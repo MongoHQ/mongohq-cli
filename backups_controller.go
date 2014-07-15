@@ -34,6 +34,7 @@ func (c *Controller) ShowBackup(filename string) {
 	fmt.Println(" created at    : " + backup.CreatedAt)
 	fmt.Println(" type          : " + backup.Type)
 	fmt.Println(" size          : " + backup.PrettySize())
+	fmt.Println(" download      : " + backup.DownloadLink())
 }
 
 func (c *Controller) RestoreBackup(filename, source, destination string) {

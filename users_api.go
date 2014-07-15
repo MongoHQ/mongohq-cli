@@ -5,10 +5,9 @@ import (
 )
 
 type User struct {
-	Id       string    `json:"id"`
-	Email    string    `json:"email"`
-	Name     string    `json:"name"`
-	Accounts []Account `json:"accounts"`
+	Id    string `json:"id"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 func (api *Api) GetCurrentUser() (User, error) {

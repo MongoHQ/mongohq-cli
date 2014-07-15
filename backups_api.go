@@ -4,20 +4,15 @@ import (
 	"encoding/json"
 )
 
-type BackupLink struct {
-	Rel  string `json:"rel"`
-	Href string `json:"href"`
-}
-
 type Backup struct {
-	Id            string       `json:"id"`
-	CreatedAt     string       `json:"created_at"`
-	DatabaseNames []string     `json:"database_names"`
-	DeploymentId  string       `json:"deployment_id"`
-	Type          string       `json:"type"`
-	Filename      string       `json:"filename"`
-	Size          float64      `json:"size"`
-	Links         []BackupLink `json:"links"`
+	Id            string   `json:"id"`
+	CreatedAt     string   `json:"created_at"`
+	DatabaseNames []string `json:"database_names"`
+	DeploymentId  string   `json:"deployment_id"`
+	Type          string   `json:"type"`
+	Filename      string   `json:"filename"`
+	Size          float64  `json:"size"`
+	Links         []Hateos `json:"links"`
 	Api           Api
 }
 

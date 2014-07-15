@@ -28,9 +28,19 @@ func main() {
 		{
 			Name:  "accounts",
 			Usage: "list accounts",
-			Flags: []cli.Flag{},
+			Flags: []cli.Flag{
+				cli.StringFlag{"account,a", "<string>", "optional account slug; if included, will run accounts:info"},
+			},
+			Description: `
+   List the slugs for all accounts which you have permission
+   To change the default account, see the "config:account" command.
+      `,
 			Action: func(c *cli.Context) {
-				controller.ListAccounts()
+				if c.String("account") == "<string>" {
+					controller.ListAccounts()
+				} else {
+					controller.ShowAccount(c.String("account"))
+				}
 			},
 		},
 		{
@@ -39,6 +49,9 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"account,a", "<string>", "account slug"},
 			},
+			Description: `
+   More detail about a particular account, including name, slug, owner, and users.
+      `,
 			Action: func(c *cli.Context) {
 				controller.ShowAccount(c.String("account"))
 			},
@@ -47,10 +60,24 @@ func main() {
 			Name:  "backups",
 			Usage: "list backups with optional filters",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "(optional) deployment to list backups for"},
+				cli.StringFlag{"deployment,dep", "<string>", "optional deployment filter for backups"},
+				cli.StringFlag{"backup,b", "<string>", "optional backup name; if included, will run backups:info"},
 			},
+			Description: `
+   Lists the backups associated with your account or deployment.
+
+   To see a list of all backups on your account, including those from deleted
+   deployments, omit the deployment argument.
+
+   To see a list of all backups on a single deployment, include the name or
+   id of the intended deployment.
+      `,
 			Action: func(c *cli.Context) {
-				controller.ListBackups(c.String("deployment"))
+				if c.String("backup") == "<string>" {
+					controller.ListBackups(c.String("deployment"))
+				} else {
+					controller.ShowBackup(c.String("backup"))
+				}
 			},
 		},
 		{
@@ -59,6 +86,9 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"backup,b", "<string>", "file name of backup"},
 			},
+			Description: `
+   More detail about a particular backup, including deployment, databases, creation time, type, size, and download link.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"backup"}, []string{})
 				controller.ShowBackup(c.String("backup"))

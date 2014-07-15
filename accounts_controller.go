@@ -15,7 +15,11 @@ func (c *Controller) ListAccounts() {
 
 	fmt.Println("== Accounts")
 	for _, account := range accountsSlice {
-		fmt.Println(account.Slug)
+		if c.Api.Config.AccountSlug == account.Slug { // signify it is the default account
+			fmt.Println(account.Slug + " (default)")
+		} else {
+			fmt.Println(account.Slug)
+		}
 	}
 }
 
