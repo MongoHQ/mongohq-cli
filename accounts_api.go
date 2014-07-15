@@ -5,13 +5,15 @@ import (
 )
 
 type Account struct {
-	Id        string `json:"id"`
-	Name      string `json:"name"`
-	Slug      string `json:"slug"`
-	Active    bool   `json:"active"`
-	CreatedAt string `json:"created_at"`
-	OwnerId   string `json:"owner_id"`
-	OwnerName string `json:"owner"`
+	Id         string `json:"id"`
+	Name       string `json:"name"`
+	Slug       string `json:"slug"`
+	Active     bool   `json:"active"`
+	CreatedAt  string `json:"created_at"`
+	OwnerId    string `json:"owner_id"`
+	OwnerName  string `json:"owner"`
+	OwnerEmail string `json:"email"`
+	Users      []User `json:"users"`
 }
 
 func (api *Api) GetAccounts() ([]Account, error) {
@@ -26,7 +28,7 @@ func (api *Api) GetAccounts() ([]Account, error) {
 }
 
 func (api *Api) GetAccount(slug string) (Account, error) {
-	body, err := api.restGet(api.apiUrl("/" + slug + "/settings"))
+	body, err := api.restGet(api.apiUrl("/accounts/" + slug))
 
 	if err != nil {
 		return Account{}, err

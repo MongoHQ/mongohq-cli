@@ -98,7 +98,7 @@ func (m *MongoStat) PrettyRes() string {
 }
 
 func (api *Api) GetDeployments() ([]Deployment, error) {
-	body, err := api.restGet(api.apiUrl("/" + api.Defaults.Account + "/deployments"))
+	body, err := api.restGet(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/deployments"))
 
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func (api *Api) GetDeployments() ([]Deployment, error) {
 }
 
 func (api *Api) GetDeployment(deploymentId string) (Deployment, error) {
-	body, err := api.restGet(api.apiUrl("/"+api.Defaults.Account+"/deployments/"+deploymentId) + "?embed=databases,plan")
+	body, err := api.restGet(api.apiUrl("/deployments/"+api.Config.AccountSlug+"/"+deploymentId) + "?embed=databases,plan")
 
 	if err != nil {
 		return Deployment{}, err
@@ -137,7 +137,7 @@ func (api *Api) CreateDeployment(deploymentName, databaseName, region string) (D
 		return Deployment{}, err
 	}
 
-	body, err := api.restPost(api.apiUrl("/"+api.Defaults.Account+"/deployments/elastic"), data)
+	body, err := api.restPost(api.apiUrl("/"+api.Config.AccountSlug+"/deployments/elastic"), data)
 
 	if err != nil {
 		return Deployment{}, err
@@ -157,7 +157,7 @@ func (api *Api) RenameDeployment(deploymentId, name string) (Deployment, error) 
 		return Deployment{}, err
 	}
 
-	body, err := api.restPatch(api.apiUrl("/"+api.Defaults.Account+"/deployments/"+deploymentId+"/rename"), data)
+	body, err := api.restPatch(api.apiUrl("/"+api.Config.AccountSlug+"/deployments/"+deploymentId+"/rename"), data)
 	if err != nil {
 		return Deployment{}, err
 	}

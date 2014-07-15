@@ -30,7 +30,7 @@ func (api *Api) GetDatabases() ([]Database, error) {
 }
 
 func (api *Api) GetDatabase(deploymentName, databaseName string) (Database, error) {
-	body, err := api.restGet(api.apiUrl("/" + api.Defaults.Account + "/deployments/" + deploymentName + "/databases/" + databaseName))
+	body, err := api.restGet(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + deploymentName + "/databases/" + databaseName))
 
 	if err != nil {
 		return Database{}, err

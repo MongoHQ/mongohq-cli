@@ -17,7 +17,7 @@ func main() {
 	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
 	app.Before = func(c *cli.Context) error {
 		loginController.RequireAuth(c) // Exits process if auth fails
-		loginController.Api.Defaults = getDefaults()
+		loginController.Api.Config = getConfig()
 
 		controller = Controller{Api: loginController.Api}
 		return nil
@@ -90,7 +90,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"account"}, []string{})
-				controller.SetDefaultAccount(c.String("account"))
+				controller.SetConfigAccount(c.String("account"))
 			},
 		},
 		{
@@ -194,17 +194,6 @@ func main() {
 				controller.HistoricalLogs(c.String("deployment"))
 			},
 		},
-		//{
-		//Name:  "deployments:oplog",
-		//Usage: "tail oplog",
-		//Flags: []cli.Flag{
-		//cli.StringFlag{"deployment,dep", "<string>", "deployment to tail the oplog"},
-		//},
-		//Action: func(c *cli.Context) {
-		//requireArguments("deployments:oplog", c, []string{"deployment"}, []string{})
-		//controller.DeploymentOplog(c.String("deployment"))
-		//},
-		//},
 		{
 			Name:  "regions",
 			Usage: "list available regions",
@@ -248,6 +237,13 @@ func main() {
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				controller.DeleteDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
+			},
+		},
+		{
+			Name:  "whoami",
+			Usage: "display effective user",
+			Action: func(c *cli.Context) {
+				controller.CurrentUser()
 			},
 		},
 		{

@@ -102,7 +102,7 @@ func (c *LoginController) Logout() {
 	_, err := c.Api.restDelete(c.Api.apiUrl("/authorization"))
 
 	os.Remove(credentialFile)
-	os.Remove(defaultsFile)
+	os.Remove(configFile)
 
 	if err != nil {
 		fmt.Println("Error deleting authorization token.  You will need to do that manually from the MongoHQ UI.")

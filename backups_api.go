@@ -38,9 +38,9 @@ func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
 	var path string
 
 	if deploymentName != "<string>" { // this is the default returned by CLi package
-		path = "/deployments/" + deploymentName + "/backups"
+		path = "/deployments/" + api.Config.AccountSlug + "/" + deploymentName + "/backups"
 	} else {
-		path = "/backups"
+		path = "/accounts/" + api.Config.AccountSlug + "/backups"
 	}
 	body, err := api.restGet(api.apiUrl(path))
 
@@ -64,7 +64,7 @@ func (api *Api) RestoreBackup(backup Backup, source, destination string) (Deploy
 		return Deployment{}, err
 	}
 
-	body, err := api.restPost(api.apiUrl("/backups/"+backup.Id+"/restore"), data)
+	body, err := api.restPost(api.apiUrl("/accounts/"+api.Config.AccountSlug+"/backups/"+backup.Id+"/restore"), data)
 	if err != nil {
 		return Deployment{}, err
 	}
