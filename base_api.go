@@ -98,7 +98,7 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	} else if response.StatusCode == 500 {
 		return responseBody, errors.New("MongoHQ service returned an error. Please try again, or check our status page: https://status.mongohq.com.")
 	} else if response.StatusCode >= 401 {
-		return responseBody, errors.New("Service returned 'forbidden'.  Run `mongohq logout` and re-run the prior command.")
+		return responseBody, errors.New("Could not access the requested object.  Double check the arguments, or run `mongohq logout` and re-run the prior command.")
 	} else if response.StatusCode >= 400 {
 		var errorResponse ErrorResponse
 		err := json.Unmarshal(responseBody, &errorResponse)

@@ -166,6 +166,17 @@ func (api *Api) RenameDeployment(deploymentId, name string) (Deployment, error) 
 	return deployment, err
 }
 
+func (api *Api) BackupDeployment(deploymentId string) (Backup, error) {
+	var err error
+	body, err := api.restPost(api.apiUrl("/deployments/"+api.Config.AccountSlug+"/"+deploymentId+"/backups"), []byte{})
+	if err != nil {
+		return Backup{}, err
+	}
+	var backup Backup
+	err = json.Unmarshal(body, &backup)
+	return backup, err
+}
+
 func (api *Api) DeploymentMongostat(deployment_id string, outputFormatter func([]map[string]MongoStat, error)) error {
 	message := SocketMessage{Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.stats"}}
 	socket, err := api.openWebsocket(message)

@@ -48,6 +48,17 @@ func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
 	return databaseBackupSlice, err
 }
 
+func (api *Api) GetBackup(backupId string) (Backup, error) {
+	body, err := api.restGet(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups/" + backupId))
+
+	if err != nil {
+		return Backup{}, err
+	}
+	var backup Backup
+	err = json.Unmarshal(body, &backup)
+	return backup, err
+}
+
 func (api *Api) RestoreBackup(backup Backup, deploymentName, source, destination string) (Deployment, error) {
 	type RestoreBackupParams struct {
 		Name           string `json:"name"`

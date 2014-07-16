@@ -81,6 +81,21 @@ func main() {
 			},
 		},
 		{
+			Name:  "backups:create",
+			Usage: "create an on-demand backup for a deployment",
+			Description: `
+   Queues an on-demand backup for a deployment.  To read more about this feature,
+   see http://docs.mongohq.com/backups/elastic-deployments.html#on-demand-backups.
+      `,
+			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "deployment name"},
+			},
+			Action: func(c *cli.Context) {
+				requireArguments(c, []string{"deployment"}, []string{})
+				controller.CreateBackup(c.String("deployment"))
+			},
+		},
+		{
 			Name:  "backups:info",
 			Usage: "information on backup",
 			Flags: []cli.Flag{
