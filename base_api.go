@@ -39,10 +39,6 @@ func (api *Api) apiUrl(path string) string {
 	return "https://beta-api.mongohq.com" + path
 }
 
-func (api *Api) gopherUrl(path string) string {
-	return "https://beta-api.mongohq.com/mongo" + path
-}
-
 func (api *Api) gopherSocketUrl(path string) string {
 	return "wss://beta-api.mongohq.com/mongo" + path + "?token=Bearer%20" + api.OauthToken
 }

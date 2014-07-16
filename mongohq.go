@@ -165,6 +165,9 @@ func main() {
 				cli.StringFlag{"database,db", "<string>", " database for more information"},
 				cli.StringFlag{"deployment,dep", "<string>", " deployment containing database"},
 			},
+			Description: `
+   More detail on a particular database, including name, status, and stats.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"database", "deployment"}, []string{})
 				controller.ShowDatabase(c.String("deployment"), c.String("database"))

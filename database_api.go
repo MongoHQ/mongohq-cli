@@ -5,17 +5,33 @@ import (
 )
 
 type Database struct {
-	Id            string `json:"id"`
-	Name          string `json:"name"`
-	Status        string `json:"status"`
-	Plan          string `json:"plan"`
-	Deployment_id string `json:"deployment_id"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Status       string `json:"status"`
+	Plan         string `json:"plan"`
+	DeploymentId string `json:"deployment_id"`
 }
 
 type DatabaseUser struct {
 	Username     string `json:"user"`
 	PasswordHash string `json:"pwd"`
 	ReadOnly     bool
+}
+
+type DatabaseStats struct {
+	Database          string         `json:"db"`
+	AverageObjectSize float64        `json:"avgObjSize"`
+	Collections       int            `json:"collections"`
+	DataFileVersion   map[string]int `json:"dataFileVersion"`
+	DataSize          int            `json:"dataSize"`
+	FileSize          int            `json:"fileSize"`
+	IndexSize         int            `json:"indexSize"`
+	Indexes           int            `json:"indexes"`
+	NsSizeMb          int            `json:"nsSizeMB"`
+	NumExtents        int            `json:"numExtents"`
+	Objects           int            `json:"objects"`
+	Ok                int            `json:"ok"`
+	StorageSize       int            `json:"storageSize"`
 }
 
 func (api *Api) GetDatabases() ([]Database, error) {
@@ -38,6 +54,18 @@ func (api *Api) GetDatabase(deploymentName, databaseName string) (Database, erro
 	var database Database
 	err = json.Unmarshal(body, &database)
 	return database, err
+}
+
+func (api *Api) GetDatabaseStats(database Database) (map[string]DatabaseStats, error) {
+	body, err := api.restGet(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + database.DeploymentId + "/mongodb/" + database.Name + "/stats"))
+
+	if err != nil {
+		return make(map[string]DatabaseStats), err
+	}
+
+	var dbStats map[string]DatabaseStats
+	err = json.Unmarshal(body, &dbStats)
+	return dbStats, err
 }
 
 func (api *Api) CreateDatabase(deploymentName, databaseName string) (Database, error) {
@@ -67,7 +95,7 @@ func (api *Api) RemoveDatabase(databaseName string) error {
 }
 
 func (api *Api) GetDatabaseUsers(deployment_id, database_name string) ([]DatabaseUser, error) {
-	body, err := api.restGet(api.gopherUrl("/" + deployment_id + "/" + database_name + "/users"))
+	body, err := api.restGet(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + deployment_id + "/mongodb/" + database_name + "/users"))
 	if err != nil {
 		return make([]DatabaseUser, 0), err
 	}
@@ -89,7 +117,7 @@ func (api *Api) CreateDatabaseUser(deploymentId, databaseName, username, passwor
 		return OkResponse{}, err
 	}
 
-	body, err := api.restPost(api.gopherUrl("/"+deploymentId+"/"+databaseName+"/users"), data)
+	body, err := api.restPost(api.apiUrl("/"+deploymentId+"/"+databaseName+"/users"), data)
 
 	if err != nil {
 		return OkResponse{}, err
@@ -100,7 +128,7 @@ func (api *Api) CreateDatabaseUser(deploymentId, databaseName, username, passwor
 }
 
 func (api *Api) RemoveDatabaseUser(deploymentId, databaseName, username string) (OkResponse, error) {
-	body, err := api.restDelete(api.gopherUrl("/" + deploymentId + "/" + databaseName + "/users/" + username))
+	body, err := api.restDelete(api.apiUrl("/" + deploymentId + "/" + databaseName + "/users/" + username))
 
 	if err != nil {
 		return OkResponse{}, err
