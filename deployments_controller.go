@@ -70,6 +70,26 @@ func (c *Controller) CreateDeployment(deploymentName, databaseName, region strin
 	}
 }
 
+func (c *Controller) DeleteDeployment(deploymentName string, force bool) {
+	if !force {
+		confirmDeploymentName := prompt("To confirm, type the name of the deployment to be deleted")
+
+		if deploymentName != confirmDeploymentName {
+			fmt.Println("Confirmation of deployment name is incorrect.")
+			os.Exit(1)
+		}
+	}
+
+	err := c.Api.RemoveDeployment(deploymentName)
+
+	if err != nil {
+		fmt.Println("Error removing deployment: " + err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Println("Removed deployment named: " + deploymentName)
+}
+
 func (c *Controller) DeploymentMongoStat(deployment_id string) {
 	hostRegex := regexp.MustCompile(".(?:mongohq|mongolayer).com")
 	loopCount := 0

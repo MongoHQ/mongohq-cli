@@ -247,6 +247,22 @@ func main() {
 			},
 		},
 		{
+			Name:  "deployments:remove",
+			Usage: "remove a deployment",
+			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
+				cli.BoolFlag{"force,f", "delete without confirmation"},
+			},
+			Description: `
+   Deletes a deployment.  Requires confirmation because this is a very destructive action,
+   particularly for data.
+      `,
+			Action: func(c *cli.Context) {
+				requireArguments(c, []string{"deployment"}, []string{})
+				controller.DeleteDeployment(c.String("deployment"), c.Bool("force"))
+			},
+		},
+		{
 			Name:  "mongostat",
 			Usage: "realtime mongostat",
 			Flags: []cli.Flag{

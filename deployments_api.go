@@ -147,6 +147,11 @@ func (api *Api) CreateDeployment(deploymentName, databaseName, region string) (D
 	return deployment, err
 }
 
+func (api *Api) RemoveDeployment(deploymentSlug string) error {
+	_, err := api.restDelete(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug))
+	return err
+}
+
 func (api *Api) RenameDeployment(deploymentId, name string) (Deployment, error) {
 	type DeploymentRenameParams struct {
 		Name string `json:"name"`
