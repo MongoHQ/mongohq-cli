@@ -70,7 +70,7 @@ func main() {
    deployments, omit the deployment argument.
 
    To see a list of all backups on a single deployment, include the name or
-   id of the intended deployment.
+   id of the intended deployment using the deployment argument.
       `,
 			Action: func(c *cli.Context) {
 				if c.String("backup") == "<string>" {

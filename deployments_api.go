@@ -12,7 +12,7 @@ type Deployment struct {
 	Provider               string `json:"provider"`
 	Region                 string `json:"region"`
 	CurrentPrimary         string `json:"current_primary"`
-	Status                 string `json:"string"`
+	Status                 string `json:"status"`
 	Version                string
 	Members                []string
 	AllowMultipleDatabases bool `json:"allow_multiple_deployments"`
@@ -157,7 +157,7 @@ func (api *Api) RenameDeployment(deploymentId, name string) (Deployment, error) 
 		return Deployment{}, err
 	}
 
-	body, err := api.restPatch(api.apiUrl("/"+api.Config.AccountSlug+"/deployments/"+deploymentId+"/rename"), data)
+	body, err := api.restPatch(api.apiUrl("/deployments/"+api.Config.AccountSlug+"/"+deploymentId), data)
 	if err != nil {
 		return Deployment{}, err
 	}

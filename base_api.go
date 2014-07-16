@@ -96,7 +96,7 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	if string(responseBody) == "NOT FOUND" {
 		return responseBody, errors.New("Object not found")
 	} else if response.StatusCode == 500 {
-		return responseBody, errors.New("MongoHQ service returned an error. Please try again, or check our status page: https://status.mongohq.com.")
+		return responseBody, errors.New("MongoHQ service returned an error. Check your parameters and try again, or check our status page: https://status.mongohq.com.")
 	} else if response.StatusCode >= 401 {
 		return responseBody, errors.New("Could not access the requested object.  Double check the arguments, or run `mongohq logout` and re-run the prior command.")
 	} else if response.StatusCode >= 400 {

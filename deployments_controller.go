@@ -30,6 +30,7 @@ func (c *Controller) ShowDeployment(deploymentId string) {
 	} else {
 		fmt.Println("=== " + deployment.NameOrId())
 		fmt.Println("  plan:                " + deployment.Plan)
+		fmt.Println("  status:              " + deployment.Status)
 		fmt.Println("  provider:            " + deployment.Provider)
 		fmt.Println("  region:              " + deployment.Region)
 		fmt.Println("  current primary:     " + deployment.CurrentPrimary)
