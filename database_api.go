@@ -89,8 +89,8 @@ func (api *Api) CreateDatabase(deploymentName, databaseName string) (Database, e
 	return database, err
 }
 
-func (api *Api) RemoveDatabase(databaseName string) error {
-	_, err := api.restDelete(api.apiUrl("/databases/" + databaseName))
+func (api *Api) RemoveDatabase(deploymentSlug, databaseName string) error {
+	_, err := api.restDelete(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/databases/" + databaseName))
 	return err
 }
 

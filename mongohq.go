@@ -177,12 +177,20 @@ func main() {
 			Name:  "databases:remove",
 			Usage: "remove database",
 			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "deployment"},
 				cli.StringFlag{"database,db", "<string>", "database to remove"},
 				cli.BoolFlag{"force,f", "delete without confirmation"},
 			},
+			Description: `
+   Deletes a database from a deployment.  If this is the last database on the
+   deployment, the deployment will also be deleted.
+
+   You will be asked to verify the database name on delete, unless including
+   the force argument.
+      `,
 			Action: func(c *cli.Context) {
-				requireArguments(c, []string{"database"}, []string{})
-				controller.DeleteDatabase(c.String("database"), c.Bool("force"))
+				requireArguments(c, []string{"database", "deployment"}, []string{})
+				controller.DeleteDatabase(c.String("deployment"), c.String("database"), c.Bool("force"))
 			},
 		},
 		{

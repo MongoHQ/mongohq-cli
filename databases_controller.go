@@ -59,7 +59,7 @@ func (c *Controller) ShowDatabase(deploymentName, databaseName string) {
 	}
 }
 
-func (c *Controller) DeleteDatabase(databaseName string, force bool) {
+func (c *Controller) DeleteDatabase(deploymentSlug, databaseName string, force bool) {
 	if !force {
 		confirmDatabaseName := prompt("To confirm, type the name of the database to be deleted")
 
@@ -69,7 +69,7 @@ func (c *Controller) DeleteDatabase(databaseName string, force bool) {
 		}
 	}
 
-	err := c.Api.RemoveDatabase(databaseName)
+	err := c.Api.RemoveDatabase(deploymentSlug, databaseName)
 
 	if err != nil {
 		fmt.Println("Error removing database: " + err.Error())
