@@ -93,6 +93,15 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	responseBody, _ := ioutil.ReadAll(response.Body)
 	response.Body.Close()
 
+	if response.StatusCode >= 400 { // test for {error: "message"} type responses.
+		var errorResponse ErrorResponse
+		err = json.Unmarshal(responseBody, &errorResponse)
+
+		if err == nil {
+			return responseBody, errors.New(errorResponse.Error)
+		}
+	}
+
 	if string(responseBody) == "NOT FOUND" {
 		return responseBody, errors.New("Object not found")
 	} else if response.StatusCode == 500 {

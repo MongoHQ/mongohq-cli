@@ -59,7 +59,7 @@ func (c *Controller) CreateDatabase(deploymentName, databaseName string) {
 	database, err := c.Api.CreateDatabase(deploymentName, databaseName)
 
 	if err != nil {
-		fmt.Println("Error retrieiving database: " + err.Error())
+		fmt.Println("Error creating database: " + err.Error())
 		os.Exit(1)
 	}
 

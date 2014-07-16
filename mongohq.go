@@ -134,6 +134,9 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"account,a", "<string>", "slug for default account"},
 			},
+			Description: `
+   Set a default account so the account flag is not required for each command.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"account"}, []string{})
 				controller.SetConfigAccount(c.String("account"))
@@ -146,6 +149,10 @@ func main() {
 				cli.StringFlag{"deployment,dep", "<string>", "deployment to create database on"},
 				cli.StringFlag{"database,db", "<string>", "new database to create"},
 			},
+			Description: `
+   Create a new database on an existing deployment.  If you are looking to create a
+   new database on a new deployment, see the deployments:create command.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database"}, []string{})
 				controller.CreateDatabase(c.String("deployment"), c.String("database"))
