@@ -117,7 +117,7 @@ func (api *Api) CreateDatabaseUser(deploymentId, databaseName, username, passwor
 		return OkResponse{}, err
 	}
 
-	body, err := api.restPost(api.apiUrl("/"+deploymentId+"/"+databaseName+"/users"), data)
+	body, err := api.restPost(api.apiUrl("/deployments/"+api.Config.AccountSlug+"/"+deploymentId+"/mongodb/"+databaseName+"/users"), data)
 
 	if err != nil {
 		return OkResponse{}, err

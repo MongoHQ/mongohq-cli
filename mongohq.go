@@ -50,7 +50,10 @@ func main() {
 				cli.StringFlag{"account,a", "<string>", "account slug"},
 			},
 			Description: `
-   More detail about a particular account, including name, slug, owner, and users.
+   More detail about a particular account, including name, slug, owner, and account users.
+
+   These account users are different than database users, and cannot be used to directly 
+   access a database.
       `,
 			Action: func(c *cli.Context) {
 				controller.ShowAccount(c.String("account"))
@@ -318,6 +321,12 @@ func main() {
 				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "database to list users"},
 			},
+			Description: `
+   List a databases' users.  These users are used to authenticate against a database.
+
+   These are different than account users, which are used to authentication against the
+   MongoHQ service.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database"}, []string{})
 				controller.ListDatabaseUsers(c.String("deployment"), c.String("database"))
@@ -328,12 +337,19 @@ func main() {
 			Usage: "add user to a database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
-				cli.StringFlag{"database,db", "<string>", "atabase name to create the user on"},
+				cli.StringFlag{"database,db", "<string>", "database name to create the user on"},
 				cli.StringFlag{"username,u", "<string>", "user to create"},
+				cli.StringFlag{"password,p", "<string>", "optional password for user; will prompt if omitted"},
 			},
+			Description: `
+   Add a new user to a database. With this user, you will be able to authenticate against the
+   database. If a password is not provided, it will be prompted.
+
+   If the user already exists, this command will update the password for the user.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
-				controller.CreateDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
+				controller.CreateDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"), c.String("password"))
 			},
 		},
 		{

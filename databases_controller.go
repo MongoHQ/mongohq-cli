@@ -1,6 +1,7 @@
 package main
 
 import (
+	"code.google.com/p/gopass"
 	"fmt"
 	"os"
 )
@@ -106,10 +107,29 @@ func (c *Controller) ListDatabaseUsers(deploymentId, databaseName string) {
 	}
 }
 
-func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username string) {
-	password := prompt("New user password")
+func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, suppliedPassword string) {
+	var password string
+	var err error
 
-	_, err := c.Api.CreateDatabaseUser(deploymentId, databaseName, username, password)
+	if suppliedPassword == "<string>" {
+		password, err = gopass.GetPass("Password (typing will be hidden): ")
+
+		if err != nil {
+			fmt.Println("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
+			os.Exit(1)
+		}
+
+		confirmedPassword, _ := gopass.GetPass("Confirm password: ")
+
+		if password != confirmedPassword {
+			fmt.Println("Password confirmation failed.")
+			os.Exit(1)
+		}
+	} else {
+		password = suppliedPassword
+	}
+
+	_, err = c.Api.CreateDatabaseUser(deploymentId, databaseName, username, password)
 
 	if err != nil {
 		fmt.Println("Error creating database user: " + err.Error())
