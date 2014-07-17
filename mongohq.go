@@ -250,6 +250,13 @@ func main() {
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 				cli.StringFlag{"name,n", "<string>", "new name for deployment"},
 			},
+			Description: `
+   Sometime, you want a little more description about a deployment than an hex id.  Use this
+   to create a deployment name (only allows alphanumeric characters and hyphens).
+
+   Immediately after making this change, you will need to reference the deployment by the new
+   name.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "name"}, []string{})
 				controller.RenameDeployment(c.String("deployment"), c.String("name"))
