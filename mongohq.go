@@ -216,11 +216,16 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", "new database name"},
 				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
-				cli.StringFlag{"region,r", "<string>", "region of deployment (for list of regions, run 'mongohq regions')"},
+				cli.StringFlag{"location,r", "<string>", "location of deployment (for list of locations, run 'mongohq locations')"},
 			},
+			Description: `
+   Creates an elastic deployment on the MongoHQ platform. Stick with me here: it will create a new database on a new
+   deployment the location you list.  The deployment is the Replica Set and the database is the logical MongoDB database.
+   You can find a list of locations by running "mongohq locations".
+      `,
 			Action: func(c *cli.Context) {
-				requireArguments(c, []string{"deployment", "database", "region"}, []string{})
-				controller.CreateDeployment(c.String("deployment"), c.String("database"), c.String("region"))
+				requireArguments(c, []string{"deployment", "database", "location"}, []string{})
+				controller.CreateDeployment(c.String("deployment"), c.String("database"), c.String("location"))
 			},
 		},
 		{
@@ -263,17 +268,6 @@ func main() {
 			},
 		},
 		{
-			Name:  "mongostat",
-			Usage: "realtime mongostat",
-			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment for watching mongostats"},
-			},
-			Action: func(c *cli.Context) {
-				requireArguments(c, []string{"deployment"}, []string{})
-				controller.DeploymentMongoStat(c.String("deployment"))
-			},
-		},
-		{
 			Name:  "logs",
 			Usage: "query historical logs",
 			Flags: []cli.Flag{
@@ -285,10 +279,25 @@ func main() {
 			},
 		},
 		{
-			Name:  "regions",
-			Usage: "list available regions",
+			Name:  "locations",
+			Usage: "list available locations",
+      Description: `
+   List the current locations available for MongoHQ deployments.  Used with both new 
+   deployments and restoring databases from backups.
+      `,
 			Action: func(c *cli.Context) {
-				controller.ListRegions()
+				controller.ListLocations()
+			},
+		},
+		{
+			Name:  "mongostat",
+			Usage: "realtime mongostat",
+			Flags: []cli.Flag{
+				cli.StringFlag{"deployment,dep", "<string>", "deployment for watching mongostats"},
+			},
+			Action: func(c *cli.Context) {
+				requireArguments(c, []string{"deployment"}, []string{})
+				controller.DeploymentMongoStat(c.String("deployment"))
 			},
 		},
 		{
