@@ -31,7 +31,6 @@ func (c *Controller) ShowDeployment(deploymentId string) {
 		fmt.Println("=== " + deployment.NameOrId())
 		fmt.Println("  plan:                " + deployment.Plan)
 		fmt.Println("  status:              " + deployment.Status)
-		fmt.Println("  provider:            " + deployment.Provider)
 		fmt.Println("  location             " + deployment.Location)
 		fmt.Println("  current primary:     " + deployment.CurrentPrimary)
 		fmt.Println("  members:             " + strings.Join(deployment.Members, ","))

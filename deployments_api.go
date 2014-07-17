@@ -9,8 +9,7 @@ type Deployment struct {
 	Id                     string
 	Name                   string `json:"name"`
 	Plan                   string `json:"plan"`
-	Provider               string `json:"provider"`
-	Location                 string `json:"location"`
+	Location               string `json:"location"`
 	CurrentPrimary         string `json:"current_primary"`
 	Status                 string `json:"status"`
 	Version                string
@@ -121,13 +120,13 @@ func (api *Api) GetDeployment(deploymentId string) (Deployment, error) {
 
 func (api *Api) CreateDeployment(deploymentName, databaseName, location string) (Deployment, error) {
 	type DeploymentCreate struct {
-		Name         string                  `json:"name"`
-		DatabaseName string                  `json:"database_name"`
-		Location     string                  `json:"location"`
-    Type         string                  `json:"type"`
+		Name         string `json:"name"`
+		DatabaseName string `json:"database_name"`
+		Location     string `json:"location"`
+		Type         string `json:"type"`
 	}
 
-  deploymentCreate := DeploymentCreate{Name: deploymentName, DatabaseName: databaseName, Location: location, Type: "mongodb"}
+	deploymentCreate := DeploymentCreate{Name: deploymentName, DatabaseName: databaseName, Location: location, Type: "mongodb"}
 	data, err := json.Marshal(deploymentCreate)
 	if err != nil {
 		return Deployment{}, err

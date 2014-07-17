@@ -234,6 +234,10 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 			},
+			Description: `
+   More detail about a particular deployment, including plan, status, location,
+   current primary, members, version, and a list of databases.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
 				controller.ShowDeployment(c.String("deployment"))
@@ -281,7 +285,7 @@ func main() {
 		{
 			Name:  "locations",
 			Usage: "list available locations",
-      Description: `
+			Description: `
    List the current locations available for MongoHQ deployments.  Used with both new 
    deployments and restoring databases from backups.
       `,
