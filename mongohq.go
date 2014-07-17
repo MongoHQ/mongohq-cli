@@ -375,6 +375,9 @@ func main() {
 		{
 			Name:  "whoami",
 			Usage: "display effective user",
+			Description: `
+   Just a simple command to tell you which account user you are currently acting as.
+      `,
 			Action: func(c *cli.Context) {
 				controller.CurrentUser()
 			},
@@ -382,6 +385,10 @@ func main() {
 		{
 			Name:  "logout",
 			Usage: "remove stored auth",
+			Description: `
+   Removes authentication information from the MongoHQ CLI on this machine, and sends a kill command
+   to the oauth token used for authentication.
+      `,
 			Action: func(c *cli.Context) {
 				loginController.Logout()
 			},
