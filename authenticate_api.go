@@ -39,6 +39,7 @@ func (api *Api) Authenticate(username, password, token string) (string, error) {
 	request.Header.Add("Content-Type", "application/json")
 
 	response, err := client.Do(request)
+	responseBody, _ := ioutil.ReadAll(response.Body)
 
 	if err != nil {
 		return "", errors.New("Error authenticating against MongoHQ: " + err.Error())
@@ -48,10 +49,16 @@ func (api *Api) Authenticate(username, password, token string) (string, error) {
 		} else if response.Header.Get("X-Mongohq-Otp") == "required; unconfigured" {
 			return "", errors.New("Account requires 2fa authentication.  Go to https://app.mongohq.com to configure")
 		} else {
+			var errorResponse ErrorResponse
+			err = json.Unmarshal(responseBody, &errorResponse)
+
+			if err == nil {
+				return "", errors.New(errorResponse.Error)
+			}
+
 			return "", errors.New("Error authenticating against MongoHQ.")
 		}
 	} else {
-		responseBody, _ := ioutil.ReadAll(response.Body)
 		_ = json.Unmarshal(responseBody, &jsonResponse)
 		response.Body.Close()
 

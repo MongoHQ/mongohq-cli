@@ -396,6 +396,11 @@ func main() {
 		{
 			Name:  "update",
 			Usage: "script to update the MongoHQ CLI binary",
+			Description: `
+   To update, run:
+
+     curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh
+      `,
 			Action: func(c *cli.Context) {
 				fmt.Println("To update, run: `curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh`")
 			},
