@@ -142,7 +142,7 @@ func (c *Controller) DeleteDatabaseUser(deploymentId, databaseName, username str
 	_, err := c.Api.RemoveDatabaseUser(deploymentId, databaseName, username)
 
 	if err != nil {
-		fmt.Println("Error removing database users: " + err.Error())
+		fmt.Println("Error removing database user: " + err.Error())
 		os.Exit(1)
 	}
 	fmt.Println("User " + username + " removed.")

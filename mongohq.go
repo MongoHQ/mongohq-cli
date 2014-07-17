@@ -360,6 +360,13 @@ func main() {
 				cli.StringFlag{"database,db", "<string>", "database name to remove the user from"},
 				cli.StringFlag{"username,u", "<string>", "user to remove from the deployment"},
 			},
+			Description: `
+   Removes a database user from a database.  If your applications are connecting with this user,
+   they will not be able to create new connections.
+
+   This user action is against database users used for authentication against a database.  It is different
+   than account users.
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				controller.DeleteDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))

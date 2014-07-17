@@ -128,7 +128,7 @@ func (api *Api) CreateDatabaseUser(deploymentId, databaseName, username, passwor
 }
 
 func (api *Api) RemoveDatabaseUser(deploymentId, databaseName, username string) (OkResponse, error) {
-	body, err := api.restDelete(api.apiUrl("/" + deploymentId + "/" + databaseName + "/users/" + username))
+	body, err := api.restDelete(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + deploymentId + "/mongodb/" + databaseName + "/users/" + username))
 
 	if err != nil {
 		return OkResponse{}, err
