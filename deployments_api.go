@@ -10,7 +10,7 @@ type Deployment struct {
 	Name                   string `json:"name"`
 	Plan                   string `json:"plan"`
 	Provider               string `json:"provider"`
-	Region                 string `json:"region"`
+	Location                 string `json:"location"`
 	CurrentPrimary         string `json:"current_primary"`
 	Status                 string `json:"status"`
 	Version                string
@@ -119,25 +119,21 @@ func (api *Api) GetDeployment(deploymentId string) (Deployment, error) {
 	return deployment, err
 }
 
-func (api *Api) CreateDeployment(deploymentName, databaseName, region string) (Deployment, error) {
-	type DeploymentCreateOptions struct {
-		Region string `json:"region"`
-	}
-
+func (api *Api) CreateDeployment(deploymentName, databaseName, location string) (Deployment, error) {
 	type DeploymentCreate struct {
-		Name         string                  `json:"deployment_name"`
-		DatabaseName string                  `json:"name"`
-		Slug         string                  `json:"slug"`
-		Options      DeploymentCreateOptions `json:"options"`
+		Name         string                  `json:"name"`
+		DatabaseName string                  `json:"database_name"`
+		Location     string                  `json:"location"`
+    Type         string                  `json:"type"`
 	}
 
-	deploymentCreate := DeploymentCreate{Name: deploymentName, DatabaseName: databaseName, Slug: "mongohq:elastic", Options: DeploymentCreateOptions{Region: region}}
+  deploymentCreate := DeploymentCreate{Name: deploymentName, DatabaseName: databaseName, Location: location, Type: "mongodb"}
 	data, err := json.Marshal(deploymentCreate)
 	if err != nil {
 		return Deployment{}, err
 	}
 
-	body, err := api.restPost(api.apiUrl("/"+api.Config.AccountSlug+"/deployments/elastic"), data)
+	body, err := api.restPost(api.apiUrl("/accounts/"+api.Config.AccountSlug+"/deployments/elastic"), data)
 
 	if err != nil {
 		return Deployment{}, err

@@ -32,7 +32,7 @@ func (c *Controller) ShowDeployment(deploymentId string) {
 		fmt.Println("  plan:                " + deployment.Plan)
 		fmt.Println("  status:              " + deployment.Status)
 		fmt.Println("  provider:            " + deployment.Provider)
-		fmt.Println("  region:              " + deployment.Region)
+		fmt.Println("  location             " + deployment.Location)
 		fmt.Println("  current primary:     " + deployment.CurrentPrimary)
 		fmt.Println("  members:             " + strings.Join(deployment.Members, ","))
 		fmt.Println("  version:             " + deployment.Version)
@@ -58,13 +58,13 @@ func (c *Controller) RenameDeployment(deploymentId, name string) {
 	}
 }
 
-func (c *Controller) CreateDeployment(deploymentName, databaseName, region string) {
-	deployment, err := c.Api.CreateDeployment(deploymentName, databaseName, region)
+func (c *Controller) CreateDeployment(deploymentName, databaseName, location string) {
+	deployment, err := c.Api.CreateDeployment(deploymentName, databaseName, location)
 
 	if err != nil {
 		fmt.Println("Error creating deployment: " + err.Error())
 	} else {
-		fmt.Println("=== Building deployment " + deploymentName + " with database " + databaseName + " in region " + region)
+		fmt.Println("=== Building deployment " + deploymentName + " with database " + databaseName + " in location " + location)
 
 		c.pollNewDeployment(deployment)
 	}

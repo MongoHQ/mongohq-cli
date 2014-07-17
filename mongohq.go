@@ -216,11 +216,11 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", "new database name"},
 				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
-				cli.StringFlag{"location,r", "<string>", "location of deployment (for list of locations, run 'mongohq locations')"},
+				cli.StringFlag{"location,l", "<string>", "location of deployment (for list of locations, run 'mongohq locations')"},
 			},
 			Description: `
    Creates an elastic deployment on the MongoHQ platform. Stick with me here: it will create a new database on a new
-   deployment the location you list.  The deployment is the Replica Set and the database is the logical MongoDB database.
+   deployment at location you specify.  The deployment is a Replica Set and the database is the logical MongoDB database.
    You can find a list of locations by running "mongohq locations".
       `,
 			Action: func(c *cli.Context) {
