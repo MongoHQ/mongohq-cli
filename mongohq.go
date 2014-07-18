@@ -19,6 +19,8 @@ func main() {
 		loginController.RequireAuth(c) // Exits process if auth fails
 		loginController.Api.Config = getConfig()
 
+		requireAccount(loginController.Api.Config)
+
 		controller = Controller{Api: loginController.Api}
 		return nil
 	}

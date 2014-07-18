@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"os"
 )
@@ -35,11 +34,4 @@ func getConfig() Config {
 func (d *Config) Save() error {
 	jsonText, _ := json.Marshal(d)
 	return ioutil.WriteFile(configFile, jsonText, 0600)
-}
-
-func (d *Config) requireAccount() error {
-	if d.AccountSlug == "<string>" {
-		return errors.New("Default account is required.  Please run `mongohq accounts` and `mongohq config:account -a <account-slug>` to set a default acount.")
-	}
-	return nil
 }
