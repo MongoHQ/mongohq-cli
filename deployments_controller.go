@@ -89,12 +89,11 @@ func (c *Controller) DeleteDeployment(deploymentName string, force bool) {
 	fmt.Println("Removed deployment named: " + deploymentName)
 }
 
-func (c *Controller) DeploymentMongoStat(deployment_id string) {
+func (c *Controller) DeploymentMongoStat(deploymentSlug string) {
 	hostRegex := regexp.MustCompile(".(?:mongohq|mongolayer).com")
 	loopCount := 0
-	var priorStat []map[string]MongoStat
 
-	outputFormatter := func(mongoStats []map[string]MongoStat, err error) {
+	outputFormatter := func(mongoStats map[string]MongoStat, err error) {
 		if err != nil {
 			fmt.Println("Error parsing stats: " + err.Error())
 			os.Exit(1)
@@ -104,16 +103,14 @@ func (c *Controller) DeploymentMongoStat(deployment_id string) {
 		lockLength := 0
 
 		// Preformatting run
-		for _, mapMongoStat := range mongoStats {
-			for host, stats := range mapMongoStat {
-				host = hostRegex.ReplaceAllLiteralString(host, "")
-				if len(host) > hostLength {
-					hostLength = len(host)
-				}
+		for host, stats := range mongoStats {
+			host = hostRegex.ReplaceAllLiteralString(host, "")
+			if len(host) > hostLength {
+				hostLength = len(host)
+			}
 
-				if len(stats.Locked) > lockLength {
-					lockLength = len(stats.Locked) + 1
-				}
+			if len(stats.Locked) > lockLength {
+				lockLength = len(stats.Locked) + 1
 			}
 		}
 
@@ -126,17 +123,14 @@ func (c *Controller) DeploymentMongoStat(deployment_id string) {
 
 		now := time.Now()
 
-		for _, mapMongoStat := range mongoStats {
-			for host, stat := range mapMongoStat {
-				fmt.Printf(sprintfFormat, hostRegex.ReplaceAllLiteralString(host, ""), stat.Inserts, stat.Query, stat.Update, stat.Delete, stat.Getmore, stat.Command, stat.Flushes, stat.PrettyMapped(), stat.PrettyVsize(), stat.PrettyRes(), stat.Faults, stat.Locked, stat.IdxMiss, stat.Qr, stat.Qw, stat.Ar, stat.Aw, stat.PrettyNetIn(), stat.PrettyNetOut(), stat.Conn, now.Format("15:04:05"))
-			}
+		for host, stat := range mongoStats {
+			fmt.Printf(sprintfFormat, hostRegex.ReplaceAllLiteralString(host, ""), stat.Inserts, stat.Query, stat.Update, stat.Delete, stat.Getmore, stat.Command, stat.Flushes, stat.PrettyMapped(), stat.PrettyVsize(), stat.PrettyRes(), stat.Faults, stat.Locked, stat.IdxMiss, stat.Qr, stat.Qw, stat.Ar, stat.Aw, stat.PrettyNetIn(), stat.PrettyNetOut(), stat.Conn, now.Format("15:04:05"))
 		}
 
-		priorStat = mongoStats
 		loopCount += 1
 	}
 
-	err := c.Api.DeploymentMongostat(deployment_id, outputFormatter)
+	err := c.Api.DeploymentMongostat(deploymentSlug, outputFormatter)
 
 	if err != nil {
 		fmt.Println("Error: " + err.Error())
@@ -144,12 +138,12 @@ func (c *Controller) DeploymentMongoStat(deployment_id string) {
 	}
 }
 
-func (c *Controller) DeploymentOplog(deployment_id string) {
+func (c *Controller) DeploymentOplog(deploymentSlug string) {
 	outputFormatter := func(entry string, err error) {
 		fmt.Println(entry)
 	}
 
-	err := c.Api.DeploymentOplog(deployment_id, outputFormatter)
+	err := c.Api.DeploymentOplog(deploymentSlug, outputFormatter)
 	if err != nil {
 		fmt.Println("Error: " + err.Error())
 		os.Exit(1)

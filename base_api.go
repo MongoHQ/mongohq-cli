@@ -36,11 +36,11 @@ type ErrorResponse struct {
 }
 
 func (api *Api) apiUrl(path string) string {
-	return "https://beta-api.mongohq.com" + path
+	return "https://api.mongohq.com" + path
 }
 
 func (api *Api) gopherSocketUrl(path string) string {
-	return "wss://beta-api.mongohq.com/mongo" + path + "?token=Bearer%20" + api.OauthToken
+	return "wss://api.mongohq.com/mongo" + path + "?token=Bearer%20" + api.OauthToken
 }
 
 func decodePem(certInput string) tls.Certificate {
@@ -157,7 +157,7 @@ func (api *Api) openWebsocket(message SocketMessage) (*websocket.Conn, error) {
 	header.Add("User-Agent", api.UserAgent)
 	client, _, err := dialer.Dial(api.gopherSocketUrl("/ws"), header)
 	if err != nil {
-		return client, errors.New("Error initiating connection to websocket.")
+		return client, errors.New("could not initiate connection to websocket.")
 	}
 	jsonMessage, err := json.Marshal(message)
 	if err != nil {

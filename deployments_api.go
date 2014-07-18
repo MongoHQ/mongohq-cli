@@ -33,15 +33,16 @@ type SocketMessage struct {
 }
 
 type Message struct {
-	DeploymentId string `json:"deployment_id"`
-	Type         string `json:"type"`
+	Deployment string `json:"deployment"`
+	Account    string `json:"account"`
+	Type       string `json:"type"`
 }
 
 type MongoStatMessage struct {
 	Type    string
 	Ts      string
 	Error   string
-	Message []map[string]MongoStat
+	Message map[string]MongoStat
 }
 
 type MongoStat struct {
@@ -177,8 +178,8 @@ func (api *Api) BackupDeployment(deploymentId string) (Backup, error) {
 	return backup, err
 }
 
-func (api *Api) DeploymentMongostat(deployment_id string, outputFormatter func([]map[string]MongoStat, error)) error {
-	message := SocketMessage{Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.stats"}}
+func (api *Api) DeploymentMongostat(deploymentSlug string, outputFormatter func(map[string]MongoStat, error)) error {
+	message := SocketMessage{Command: "subscribe", Uuid: "12345", Message: Message{Account: api.Config.AccountSlug, Deployment: deploymentSlug, Type: "mongo.stats"}}
 	socket, err := api.openWebsocket(message)
 	if err != nil {
 		return err
@@ -187,7 +188,7 @@ func (api *Api) DeploymentMongostat(deployment_id string, outputFormatter func([
 	for {
 		_, msg, err := socket.ReadMessage()
 		if err != nil {
-			outputFormatter(make([]map[string]MongoStat, 0), err)
+			outputFormatter(make(map[string]MongoStat, 0), err)
 		}
 
 		// catch the first success response
@@ -207,8 +208,8 @@ func (api *Api) DeploymentMongostat(deployment_id string, outputFormatter func([
 	}
 }
 
-func (api *Api) DeploymentOplog(deployment_id string, outputFormatter func(string, error)) error {
-	message := SocketMessage{Command: "subscribe", Uuid: "12345", Message: Message{DeploymentId: deployment_id, Type: "mongo.oplog"}}
+func (api *Api) DeploymentOplog(deploymentSlug string, outputFormatter func(string, error)) error {
+	message := SocketMessage{Command: "subscribe", Uuid: "12345", Message: Message{Deployment: deploymentSlug, Type: "mongo.oplog"}}
 	socket, err := api.openWebsocket(message)
 	if err != nil {
 		return err

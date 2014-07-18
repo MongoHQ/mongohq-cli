@@ -55,23 +55,23 @@ func (c *LoginController) processAuthenticationResponse(username, password, oaut
 			fmt.Println("\nAuthentication complete.\n\n")
 			c.Api = Api{OauthToken: oauthToken, UserAgent: "MongoHQ-CLI " + Version()}
 
-      accounts, err := c.Api.GetAccounts()
-      if err != nil {
-        return errors.New("Error returning accounts after authentication.  Seems like something with authentication may have failed.  Please try again.")
-      }
+			accounts, err := c.Api.GetAccounts()
+			if err != nil {
+				return errors.New("Error returning accounts after authentication.  Seems like something with authentication may have failed.  Please try again.")
+			}
 
-      config := getConfig()
-      if len(accounts) == 1 {
-        config.AccountSlug = accounts[0].Slug
-      } else {
-        fmt.Println("== Accounts")
-        for _, account := range accounts {
-          fmt.Println("  " + account.Slug)
-        }
-        accountSlug := prompt("Which account should be default? (Can be changed later with config:account)")
-        config.AccountSlug = accountSlug
-      }
-      config.Save()
+			config := getConfig()
+			if len(accounts) == 1 {
+				config.AccountSlug = accounts[0].Slug
+			} else {
+				fmt.Println("== Accounts")
+				for _, account := range accounts {
+					fmt.Println("  " + account.Slug)
+				}
+				accountSlug := prompt("Which account should be default? (Can be changed later with config:account)")
+				config.AccountSlug = accountSlug
+			}
+			config.Save()
 
 			return nil
 		}

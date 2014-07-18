@@ -311,6 +311,14 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for watching mongostats"},
 			},
+			Description: `
+   A streaming output of usage statistics for your database.  This is a very good first step when
+   you are looking for performance characteristics on your database.  The usage stats include:
+
+   * Operational stats: inserts, queries, updates, deletes, getmores, commands per second
+   * Memory usage: physical and virtual usage, with page swaps (i.e. faults) / second
+   * Database behavior: flushes, locked percentage, queued reads and writes
+      `,
 			Action: func(c *cli.Context) {
 				requireArguments(c, []string{"deployment"}, []string{})
 				controller.DeploymentMongoStat(c.String("deployment"))
