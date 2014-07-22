@@ -19,6 +19,13 @@ func main() {
 		loginController.RequireAuth(c) // Exits process if auth fails
 		loginController.Api.Config = getConfig()
 
+		if len(os.Args[1]) > 1 {
+			command := os.Args[1]
+			if command != "accounts" && command != "accounts:info" && command != "config:account" && command != "logout" {
+				requireAccount(loginController.Api)
+			}
+		}
+
 		controller = Controller{Api: loginController.Api}
 		return nil
 	}
@@ -59,9 +66,8 @@ These account users are different than database users, and cannot be used to dir
 			},
 		},
 		{
-			Name:   "backups",
-			Usage:  "list backups with optional filters",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "backups",
+			Usage: "list backups with optional filters",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "optional deployment filter for backups"},
 				cli.StringFlag{"backup,b", "<string>", "optional backup name; if included, will run backups:info"},
@@ -86,9 +92,8 @@ To see a list of all backups on a single deployment, include the name or id of t
 			},
 		},
 		{
-			Name:   "backups:create",
-			Usage:  "create an on-demand backup for a deployment",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "backups:create",
+			Usage: "create an on-demand backup for a deployment",
 			Description: `
 Queues an on-demand backup for a deployment.  To read more about this feature, see http://docs.mongohq.com/backups/elastic-deployments.html#on-demand-backups.
       `,
@@ -101,9 +106,8 @@ Queues an on-demand backup for a deployment.  To read more about this feature, s
 			},
 		},
 		{
-			Name:   "backups:info",
-			Usage:  "information on backup",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "backups:info",
+			Usage: "information on backup",
 			Flags: []cli.Flag{
 				cli.StringFlag{"backup,b", "<string>", "file name of backup"},
 			},
@@ -116,9 +120,8 @@ More detail about a particular backup, including deployment, databases, creation
 			},
 		},
 		{
-			Name:   "backups:restore",
-			Usage:  "restore backup to a new database",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "backups:restore",
+			Usage: "restore backup to a new database",
 			Description: `
 Restores a backup of a database to a new, fresh deployment. The new deployment will be created in the same datacenter with the same version as the source database.
       `,
@@ -148,9 +151,8 @@ Set a default account so the account flag is not required for each command.
 			},
 		},
 		{
-			Name:   "databases:create",
-			Usage:  "create database on an existing deployment",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "databases:create",
+			Usage: "create database on an existing deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment to create database on"},
 				cli.StringFlag{"database,db", "<string>", "new database to create"},
@@ -164,9 +166,8 @@ Create a new database on an existing deployment.  If you are looking to create a
 			},
 		},
 		{
-			Name:   "databases:info",
-			Usage:  "information on database",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "databases:info",
+			Usage: "information on database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", " database for more information"},
 				cli.StringFlag{"deployment,dep", "<string>", " deployment containing database"},
@@ -180,9 +181,8 @@ More detail on a particular database, including name, status, and stats.
 			},
 		},
 		{
-			Name:   "databases:remove",
-			Usage:  "remove database",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "databases:remove",
+			Usage: "remove database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment"},
 				cli.StringFlag{"database,db", "<string>", "database to remove"},
@@ -199,9 +199,8 @@ You will be asked to verify the database name on delete, unless including the fo
 			},
 		},
 		{
-			Name:   "deployments",
-			Usage:  "list deployments",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "deployments",
+			Usage: "list deployments",
 			Description: `
 List the slugs for all deployments.
       `,
@@ -209,7 +208,7 @@ List the slugs for all deployments.
 				cli.StringFlag{"deployment,dep", "<string>", "optional deployment name; if included runs deployments:info"},
 			},
 			Action: func(c *cli.Context) {
-				if c.String("deployment") == "" {
+				if c.String("deployment") == "<string>" {
 					controller.ListDeployments()
 				} else {
 					controller.ShowDeployment(c.String("deployment"))
@@ -217,9 +216,8 @@ List the slugs for all deployments.
 			},
 		},
 		{
-			Name:   "deployments:create",
-			Usage:  "create a new Elastic Deployment",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "deployments:create",
+			Usage: "create a new Elastic Deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", "new database name"},
 				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
@@ -234,9 +232,8 @@ Creates an elastic deployment on the MongoHQ platform. Stick with me here: it wi
 			},
 		},
 		{
-			Name:   "deployments:info",
-			Usage:  "information on deployment",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "deployments:info",
+			Usage: "information on deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 			},
@@ -249,9 +246,8 @@ More detail about a particular deployment, including plan, status, location, cur
 			},
 		},
 		{
-			Name:   "deployments:rename",
-			Usage:  "rename a deployment",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "deployments:rename",
+			Usage: "rename a deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 				cli.StringFlag{"name,n", "<string>", "new name for deployment"},
@@ -267,9 +263,8 @@ Immediately after making this change, you will need to reference the deployment 
 			},
 		},
 		{
-			Name:   "deployments:remove",
-			Usage:  "remove a deployment",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "deployments:remove",
+			Usage: "remove a deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 				cli.BoolFlag{"force,f", "delete without confirmation"},
@@ -283,9 +278,8 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 			},
 		},
 		{
-			Name:   "logs",
-			Usage:  "query historical logs",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "logs",
+			Usage: "query historical logs",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for querying logs"},
 			},
@@ -295,9 +289,8 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 			},
 		},
 		{
-			Name:   "locations",
-			Usage:  "list available locations",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "locations",
+			Usage: "list available locations",
 			Description: `
 List the current locations available for MongoHQ deployments.  Used with both new deployments and restoring databases from backups.
       `,
@@ -306,9 +299,8 @@ List the current locations available for MongoHQ deployments.  Used with both ne
 			},
 		},
 		{
-			Name:   "mongostat",
-			Usage:  "realtime mongostat",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "mongostat",
+			Usage: "realtime mongostat",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for watching mongostats"},
 			},
@@ -325,9 +317,8 @@ A streaming output of usage statistics for your database.  This is a very good f
 			},
 		},
 		{
-			Name:   "users",
-			Usage:  "list users on a database",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "users",
+			Usage: "list users on a database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "database to list users"},
@@ -343,9 +334,8 @@ These are different than account users, which are used to authentication against
 			},
 		},
 		{
-			Name:   "users:create",
-			Usage:  "add user to a database",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "users:create",
+			Usage: "add user to a database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "database name to create the user on"},
@@ -363,9 +353,8 @@ If the user already exists, this command will update the password for the user.
 			},
 		},
 		{
-			Name:   "users:remove",
-			Usage:  "remove user from database",
-			Before: func(c *cli.Context) error { requireAccount(loginController.Api); return nil },
+			Name:  "users:remove",
+			Usage: "remove user from database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
 				cli.StringFlag{"database,db", "<string>", "database name to remove the user from"},

@@ -35,7 +35,6 @@ func (c *Controller) ListBackupsForDeployment(deploymentSlug string) {
 }
 
 func (c *Controller) ShowBackup(backupSlug string) {
-	println("Backup slug: " + backupSlug)
 	backup, err := c.Api.GetBackup(backupSlug)
 	if err != nil {
 		fmt.Println("Error retreiving backup: " + err.Error())

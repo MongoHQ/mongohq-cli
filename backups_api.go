@@ -31,7 +31,7 @@ func (b *Backup) PrettySize() string {
 }
 
 func (api *Api) GetBackups() ([]Backup, error) {
-	body, err := api.restGet("/accounts/" + api.Config.AccountSlug + "/backups")
+	body, err := api.restGet(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups"))
 
 	if err != nil {
 		return []Backup{}, err
@@ -42,7 +42,7 @@ func (api *Api) GetBackups() ([]Backup, error) {
 }
 
 func (api *Api) GetBackupsForDeployment(deploymentSlug string) ([]Backup, error) {
-	body, err := api.restGet("/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/backups")
+	body, err := api.restGet(api.apiUrl("/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/backups"))
 
 	if err != nil {
 		return []Backup{}, err
@@ -53,7 +53,6 @@ func (api *Api) GetBackupsForDeployment(deploymentSlug string) ([]Backup, error)
 }
 
 func (api *Api) GetBackup(backupSlug string) (Backup, error) {
-	println(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups/" + backupSlug))
 	body, err := api.restGet(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups/" + backupSlug))
 
 	if err != nil {

@@ -34,28 +34,30 @@ func (c *Controller) ShowDatabase(deploymentName, databaseName string) {
 	fmt.Println(" status:     " + database.Status)
 	fmt.Println(" deployment: " + deploymentName)
 
-	users, err := c.Api.GetDatabaseUsers(deploymentName, databaseName)
+	if database.Status == "running" {
+		users, err := c.Api.GetDatabaseUsers(deploymentName, databaseName)
 
-	if err != nil {
-		fmt.Println(" == Error returning database users: " + err.Error())
-	} else {
-		fmt.Println(" == users")
-		for _, user := range users {
-			fmt.Println("  " + user.Username)
+		if err != nil {
+			fmt.Println(" == Error returning database users: " + err.Error())
+		} else {
+			fmt.Println(" == users")
+			for _, user := range users {
+				fmt.Println("  " + user.Username)
+			}
 		}
-	}
 
-	stats, err := c.Api.GetDatabaseStats(database)
+		stats, err := c.Api.GetDatabaseStats(database)
 
-	if err != nil {
-		fmt.Println(" == Error returning database stats: " + err.Error())
-	} else {
-		fmt.Println(" == database usage stats per host")
-		for host, stat := range stats {
-			fmt.Println("  == " + host)
-			fmt.Println("   dataSize:  " + prettySize(float64(stat.DataSize)))
-			fmt.Println("   indexSize: " + prettySize(float64(stat.IndexSize)))
-			fmt.Println("   fileSize:  " + prettySize(float64(stat.FileSize)))
+		if err != nil {
+			fmt.Println(" == Error returning database stats: " + err.Error())
+		} else {
+			fmt.Println(" == database usage stats per host")
+			for host, stat := range stats {
+				fmt.Println("  == " + host)
+				fmt.Println("   dataSize:  " + prettySize(float64(stat.DataSize)))
+				fmt.Println("   indexSize: " + prettySize(float64(stat.IndexSize)))
+				fmt.Println("   fileSize:  " + prettySize(float64(stat.FileSize)))
+			}
 		}
 	}
 }
