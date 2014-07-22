@@ -1,14 +1,13 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func (c *Controller) ListBackups(deploymentName string) {
-	backupsSlice, err := c.Api.GetBackups(deploymentName)
+func (c *Controller) ListBackups() {
+	backupsSlice, err := c.Api.GetBackups()
 
 	if err != nil {
 		fmt.Println("Error retreiving backups: " + err.Error())
@@ -21,14 +20,29 @@ func (c *Controller) ListBackups(deploymentName string) {
 	}
 }
 
-func (c *Controller) ShowBackup(filename string) {
-	backup, err := c.findBackupByFilename(filename)
+func (c *Controller) ListBackupsForDeployment(deploymentSlug string) {
+	backupsSlice, err := c.Api.GetBackupsForDeployment(deploymentSlug)
+
+	if err != nil {
+		fmt.Println("Error retreiving backups: " + err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Println("== Backups for " + deploymentSlug)
+	for _, backup := range backupsSlice {
+		fmt.Println(backup.Filename)
+	}
+}
+
+func (c *Controller) ShowBackup(backupSlug string) {
+	println("Backup slug: " + backupSlug)
+	backup, err := c.Api.GetBackup(backupSlug)
 	if err != nil {
 		fmt.Println("Error retreiving backup: " + err.Error())
 		os.Exit(1)
 	}
 	deployment, _ := c.Api.GetDeployment(backup.DeploymentSlug)
-	fmt.Println("== Backup " + filename)
+	fmt.Println("== Backup " + backupSlug)
 	fmt.Println(" deployment    : " + deployment.Name)
 	fmt.Println(" databases     : " + strings.Join(backup.DatabaseNames, ", "))
 	fmt.Println(" status        : " + backup.Status)
@@ -40,8 +54,8 @@ func (c *Controller) ShowBackup(filename string) {
 	}
 }
 
-func (c *Controller) RestoreBackup(filename, deploymentName, source, destination string) {
-	backup, err := c.findBackupByFilename(filename)
+func (c *Controller) RestoreBackup(backupSlug, deploymentName, source, destination string) {
+	backup, err := c.Api.GetBackup(backupSlug)
 	if err != nil {
 		fmt.Println("Error retreiving backup: " + err.Error())
 		os.Exit(1)
@@ -53,21 +67,8 @@ func (c *Controller) RestoreBackup(filename, deploymentName, source, destination
 		os.Exit(1)
 	}
 
-	fmt.Println("=== Restoring from database " + source + " on deployment " + backup.DeploymentSlug + " from backup " + filename + " to new deployment " + deploymentName)
+	fmt.Println("=== Restoring from database " + source + " on deployment " + backup.DeploymentSlug + " from backup " + backupSlug + " to new deployment " + deploymentName)
 	c.pollNewDeployment(deployment)
-}
-
-func (c *Controller) findBackupByFilename(filename string) (Backup, error) {
-	backups, err := c.Api.GetBackups("")
-	if err != nil {
-		return Backup{}, err
-	}
-	for _, backup := range backups {
-		if backup.Filename == filename {
-			return backup, err
-		}
-	}
-	return Backup{}, errors.New("Could not find backup with value " + filename)
 }
 
 func (c *Controller) CreateBackup(deploymentSlug string) {

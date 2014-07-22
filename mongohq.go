@@ -35,7 +35,7 @@ func main() {
 List the slugs for all accounts which you have permission To change the default account, see the "config:account" command.
       `,
 			Action: func(c *cli.Context) {
-				if c.String("account") == "" {
+				if c.String("account") == "<string>" {
 					controller.ListAccounts()
 				} else {
 					controller.ShowAccount(c.String("account"))
@@ -74,8 +74,12 @@ To see a list of all backups on your account, including those from deleted deplo
 To see a list of all backups on a single deployment, include the name or id of the intended deployment using the deployment argument.
       `,
 			Action: func(c *cli.Context) {
-				if c.String("backup") == "" {
-					controller.ListBackups(c.String("deployment"))
+				if c.String("backup") == "<string>" {
+					if c.String("deployment") == "<string>" {
+						controller.ListBackups()
+					} else {
+						controller.ListBackupsForDeployment(c.String("deployment"))
+					}
 				} else {
 					controller.ShowBackup(c.String("backup"))
 				}

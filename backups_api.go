@@ -30,15 +30,8 @@ func (b *Backup) PrettySize() string {
 	return prettySize(b.Size)
 }
 
-func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
-	var path string
-
-	if deploymentName != "" {
-		path = "/deployments/" + api.Config.AccountSlug + "/" + deploymentName + "/backups"
-	} else {
-		path = "/accounts/" + api.Config.AccountSlug + "/backups"
-	}
-	body, err := api.restGet(api.apiUrl(path))
+func (api *Api) GetBackups() ([]Backup, error) {
+	body, err := api.restGet("/accounts/" + api.Config.AccountSlug + "/backups")
 
 	if err != nil {
 		return []Backup{}, err
@@ -48,8 +41,20 @@ func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
 	return databaseBackupSlice, err
 }
 
-func (api *Api) GetBackup(backupId string) (Backup, error) {
-	body, err := api.restGet(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups/" + backupId))
+func (api *Api) GetBackupsForDeployment(deploymentSlug string) ([]Backup, error) {
+	body, err := api.restGet("/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/backups")
+
+	if err != nil {
+		return []Backup{}, err
+	}
+	var databaseBackupSlice []Backup
+	err = json.Unmarshal(body, &databaseBackupSlice)
+	return databaseBackupSlice, err
+}
+
+func (api *Api) GetBackup(backupSlug string) (Backup, error) {
+	println(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups/" + backupSlug))
+	body, err := api.restGet(api.apiUrl("/accounts/" + api.Config.AccountSlug + "/backups/" + backupSlug))
 
 	if err != nil {
 		return Backup{}, err
