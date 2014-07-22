@@ -113,7 +113,7 @@ func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, su
 	var password string
 	var err error
 
-	if suppliedPassword == "" {
+	if suppliedPassword == "<string>" {
 		password, err = gopass.GetPass("Password (typing will be hidden): ")
 
 		if err != nil {

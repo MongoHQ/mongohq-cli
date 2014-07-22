@@ -21,7 +21,7 @@ func main() {
 
 		if len(os.Args) > 1 {
 			command := os.Args[1]
-			if command != "accounts" && command != "accounts:info" && command != "config:account" && command != "logout" {
+			if command != "accounts" && command != "accounts:info" && command != "config:account" && command != "logout" && command != "whoami" {
 				requireAccount(loginController.Api)
 			}
 		}
