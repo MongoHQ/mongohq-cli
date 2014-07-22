@@ -26,7 +26,7 @@ func (c *Controller) ShowDeployment(deploymentId string) {
 	deployment, err := c.Api.GetDeployment(deploymentId)
 
 	if err != nil {
-		fmt.Println("Error retrieving deployments: " + err.Error())
+		fmt.Println("Error retrieving deployment: " + err.Error())
 	} else {
 		fmt.Println("=== " + deployment.NameOrId())
 		fmt.Println("  plan:                " + deployment.Plan)

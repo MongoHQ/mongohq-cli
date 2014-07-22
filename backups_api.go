@@ -33,7 +33,7 @@ func (b *Backup) PrettySize() string {
 func (api *Api) GetBackups(deploymentName string) ([]Backup, error) {
 	var path string
 
-	if deploymentName != "<string>" { // this is the default returned by CLi package
+	if deploymentName != "" {
 		path = "/deployments/" + api.Config.AccountSlug + "/" + deploymentName + "/backups"
 	} else {
 		path = "/accounts/" + api.Config.AccountSlug + "/backups"
