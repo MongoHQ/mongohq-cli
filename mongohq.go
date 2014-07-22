@@ -19,7 +19,7 @@ func main() {
 		loginController.RequireAuth(c) // Exits process if auth fails
 		loginController.Api.Config = getConfig()
 
-		if len(os.Args[1]) > 1 {
+		if len(os.Args) > 1 {
 			command := os.Args[1]
 			if command != "accounts" && command != "accounts:info" && command != "config:account" && command != "logout" {
 				requireAccount(loginController.Api)
