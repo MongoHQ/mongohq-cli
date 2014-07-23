@@ -13,7 +13,7 @@ import (
 
 // Login is its on controller because it acts differently than others
 type LoginController struct {
-	Api        Api
+	Api        *Api
 	OauthToken string
 	Username   string
 }
@@ -53,7 +53,9 @@ func (c *LoginController) processAuthenticationResponse(username, password, oaut
 			return err
 		} else {
 			fmt.Println("\nAuthentication complete.\n\n")
-			c.Api = Api{OauthToken: oauthToken, UserAgent: "MongoHQ-CLI " + Version()}
+
+			c.Api.OauthToken = oauthToken
+			c.Api.UserAgent = "MongoHQ-CLI " + Version()
 
 			accounts, err := c.Api.GetAccounts()
 			if err != nil {
@@ -107,14 +109,14 @@ func (c *LoginController) readCredentialFile() (jsonResponse map[string]interfac
 		jsonText, err := ioutil.ReadFile(credentialFile)
 		_ = json.Unmarshal(jsonText, &jsonResponse)
 
-		c.Api = Api{OauthToken: jsonResponse["oauth_token"].(string), UserAgent: "MongoHQ-CLI " + Version()}
+		c.Api = &Api{OauthToken: jsonResponse["oauth_token"].(string), UserAgent: "MongoHQ-CLI " + Version()}
 
 		return jsonResponse, err
 	}
 }
 
-func (c *LoginController) RequireAuth(*cli.Context) {
-	c.verifyAuth()
+func (l *LoginController) RequireAuth(*cli.Context) {
+	l.verifyAuth()
 }
 
 func (c *LoginController) Logout() {

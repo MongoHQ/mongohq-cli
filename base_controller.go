@@ -8,7 +8,7 @@ import (
 )
 
 type Controller struct {
-	Api Api
+	Api *Api
 }
 
 func prompt(text string) string {

@@ -15,7 +15,7 @@ type AuthenticationArguments struct {
 	ClientId  string `json:"client_id"`
 }
 
-func (api *Api) Authenticate(username, password, token string) (string, error) {
+func (api Api) Authenticate(username, password, token string) (string, error) {
 	var oauthToken string
 	var authenticationError error
 	var jsonResponse map[string]interface{}

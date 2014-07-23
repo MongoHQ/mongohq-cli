@@ -19,7 +19,7 @@ import (
 type Api struct {
 	OauthToken string
 	UserAgent  string
-	Config     Config
+	Config     *Config
 }
 
 type Hateos struct {

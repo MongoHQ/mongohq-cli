@@ -16,6 +16,7 @@ func main() {
 	app.Name = "mongohq"
 	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
 	app.Before = func(c *cli.Context) error {
+		loginController.Api = new(Api)
 		loginController.RequireAuth(c) // Exits process if auth fails
 		loginController.Api.Config = getConfig()
 

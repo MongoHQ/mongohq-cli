@@ -13,16 +13,16 @@ type Config struct {
 	DeploymentSlug string `json:"deployment-slug"`
 }
 
-func getConfig() Config {
+func getConfig() *Config {
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		return Config{}
+		return new(Config)
 	} else {
-		var config Config
+		var config *Config
 
 		jsonText, err := ioutil.ReadFile(configFile)
 
 		if err != nil {
-			return Config{}
+			return new(Config)
 		}
 
 		_ = json.Unmarshal(jsonText, &config)

@@ -24,7 +24,7 @@ func (c *Controller) SetConfigAccount(slug string) {
 	fmt.Println("Set default account to " + account.Slug)
 }
 
-func requireAccount(api Api) {
+func requireAccount(api *Api) {
 	runCount := 0
 	for api.Config.AccountSlug == "" {
 		if runCount > 2 {
