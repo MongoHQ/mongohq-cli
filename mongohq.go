@@ -159,8 +159,9 @@ Set a default account so the account flag is not required for each command.
 			},
 		},
 		{
-			Name:  "databases:create",
-			Usage: "create database on an existing deployment",
+			Name:      "databases:create",
+			ShortName: "db:create",
+			Usage:     "create database on an existing deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment to create database on"},
 				cli.StringFlag{"database,db", "<string>", "new database to create"},
@@ -177,8 +178,9 @@ Create a new database on an existing deployment.  If you are looking to create a
 			},
 		},
 		{
-			Name:  "databases:info",
-			Usage: "information on database",
+			Name:      "databases:info",
+			ShortName: "db:info",
+			Usage:     "information on database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", " database for more information"},
 				cli.StringFlag{"deployment,dep", "<string>", " deployment containing database"},
@@ -195,8 +197,9 @@ More detail on a particular database, including name, status, and stats.
 			},
 		},
 		{
-			Name:  "databases:remove",
-			Usage: "remove database",
+			Name:      "databases:remove",
+			ShortName: "db:remove",
+			Usage:     "remove database",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment"},
 				cli.StringFlag{"database,db", "<string>", "database to remove"},
@@ -216,8 +219,9 @@ You will be asked to verify the database name on delete, unless including the fo
 			},
 		},
 		{
-			Name:  "deployments",
-			Usage: "list deployments",
+			Name:      "deployments",
+			ShortName: "dep",
+			Usage:     "list deployments",
 			Description: `
 List the slugs for all deployments.
       `,
@@ -236,8 +240,9 @@ List the slugs for all deployments.
 			},
 		},
 		{
-			Name:  "deployments:create",
-			Usage: "create a new Elastic Deployment",
+			Name:      "deployments:create",
+			ShortName: "dep:create",
+			Usage:     "create a new Elastic Deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"database,db", "<string>", "new database name"},
 				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
@@ -255,8 +260,9 @@ Creates an elastic deployment on the MongoHQ platform. Stick with me here: it wi
 			},
 		},
 		{
-			Name:  "deployments:info",
-			Usage: "information on deployment",
+			Name:      "deployments:info",
+			ShortName: "dep:info",
+			Usage:     "information on deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 			},
@@ -272,8 +278,9 @@ More detail about a particular deployment, including plan, status, location, cur
 			},
 		},
 		{
-			Name:  "deployments:rename",
-			Usage: "rename a deployment",
+			Name:      "deployments:rename",
+			ShortName: "dep:rename",
+			Usage:     "rename a deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 				cli.StringFlag{"name,n", "<string>", "new name for deployment"},
@@ -292,8 +299,9 @@ Immediately after making this change, you will need to reference the deployment 
 			},
 		},
 		{
-			Name:  "deployments:remove",
-			Usage: "remove a deployment",
+			Name:      "deployments:remove",
+			ShortName: "dep:remove",
+			Usage:     "remove a deployment",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
 				cli.BoolFlag{"force,f", "delete without confirmation"},
