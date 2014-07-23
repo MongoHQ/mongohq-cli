@@ -16,17 +16,7 @@ func main() {
 	app.Name = "mongohq"
 	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
 	app.Before = func(c *cli.Context) error {
-		loginController.Api = new(Api)
-		loginController.RequireAuth(c) // Exits process if auth fails
-		loginController.Api.Config = getConfig()
-
-		if len(os.Args) > 1 {
-			command := os.Args[1]
-			if command != "accounts" && command != "accounts:info" && command != "config:account" && command != "logout" && command != "whoami" {
-				requireAccount(loginController.Api)
-			}
-		}
-
+		loginController.Api = &Api{UserAgent: "MongoHQ-CLI " + Version()}
 		controller = Controller{Api: loginController.Api}
 		return nil
 	}
@@ -43,6 +33,8 @@ func main() {
 List the slugs for all accounts which you have permission To change the default account, see the "config:account" command.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+
 				if c.String("account") == "<string>" {
 					controller.ListAccounts()
 				} else {
@@ -62,6 +54,7 @@ More detail about a particular account, including name, slug, owner, and account
 These account users are different than database users, and cannot be used to directly access a database.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
 				requireArguments(c, []string{"account"}, []string{})
 				controller.ShowAccount(c.String("account"))
 			},
@@ -81,6 +74,9 @@ To see a list of all backups on your account, including those from deleted deplo
 To see a list of all backups on a single deployment, include the name or id of the intended deployment using the deployment argument.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				if c.String("backup") == "<string>" {
 					if c.String("deployment") == "<string>" {
 						controller.ListBackups()
@@ -102,6 +98,9 @@ Queues an on-demand backup for a deployment.  To read more about this feature, s
 				cli.StringFlag{"deployment,dep", "<string>", "deployment name"},
 			},
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment"}, []string{})
 				controller.CreateBackup(c.String("deployment"))
 			},
@@ -116,6 +115,9 @@ Queues an on-demand backup for a deployment.  To read more about this feature, s
 More detail about a particular backup, including deployment, databases, creation time, type, size, and download link.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"backup"}, []string{})
 				controller.ShowBackup(c.String("backup"))
 			},
@@ -133,6 +135,9 @@ Restores a backup of a database to a new, fresh deployment. The new deployment w
 				cli.StringFlag{"destination-database,destination", "<string>", "new database name"},
 			},
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "backup", "source-database", "destination-database"}, []string{})
 				controller.RestoreBackup(c.String("backup"), c.String("deployment"), c.String("source-database"), c.String("destination-database"))
 			},
@@ -147,6 +152,8 @@ Restores a backup of a database to a new, fresh deployment. The new deployment w
 Set a default account so the account flag is not required for each command.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+
 				requireArguments(c, []string{"account"}, []string{})
 				controller.SetConfigAccount(c.String("account"))
 			},
@@ -162,6 +169,9 @@ Set a default account so the account flag is not required for each command.
 Create a new database on an existing deployment.  If you are looking to create a new database on a new deployment, see the deployments:create command.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "database"}, []string{})
 				controller.CreateDatabase(c.String("deployment"), c.String("database"))
 			},
@@ -177,6 +187,9 @@ Create a new database on an existing deployment.  If you are looking to create a
 More detail on a particular database, including name, status, and stats.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"database", "deployment"}, []string{})
 				controller.ShowDatabase(c.String("deployment"), c.String("database"))
 			},
@@ -195,6 +208,9 @@ Deletes a database from a deployment.  If this is the last database on the deplo
 You will be asked to verify the database name on delete, unless including the force argument.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"database", "deployment"}, []string{})
 				controller.DeleteDatabase(c.String("deployment"), c.String("database"), c.Bool("force"))
 			},
@@ -209,6 +225,9 @@ List the slugs for all deployments.
 				cli.StringFlag{"deployment,dep", "<string>", "optional deployment name; if included runs deployments:info"},
 			},
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				if c.String("deployment") == "<string>" {
 					controller.ListDeployments()
 				} else {
@@ -228,6 +247,9 @@ List the slugs for all deployments.
 Creates an elastic deployment on the MongoHQ platform. Stick with me here: it will create a new database on a new deployment at location you specify.  The deployment is a Replica Set and the database is the logical MongoDB database. You can find a list of locations by running "mongohq locations".
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "database", "location"}, []string{})
 				controller.CreateDeployment(c.String("deployment"), c.String("database"), c.String("location"))
 			},
@@ -242,6 +264,9 @@ Creates an elastic deployment on the MongoHQ platform. Stick with me here: it wi
 More detail about a particular deployment, including plan, status, location, current primary, members, version, and a list of databases.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment"}, []string{})
 				controller.ShowDeployment(c.String("deployment"))
 			},
@@ -259,6 +284,9 @@ Sometime, you want a little more description about a deployment than an hex id. 
 Immediately after making this change, you will need to reference the deployment by the new name.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "name"}, []string{})
 				controller.RenameDeployment(c.String("deployment"), c.String("name"))
 			},
@@ -274,6 +302,9 @@ Immediately after making this change, you will need to reference the deployment 
 Deletes a deployment.  Requires confirmation because this is a very destructive action, particularly for data.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment"}, []string{})
 				controller.DeleteDeployment(c.String("deployment"), c.Bool("force"))
 			},
@@ -296,6 +327,9 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 List the current locations available for MongoHQ deployments.  Used with both new deployments and restoring databases from backups.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				controller.ListLocations()
 			},
 		},
@@ -313,6 +347,9 @@ A streaming output of usage statistics for your database.  This is a very good f
  * Database behavior: flushes, locked percentage, queued reads and writes
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment"}, []string{})
 				controller.DeploymentMongoStat(c.String("deployment"))
 			},
@@ -330,6 +367,9 @@ List a databases' users.  These users are used to authenticate against a databas
 These are different than account users, which are used to authentication against the MongoHQ service.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "database"}, []string{})
 				controller.ListDatabaseUsers(c.String("deployment"), c.String("database"))
 			},
@@ -349,6 +389,9 @@ Add a new user to a database. With this user, you will be able to authenticate a
 If the user already exists, this command will update the password for the user.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				controller.CreateDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"), c.String("password"))
 			},
@@ -367,6 +410,9 @@ Removes a database user from a database.  If your applications are connecting wi
 This user action is against database users used for authentication against a database.  It is different than account users.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				controller.DeleteDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
 			},
@@ -378,6 +424,8 @@ This user action is against database users used for authentication against a dat
 Just a simple command to tell you which account user you are currently acting as.
       `,
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+
 				controller.CurrentUser()
 			},
 		},

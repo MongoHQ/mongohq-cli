@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/codegangsta/cli"
 	"io/ioutil"
 	"os"
 )
@@ -55,7 +54,6 @@ func (c *LoginController) processAuthenticationResponse(username, password, oaut
 			fmt.Println("\nAuthentication complete.\n\n")
 
 			c.Api.OauthToken = oauthToken
-			c.Api.UserAgent = "MongoHQ-CLI " + Version()
 
 			accounts, err := c.Api.GetAccounts()
 			if err != nil {
@@ -109,13 +107,13 @@ func (c *LoginController) readCredentialFile() (jsonResponse map[string]interfac
 		jsonText, err := ioutil.ReadFile(credentialFile)
 		_ = json.Unmarshal(jsonText, &jsonResponse)
 
-		c.Api = &Api{OauthToken: jsonResponse["oauth_token"].(string), UserAgent: "MongoHQ-CLI " + Version()}
+		c.Api.OauthToken = jsonResponse["oauth_token"].(string)
 
 		return jsonResponse, err
 	}
 }
 
-func (l *LoginController) RequireAuth(*cli.Context) {
+func (l *LoginController) RequireAuth() {
 	l.verifyAuth()
 }
 
@@ -142,4 +140,6 @@ func (c *LoginController) verifyAuth() {
 			os.Exit(1)
 		}
 	}
+
+	c.Api.Config = getConfig()
 }
