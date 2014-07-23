@@ -14,7 +14,7 @@ func (c *Controller) ListDatabases() {
 		os.Exit(1)
 	}
 
-	fmt.Println("=== My Databases")
+	fmt.Println("== My Databases")
 	for _, database := range databases {
 		fmt.Println(database.Name)
 	}
@@ -28,11 +28,11 @@ func (c *Controller) ShowDatabase(deploymentName, databaseName string) {
 		os.Exit(1)
 	}
 
-	fmt.Println("=== " + database.Name)
-	fmt.Println(" name:       " + database.Name)
-	fmt.Println(" plan:       " + database.Plan)
-	fmt.Println(" status:     " + database.Status)
-	fmt.Println(" deployment: " + deploymentName)
+	fmt.Println("== " + database.Name)
+	fmt.Println(" name       : " + database.Name)
+	fmt.Println(" plan       : " + database.Plan)
+	fmt.Println(" status     : " + database.Status)
+	fmt.Println(" deployment : " + deploymentName)
 
 	if database.Status == "running" {
 		users, err := c.Api.GetDatabaseUsers(deploymentName, databaseName)
@@ -90,9 +90,9 @@ func (c *Controller) CreateDatabase(deploymentName, databaseName string) {
 		os.Exit(1)
 	}
 
-	fmt.Println("=== " + database.Name)
-	fmt.Println(" status:        " + database.Status)
-	fmt.Println(" deployment:    " + deploymentName)
+	fmt.Println("== " + database.Name)
+	fmt.Println(" status     :" + database.Status)
+	fmt.Println(" deployment :" + deploymentName)
 }
 
 func (c *Controller) ListDatabaseUsers(deploymentId, databaseName string) {

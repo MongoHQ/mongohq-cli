@@ -14,6 +14,6 @@ func (c *Controller) CurrentUser() {
 	}
 
 	fmt.Println("== whoami")
-	fmt.Println("  name:  " + user.Name)
-	fmt.Println("  email: " + user.Email)
+	fmt.Println("  name  : " + user.Name)
+	fmt.Println("  email : " + user.Email)
 }

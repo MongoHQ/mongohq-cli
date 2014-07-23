@@ -42,14 +42,14 @@ func (c *Controller) ShowBackup(backupSlug string) {
 	}
 	deployment, _ := c.Api.GetDeployment(backup.DeploymentSlug)
 	fmt.Println("== Backup " + backupSlug)
-	fmt.Println(" deployment    : " + deployment.Name)
-	fmt.Println(" databases     : " + strings.Join(backup.DatabaseNames, ", "))
-	fmt.Println(" status        : " + backup.Status)
-	fmt.Println(" created at    : " + backup.CreatedAt)
-	fmt.Println(" type          : " + backup.Type)
-	fmt.Println(" size          : " + backup.PrettySize())
+	fmt.Println(" deployment : " + deployment.Name)
+	fmt.Println(" databases  : " + strings.Join(backup.DatabaseNames, ", "))
+	fmt.Println(" status     : " + backup.Status)
+	fmt.Println(" created at : " + backup.CreatedAt)
+	fmt.Println(" type       : " + backup.Type)
+	fmt.Println(" size       : " + backup.PrettySize())
 	if backup.Status == "complete" {
-		fmt.Println(" download      : " + backup.DownloadLink())
+		fmt.Println(" download   : " + backup.DownloadLink())
 	}
 }
 
@@ -66,7 +66,7 @@ func (c *Controller) RestoreBackup(backupSlug, deploymentName, source, destinati
 		os.Exit(1)
 	}
 
-	fmt.Println("=== Restoring from database " + source + " on deployment " + backup.DeploymentSlug + " from backup " + backupSlug + " to new deployment " + deploymentName)
+	fmt.Println("== Restoring from database " + source + " on deployment " + backup.DeploymentSlug + " from backup " + backupSlug + " to new deployment " + deploymentName)
 	c.pollNewDeployment(deployment)
 }
 
@@ -90,15 +90,19 @@ func (c *Controller) CreateBackup(deploymentSlug string) {
 		status = backup.Status
 	}
 
-	fmt.Println("\n== Backup " + backup.Filename)
-	fmt.Println(" deployment    : " + deploymentSlug)
-	fmt.Println(" databases     : " + strings.Join(backup.DatabaseNames, ", "))
-	fmt.Println(" status        : " + backup.Status)
-	fmt.Println(" created at    : " + backup.CreatedAt)
-	fmt.Println(" type          : " + backup.Type)
-	fmt.Println(" size          : " + backup.PrettySize())
-	if backup.Status == "complete" {
-		fmt.Println(" download      : " + backup.DownloadLink())
+	if status != "complete" {
+		fmt.Println("Error creating backup.  Please try once mroe, or contact support@mongohq.com.")
+		os.Exit(1)
 	}
 
+	fmt.Println("== Backup " + backup.Filename)
+	fmt.Println(" deployment : " + deploymentSlug)
+	fmt.Println(" databases  : " + strings.Join(backup.DatabaseNames, ", "))
+	fmt.Println(" status     : " + backup.Status)
+	fmt.Println(" created at : " + backup.CreatedAt)
+	fmt.Println(" type       : " + backup.Type)
+	fmt.Println(" size       : " + backup.PrettySize())
+	if backup.Status == "complete" {
+		fmt.Println(" download   : " + backup.DownloadLink())
+	}
 }

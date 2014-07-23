@@ -15,7 +15,7 @@ func (c *Controller) ListDeployments() {
 	if err != nil {
 		fmt.Println("Error retrieving deployments: " + err.Error())
 	} else {
-		fmt.Println("=== My Deployments")
+		fmt.Println("== My Deployments")
 		for _, deployment := range deployments {
 			fmt.Println(deployment.NameOrId())
 		}
@@ -28,13 +28,14 @@ func (c *Controller) ShowDeployment(deploymentId string) {
 	if err != nil {
 		fmt.Println("Error retrieving deployment: " + err.Error())
 	} else {
-		fmt.Println("=== " + deployment.NameOrId())
-		fmt.Println("  plan:                " + deployment.Plan)
-		fmt.Println("  status:              " + deployment.Status)
-		fmt.Println("  location             " + deployment.Location)
-		fmt.Println("  current primary:     " + deployment.CurrentPrimary)
-		fmt.Println("  members:             " + strings.Join(deployment.Members, ","))
-		fmt.Println("  version:             " + deployment.Version)
+		fmt.Println("== " + deployment.NameOrId())
+		fmt.Println(" name            : " + deployment.NameOrId())
+		fmt.Println(" plan            : " + deployment.Plan)
+		fmt.Println(" status          : " + deployment.Status)
+		fmt.Println(" location        : " + deployment.Location)
+		fmt.Println(" current primary : " + deployment.CurrentPrimary)
+		fmt.Println(" members         : " + strings.Join(deployment.Members, ","))
+		fmt.Println(" version         : " + deployment.Version)
 
 		if deployment.AllowMultipleDatabases {
 			fmt.Println("  multiple databases?: true")
@@ -63,7 +64,7 @@ func (c *Controller) CreateDeployment(deploymentName, databaseName, location str
 	if err != nil {
 		fmt.Println("Error creating deployment: " + err.Error())
 	} else {
-		fmt.Println("=== Building deployment " + deploymentName + " with database " + databaseName + " in location " + location)
+		fmt.Println("== Building deployment " + deploymentName + " with database " + databaseName + " in location " + location)
 
 		c.pollNewDeployment(deployment)
 	}
