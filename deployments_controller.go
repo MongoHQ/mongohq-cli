@@ -96,7 +96,7 @@ func (c *Controller) DeploymentMongoStat(deploymentSlug string) {
 
 	outputFormatter := func(mongoStats map[string]MongoStat, err error) {
 		if err != nil {
-			fmt.Println("Error parsing stats: " + err.Error())
+			fmt.Println("Error authenticating connection to websocket.")
 			os.Exit(1)
 		}
 
