@@ -3,11 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/peterh/liner"
 	"os"
+	"strings"
 )
 
 var api *Api
 var controller Controller
+var historyfn="/tmp/.mongohq_history"
 
 func main() {
 	loginController := new(LoginController)
@@ -467,5 +470,36 @@ To update, run:
 		},
 	}
 
-	app.Run(os.Args)
+	if len(os.Args)==1 {
+		term:=liner.NewLiner()
+		var prompt="> "
+		if f,err := os.Open(historyfn); err==nil {
+			term.ReadHistory(f)
+			f.Close()
+		}
+		for {
+			line,err:=term.Prompt(prompt)
+			if err!=nil {
+				break
+			}
+			if line=="exit" {
+				break
+			}
+			term.AppendHistory(line)
+			plines:=strings.Fields(line)
+			plines=append(plines,"")
+			copy(plines[1:],plines[0:])
+			plines[0]="mongohq-repl"
+			app.Run(plines)
+		}
+		if f,err :=os.Create(historyfn); err!=nil {
+			fmt.Println("Error writing history file",err)
+		} else {
+			term.WriteHistory(f)
+			f.Close()
+		}
+		os.Exit(0)
+	} else {
+		app.Run(os.Args)
+	}
 }
