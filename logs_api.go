@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"net/url"
 	"sort"
 	"time"
 )
@@ -29,11 +30,25 @@ func (hl HistoricalLogs) Less(i, j int) bool {
 	return hl[i].Timestamp.Before(hl[j].Timestamp)
 }
 
-func (api *Api) GetHistoricalLogs(deployment string) (HistoricalLogs, int, error) {
+func (api *Api) GetHistoricalLogs(deploymentSlug, search, exclude, regexp string) (HistoricalLogs, int, error) {
 	var historicalLogs HistoricalLogs
 	maxHostnameLength := 0
 
-	body, err := api.restGet(api.apiUrl("/deployments/" + deployment + "/historical_logs?size=200&sort=desc"))
+	urlPath := "/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/historical_logs?size=200&sort=desc"
+
+	if regexp != "<string>" {
+		urlPath = urlPath + "&grep=" + url.QueryEscape(regexp)
+	}
+
+	if search != "<string>" {
+		urlPath = urlPath + "&search=" + url.QueryEscape(search)
+	}
+
+	if exclude != "<string>" {
+		urlPath = urlPath + "&exclude=" + url.QueryEscape(exclude)
+	}
+
+	body, err := api.restGet(api.apiUrl(urlPath))
 	if err != nil {
 		return nil, maxHostnameLength, err
 	}

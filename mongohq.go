@@ -322,10 +322,16 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 			Usage: "query historical logs",
 			Flags: []cli.Flag{
 				cli.StringFlag{"deployment,dep", "<string>", "deployment for querying logs"},
+				cli.StringFlag{"regexp,e", "<string>", "regexp for log searches"},
+				cli.StringFlag{"search,s", "<string>", "exact search term for log searches"},
+				cli.StringFlag{"exclude,v", "<string>", "exclude search term for log searches"},
 			},
 			Action: func(c *cli.Context) {
+				loginController.RequireAuth()
+				requireAccount(loginController.Api)
+
 				requireArguments(c, []string{"deployment"}, []string{})
-				controller.HistoricalLogs(c.String("deployment"))
+				controller.HistoricalLogs(c.String("deployment"), c.String("search"), c.String("exclude"), c.String("regexp"))
 			},
 		},
 		{
