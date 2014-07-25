@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"sort"
+	"strconv"
 	"time"
 )
 
@@ -30,11 +31,11 @@ func (hl HistoricalLogs) Less(i, j int) bool {
 	return hl[i].Timestamp.Before(hl[j].Timestamp)
 }
 
-func (api *Api) GetHistoricalLogs(deploymentSlug, search, exclude, regexp string) (HistoricalLogs, int, error) {
+func (api *Api) GetHistoricalLogs(deploymentSlug, search, exclude, regexp string, limit int, fromDate *time.Time, toDate *time.Time) (HistoricalLogs, int, error) {
 	var historicalLogs HistoricalLogs
 	maxHostnameLength := 0
 
-	urlPath := "/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/historical_logs?size=200&sort=desc"
+	urlPath := "/deployments/" + api.Config.AccountSlug + "/" + deploymentSlug + "/historical_logs?size=" + strconv.Itoa(limit) + "&sort=desc"
 
 	if regexp != "<string>" {
 		urlPath = urlPath + "&grep=" + url.QueryEscape(regexp)
@@ -46,6 +47,14 @@ func (api *Api) GetHistoricalLogs(deploymentSlug, search, exclude, regexp string
 
 	if exclude != "<string>" {
 		urlPath = urlPath + "&exclude=" + url.QueryEscape(exclude)
+	}
+
+	if fromDate != nil {
+		urlPath = urlPath + "&from_date=" + fromDate.Format(time.RFC3339Nano)
+	}
+
+	if toDate != nil {
+		urlPath = urlPath + "&to_date=" + toDate.Format(time.RFC3339Nano) + "&from_date=2010-01-01T00:00:00Z"
 	}
 
 	body, err := api.restGet(api.apiUrl(urlPath))
