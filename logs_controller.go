@@ -28,6 +28,7 @@ func (c *Controller) HistoricalLogs(deploymentSlug, search, exclude, regexp stri
 			historicalLogs, hostLength, err = c.Api.GetHistoricalLogs(deploymentSlug, search, exclude, regexp, logLimit, nil, nil)
 		} else {
 			fmt.Print(command + " is an unknown option.  Please type (n)ext, (p)revious, or (e)xit.")
+			command = prompt("(n)ext (p)revious (e)xit >")
 			continue
 		}
 
