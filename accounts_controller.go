@@ -10,7 +10,10 @@ func (c *Controller) ListAccounts() {
 
 	if err != nil {
 		fmt.Println("Error retreiving accounts: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== Accounts")
@@ -28,7 +31,10 @@ func (c *Controller) ShowAccount(slug string) {
 
 	if err != nil {
 		fmt.Println("Error retreiving account: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== " + slug)

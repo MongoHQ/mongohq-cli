@@ -11,7 +11,10 @@ func (c *Controller) ListDatabases() {
 
 	if err != nil {
 		fmt.Println("Error retrieving databases: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== My Databases")
@@ -25,7 +28,10 @@ func (c *Controller) ShowDatabase(deploymentName, databaseName string) {
 
 	if err != nil {
 		fmt.Println("Error retrieiving database: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== " + database.Name)
@@ -68,7 +74,10 @@ func (c *Controller) DeleteDatabase(deploymentSlug, databaseName string, force b
 
 		if databaseName != confirmDatabaseName {
 			fmt.Println("Confirmation of database name is incorrect.")
-			os.Exit(1)
+			if !replMode {
+				os.Exit(1)
+			}
+			return
 		}
 	}
 
@@ -76,7 +85,10 @@ func (c *Controller) DeleteDatabase(deploymentSlug, databaseName string, force b
 
 	if err != nil {
 		fmt.Println("Error removing database: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("Removed database named: " + databaseName)
@@ -87,7 +99,10 @@ func (c *Controller) CreateDatabase(deploymentName, databaseName string) {
 
 	if err != nil {
 		fmt.Println("Error creating database: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== " + database.Name)
@@ -100,7 +115,10 @@ func (c *Controller) ListDatabaseUsers(deploymentId, databaseName string) {
 
 	if err != nil {
 		fmt.Println("Error retrieiving database users: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	} else {
 		fmt.Println("== Users for database " + databaseName)
 		for _, databaseUser := range databaseUsersSlice {
@@ -118,14 +136,20 @@ func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, su
 
 		if err != nil {
 			fmt.Println("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
-			os.Exit(1)
+			if !replMode {
+				os.Exit(1)
+			}
+			return
 		}
 
 		confirmedPassword, _ := gopass.GetPass("Confirm password: ")
 
 		if password != confirmedPassword {
 			fmt.Println("Password confirmation failed.")
-			os.Exit(1)
+			if !replMode {
+				os.Exit(1)
+			}
+			return
 		}
 	} else {
 		password = suppliedPassword
@@ -135,7 +159,10 @@ func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, su
 
 	if err != nil {
 		fmt.Println("Error creating database user: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 	fmt.Println("User " + username + " created.")
 }
@@ -145,7 +172,10 @@ func (c *Controller) DeleteDatabaseUser(deploymentId, databaseName, username str
 
 	if err != nil {
 		fmt.Println("Error removing database user: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 	fmt.Println("User " + username + " removed.")
 }

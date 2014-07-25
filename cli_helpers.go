@@ -6,7 +6,10 @@ import (
 	"os"
 )
 
-func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []string) {
+var replMode bool // This is the repl mode - set to avoid exits
+var replExit bool // This is the flag to set if you need the repl to exit
+
+func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []string) error {
 	err := false
 
 	for _, argument := range argumentsSlice {
@@ -17,16 +20,28 @@ func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []s
 	}
 
 	if err {
-		fmt.Println("\nMissing arguments, for more information, run: mongohq " + c.Command.Name + " --help\n")
+		if !replMode {
+			fmt.Println("\nMissing arguments, for more information, run: mongohq " + c.Command.Name + " --help\n")
+		} else {
+			fmt.Println("Missing arguments: type 'help " + c.Command.Name + "' for details")
+		}
+
 		for _, errorMessage := range errorMessages {
 			fmt.Println(errorMessage)
 		}
-		os.Exit(1)
+
+		return fmt.Errorf("Missing arguments")
 	}
+	return nil
 }
 
 func findClosestCommand(context *cli.Context, command string) {
-	fmt.Println(" ! `" + command + "` is not a mongohq command.")
-	fmt.Println(" ! See `mongohq help` for a list of available commands")
-	os.Exit(1)
+
+	if !replMode {
+		fmt.Println(" ! `" + command + "` is not a mongohq command.")
+		fmt.Println(" ! See `mongohq help` for a list of available commands")
+		os.Exit(1)
+	} else {
+		fmt.Println("Unknown command:" + command)
+	}
 }

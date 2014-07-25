@@ -10,7 +10,10 @@ func (c *Controller) SetConfigAccount(slug string) {
 
 	if err != nil {
 		fmt.Println("Error accessing account:" + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	config := getConfig()

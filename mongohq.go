@@ -10,7 +10,7 @@ import (
 
 var api *Api
 var controller Controller
-var historyfn="/tmp/.mongohq_history"
+var historyfn = os.Getenv("HOME") + "/.mongohq/history"
 
 func main() {
 	loginController := new(LoginController)
@@ -30,7 +30,7 @@ func main() {
 			Name:  "accounts",
 			Usage: "list accounts",
 			Flags: []cli.Flag{
-				cli.StringFlag{"account,a", "<string>", "optional account slug; if included, will run accounts:info"},
+				cli.StringFlag{Name: "account,a", Value: "<string>", Usage: "optional account slug; if included, will run accounts:info"},
 			},
 			Description: `
 List the slugs for all accounts which you have permission To change the default account, see the "config:account" command.
@@ -49,7 +49,7 @@ List the slugs for all accounts which you have permission To change the default 
 			Name:  "accounts:info",
 			Usage: "account information",
 			Flags: []cli.Flag{
-				cli.StringFlag{"account,a", "<string>", "account slug"},
+				cli.StringFlag{Name: "account,a", Value: "<string>", Usage: "account slug"},
 			},
 			Description: `
 More detail about a particular account, including name, slug, owner, and account users.
@@ -58,7 +58,13 @@ These account users are different than database users, and cannot be used to dir
       `,
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
-				requireArguments(c, []string{"account"}, []string{})
+				err := requireArguments(c, []string{"account"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.ShowAccount(c.String("account"))
 			},
 		},
@@ -66,8 +72,8 @@ These account users are different than database users, and cannot be used to dir
 			Name:  "backups",
 			Usage: "list backups with optional filters",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "optional deployment filter for backups"},
-				cli.StringFlag{"backup,b", "<string>", "optional backup name; if included, will run backups:info"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "optional deployment filter for backups"},
+				cli.StringFlag{Name: "backup,b", Value: "<string>", Usage: "optional backup name; if included, will run backups:info"},
 			},
 			Description: `
 Lists the backups associated with your account or deployment.
@@ -98,13 +104,19 @@ To see a list of all backups on a single deployment, include the name or id of t
 Queues an on-demand backup for a deployment.  To read more about this feature, see http://docs.mongohq.com/backups/elastic-deployments.html#on-demand-backups.
       `,
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment name"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment name"},
 			},
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment"}, []string{})
+				err := requireArguments(c, []string{"deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.CreateBackup(c.String("deployment"))
 			},
 		},
@@ -112,7 +124,7 @@ Queues an on-demand backup for a deployment.  To read more about this feature, s
 			Name:  "backups:info",
 			Usage: "information on backup",
 			Flags: []cli.Flag{
-				cli.StringFlag{"backup,b", "<string>", "file name of backup"},
+				cli.StringFlag{Name: "backup,b", Value: "<string>", Usage: "file name of backup"},
 			},
 			Description: `
 More detail about a particular backup, including deployment, databases, creation time, type, size, and download link.
@@ -121,7 +133,13 @@ More detail about a particular backup, including deployment, databases, creation
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"backup"}, []string{})
+				err := requireArguments(c, []string{"backup"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.ShowBackup(c.String("backup"))
 			},
 		},
@@ -132,16 +150,22 @@ More detail about a particular backup, including deployment, databases, creation
 Restores a backup of a database to a new, fresh deployment. The new deployment will be created in the same datacenter with the same version as the source database.
       `,
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
-				cli.StringFlag{"backup,b", "<string>", "file name of backup"},
-				cli.StringFlag{"source-database,source", "<string>", "original database name"},
-				cli.StringFlag{"destination-database,destination", "<string>", "new database name"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "new deployment name"},
+				cli.StringFlag{Name: "backup,b", Value: "<string>", Usage: "file name of backup"},
+				cli.StringFlag{Name: "source-database,source", Value: "<string>", Usage: "original database name"},
+				cli.StringFlag{Name: "destination-database,destination", Value: "<string>", Usage: "new database name"},
 			},
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "backup", "source-database", "destination-database"}, []string{})
+				err := requireArguments(c, []string{"deployment", "backup", "source-database", "destination-database"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.RestoreBackup(c.String("backup"), c.String("deployment"), c.String("source-database"), c.String("destination-database"))
 			},
 		},
@@ -149,7 +173,7 @@ Restores a backup of a database to a new, fresh deployment. The new deployment w
 			Name:  "config:account",
 			Usage: "set a default account context",
 			Flags: []cli.Flag{
-				cli.StringFlag{"account,a", "<string>", "slug for default account"},
+				cli.StringFlag{Name: "account,a", Value: "<string>", Usage: "slug for default account"},
 			},
 			Description: `
 Set a default account so the account flag is not required for each command.
@@ -157,7 +181,13 @@ Set a default account so the account flag is not required for each command.
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
 
-				requireArguments(c, []string{"account"}, []string{})
+				err := requireArguments(c, []string{"account"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.SetConfigAccount(c.String("account"))
 			},
 		},
@@ -166,8 +196,8 @@ Set a default account so the account flag is not required for each command.
 			ShortName: "db:create",
 			Usage:     "create database on an existing deployment",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment to create database on"},
-				cli.StringFlag{"database,db", "<string>", "new database to create"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment to create database on"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "new database to create"},
 			},
 			Description: `
 Create a new database on an existing deployment.  If you are looking to create a new database on a new deployment, see the deployments:create command.
@@ -176,7 +206,13 @@ Create a new database on an existing deployment.  If you are looking to create a
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "database"}, []string{})
+				err := requireArguments(c, []string{"deployment", "database"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.CreateDatabase(c.String("deployment"), c.String("database"))
 			},
 		},
@@ -185,8 +221,8 @@ Create a new database on an existing deployment.  If you are looking to create a
 			ShortName: "db:info",
 			Usage:     "information on database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"database,db", "<string>", " database for more information"},
-				cli.StringFlag{"deployment,dep", "<string>", " deployment containing database"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "database for more information"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment containing database"},
 			},
 			Description: `
 More detail on a particular database, including name, status, and stats.
@@ -195,7 +231,13 @@ More detail on a particular database, including name, status, and stats.
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"database", "deployment"}, []string{})
+				err := requireArguments(c, []string{"database", "deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.ShowDatabase(c.String("deployment"), c.String("database"))
 			},
 		},
@@ -204,9 +246,9 @@ More detail on a particular database, including name, status, and stats.
 			ShortName: "db:remove",
 			Usage:     "remove database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment"},
-				cli.StringFlag{"database,db", "<string>", "database to remove"},
-				cli.BoolFlag{"force,f", "delete without confirmation"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "database to remove"},
+				cli.BoolFlag{Name: "force,f", Usage: "delete without confirmation"},
 			},
 			Description: `
 Deletes a database from a deployment.  If this is the last database on the deployment, the deployment will also be deleted.
@@ -217,7 +259,13 @@ You will be asked to verify the database name on delete, unless including the fo
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"database", "deployment"}, []string{})
+				err := requireArguments(c, []string{"database", "deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.DeleteDatabase(c.String("deployment"), c.String("database"), c.Bool("force"))
 			},
 		},
@@ -229,7 +277,7 @@ You will be asked to verify the database name on delete, unless including the fo
 List the slugs for all deployments.
       `,
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "optional deployment name; if included runs deployments:info"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "optional deployment name; if included runs deployments:info"},
 			},
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
@@ -247,9 +295,9 @@ List the slugs for all deployments.
 			ShortName: "dep:create",
 			Usage:     "create a new Elastic Deployment",
 			Flags: []cli.Flag{
-				cli.StringFlag{"database,db", "<string>", "new database name"},
-				cli.StringFlag{"deployment,dep", "<string>", "new deployment name"},
-				cli.StringFlag{"location,l", "<string>", "location of deployment (for list of locations, run 'mongohq locations')"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "new database name"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "new deployment name"},
+				cli.StringFlag{Name: "location,l", Value: "<string>", Usage: "location of deployment (for list of locations, run 'mongohq locations')"},
 			},
 			Description: `
 Creates an elastic deployment on the MongoHQ platform. Stick with me here: it will create a new database on a new deployment at location you specify.  The deployment is a Replica Set and the database is the logical MongoDB database. You can find a list of locations by running "mongohq locations".
@@ -258,7 +306,13 @@ Creates an elastic deployment on the MongoHQ platform. Stick with me here: it wi
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "database", "location"}, []string{})
+				err := requireArguments(c, []string{"deployment", "database", "location"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.CreateDeployment(c.String("deployment"), c.String("database"), c.String("location"))
 			},
 		},
@@ -267,7 +321,7 @@ Creates an elastic deployment on the MongoHQ platform. Stick with me here: it wi
 			ShortName: "dep:info",
 			Usage:     "information on deployment",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment for more information"},
 			},
 			Description: `
 More detail about a particular deployment, including plan, status, location, current primary, members, version, and a list of databases.
@@ -276,7 +330,13 @@ More detail about a particular deployment, including plan, status, location, cur
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment"}, []string{})
+				err := requireArguments(c, []string{"deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.ShowDeployment(c.String("deployment"))
 			},
 		},
@@ -285,8 +345,8 @@ More detail about a particular deployment, including plan, status, location, cur
 			ShortName: "dep:rename",
 			Usage:     "rename a deployment",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
-				cli.StringFlag{"name,n", "<string>", "new name for deployment"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment for more information"},
+				cli.StringFlag{Name: "name,n", Value: "<string>", Usage: "new name for deployment"},
 			},
 			Description: `
 Sometime, you want a little more description about a deployment than an hex id.  Use this to create a deployment name (only allows alphanumeric characters and hyphens).
@@ -297,7 +357,13 @@ Immediately after making this change, you will need to reference the deployment 
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "name"}, []string{})
+				err := requireArguments(c, []string{"deployment", "name"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.RenameDeployment(c.String("deployment"), c.String("name"))
 			},
 		},
@@ -306,8 +372,8 @@ Immediately after making this change, you will need to reference the deployment 
 			ShortName: "dep:remove",
 			Usage:     "remove a deployment",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment for more information"},
-				cli.BoolFlag{"force,f", "delete without confirmation"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment for more information"},
+				cli.BoolFlag{Name: "force,f", Usage: "delete without confirmation"},
 			},
 			Description: `
 Deletes a deployment.  Requires confirmation because this is a very destructive action, particularly for data.
@@ -316,7 +382,13 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment"}, []string{})
+				err := requireArguments(c, []string{"deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.DeleteDeployment(c.String("deployment"), c.Bool("force"))
 			},
 		},
@@ -324,16 +396,22 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 			Name:  "logs",
 			Usage: "query historical logs",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment for querying logs"},
-				cli.StringFlag{"regexp,e", "<string>", "regexp for log searches"},
-				cli.StringFlag{"search,s", "<string>", "exact search term for log searches"},
-				cli.StringFlag{"exclude,v", "<string>", "exclude search term for log searches"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment for querying logs"},
+				cli.StringFlag{Name: "regexp,e", Value: "<string>", Usage: "regexp for log searches"},
+				cli.StringFlag{Name: "search,s", Value: "<string>", Usage: "exact search term for log searches"},
+				cli.StringFlag{Name: "exclude,v", Value: "<string>", Usage: "exclude search term for log searches"},
 			},
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment"}, []string{})
+				err := requireArguments(c, []string{"deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.HistoricalLogs(c.String("deployment"), c.String("search"), c.String("exclude"), c.String("regexp"))
 			},
 		},
@@ -354,7 +432,7 @@ List the current locations available for MongoHQ deployments.  Used with both ne
 			Name:  "mongostat",
 			Usage: "realtime mongostat",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment for watching mongostats"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment for watching mongostats"},
 			},
 			Description: `
 A streaming output of usage statistics for your database.  This is a very good first step when you are looking for performance characteristics on your database.  The usage stats include:
@@ -367,7 +445,13 @@ A streaming output of usage statistics for your database.  This is a very good f
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment"}, []string{})
+				err := requireArguments(c, []string{"deployment"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.DeploymentMongoStat(c.String("deployment"))
 			},
 		},
@@ -375,8 +459,8 @@ A streaming output of usage statistics for your database.  This is a very good f
 			Name:  "users",
 			Usage: "list users on a database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
-				cli.StringFlag{"database,db", "<string>", "database to list users"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment id the database is on"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "database to list users"},
 			},
 			Description: `
 List a databases' users.  These users are used to authenticate against a database.
@@ -387,7 +471,13 @@ These are different than account users, which are used to authentication against
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "database"}, []string{})
+				err := requireArguments(c, []string{"deployment", "database"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.ListDatabaseUsers(c.String("deployment"), c.String("database"))
 			},
 		},
@@ -395,10 +485,10 @@ These are different than account users, which are used to authentication against
 			Name:  "users:create",
 			Usage: "add user to a database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
-				cli.StringFlag{"database,db", "<string>", "database name to create the user on"},
-				cli.StringFlag{"username,u", "<string>", "user to create"},
-				cli.StringFlag{"password,p", "<string>", "optional password for user; will prompt if omitted"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment id the database is on"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "database name to create the user on"},
+				cli.StringFlag{Name: "username,u", Value: "<string>", Usage: "user to create"},
+				cli.StringFlag{Name: "password,p", Value: "<string>", Usage: "optional password for user; will prompt if omitted"},
 			},
 			Description: `
 Add a new user to a database. With this user, you will be able to authenticate against the database. If a password is not provided, it will be prompted.
@@ -409,7 +499,13 @@ If the user already exists, this command will update the password for the user.
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
+				err := requireArguments(c, []string{"deployment", "database", "username"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.CreateDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"), c.String("password"))
 			},
 		},
@@ -417,9 +513,9 @@ If the user already exists, this command will update the password for the user.
 			Name:  "users:remove",
 			Usage: "remove user from database",
 			Flags: []cli.Flag{
-				cli.StringFlag{"deployment,dep", "<string>", "deployment id the database is on"},
-				cli.StringFlag{"database,db", "<string>", "database name to remove the user from"},
-				cli.StringFlag{"username,u", "<string>", "user to remove from the deployment"},
+				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment id the database is on"},
+				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "database name to remove the user from"},
+				cli.StringFlag{Name: "username,u", Value: "<string>", Usage: "user to remove from the deployment"},
 			},
 			Description: `
 Removes a database user from a database.  If your applications are connecting with this user, they will not be able to create new connections.
@@ -430,7 +526,13 @@ This user action is against database users used for authentication against a dat
 				loginController.RequireAuth()
 				requireAccount(loginController.Api)
 
-				requireArguments(c, []string{"deployment", "database", "username"}, []string{})
+				err := requireArguments(c, []string{"deployment", "database", "username"}, []string{})
+				if err != nil {
+					if !replMode {
+						os.Exit(1)
+					}
+					return
+				}
 				controller.DeleteDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
 			},
 		},
@@ -470,35 +572,87 @@ To update, run:
 		},
 	}
 
-	if len(os.Args)==1 {
-		term:=liner.NewLiner()
-		var prompt="> "
-		if f,err := os.Open(historyfn); err==nil {
+	// Basic REPL code
+	if len(os.Args) == 1 {
+		replMode = true
+		replExit = false
+		loginController.Api = &Api{UserAgent: "MongoHQ-CLI " + Version()}
+		controller = Controller{Api: loginController.Api}
+		loginController.RequireAuth()
+		term := liner.NewLiner()
+
+		var prompt = "> "
+		if f, err := os.Open(historyfn); err == nil {
 			term.ReadHistory(f)
 			f.Close()
 		}
-		for {
-			line,err:=term.Prompt(prompt)
-			if err!=nil {
+
+		// TODO: This is a basic completer for *only* the subcommands
+		term.SetCompleter(func(line string) (c []string) {
+			// TODO:
+			// split line, count args, if none, sub command match
+			// if more than one, check what the last entered thing is
+			// if -- load up with the flags
+			// TODO++: otherwise look at previous flag and determine
+			// possible completetions
+			parts := strings.Fields(line)
+			switch {
+			case len(parts) == 0:
+				// Nothing - load all the lines
+				for _, cmd := range app.Commands {
+					c = append(c, cmd.Name)
+				}
+
+			case len(parts) == 1:
+				// One item - if it is help then offer help for all commands
+				if parts[0] == "help" {
+					for _, cmd := range app.Commands {
+						c = append(c, "help "+cmd.Name)
+					}
+				} else {
+					for _, cmd := range app.Commands {
+						if strings.HasPrefix(cmd.Name, strings.ToLower(line)) {
+							c = append(c, cmd.Name)
+						}
+					}
+				}
+
+			case len(parts) == 2:
+				// two parts, so is this help command-partial if so
+				if parts[0] == "help" {
+					for _, cmd := range app.Commands {
+						if strings.HasPrefix(cmd.Name, strings.ToLower(parts[1])) {
+							c = append(c, "help "+cmd.Name)
+						}
+					}
+				}
+			}
+			return
+		})
+
+		for !replExit {
+			line, err := term.Prompt(prompt)
+			if err != nil {
 				break
 			}
-			if line=="exit" {
+			if line == "exit" {
 				break
 			}
 			term.AppendHistory(line)
-			plines:=strings.Fields(line)
-			plines=append(plines,"")
-			copy(plines[1:],plines[0:])
-			plines[0]="mongohq-repl"
+			plines := strings.Fields(line)
+			plines = append(plines, "")
+			copy(plines[1:], plines[0:])
+			plines[0] = "mongohq-repl"
 			app.Run(plines)
 		}
-		if f,err :=os.Create(historyfn); err!=nil {
-			fmt.Println("Error writing history file",err)
+
+		if f, err := os.Create(historyfn); err != nil {
+			fmt.Println("Error writing history file", err)
 		} else {
 			term.WriteHistory(f)
 			f.Close()
 		}
-		os.Exit(0)
+		term.Close()
 	} else {
 		app.Run(os.Args)
 	}

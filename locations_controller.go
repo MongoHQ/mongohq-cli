@@ -10,7 +10,10 @@ func (c *Controller) ListLocations() {
 
 	if err != nil {
 		fmt.Println("Error returning locations: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== locations")
