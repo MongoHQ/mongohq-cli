@@ -6,9 +6,6 @@ import (
 	"os"
 )
 
-var replMode bool // This is the repl mode - set to avoid exits
-var replExit bool // This is the flag to set if you need the repl to exit
-
 func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []string) error {
 	err := false
 
