@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -11,7 +10,8 @@ func (c *Controller) ListBackups() {
 
 	if err != nil {
 		fmt.Println("Error retreiving backups: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== Backups")
@@ -25,7 +25,8 @@ func (c *Controller) ListBackupsForDeployment(deploymentSlug string) {
 
 	if err != nil {
 		fmt.Println("Error retreiving backups: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== Backups for " + deploymentSlug)
@@ -38,7 +39,8 @@ func (c *Controller) ShowBackup(backupSlug string) {
 	backup, err := c.Api.GetBackup(backupSlug)
 	if err != nil {
 		fmt.Println("Error retreiving backup: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 	deployment, _ := c.Api.GetDeployment(backup.DeploymentSlug)
 	fmt.Println("== Backup " + backupSlug)
@@ -57,13 +59,15 @@ func (c *Controller) RestoreBackup(backupSlug, deploymentName, source, destinati
 	backup, err := c.Api.GetBackup(backupSlug)
 	if err != nil {
 		fmt.Println("Error retreiving backup: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	deployment, err := c.Api.RestoreBackup(backup, deploymentName, source, destination)
 	if err != nil {
 		fmt.Println("Error restoring backup: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== Restoring from database " + source + " on deployment " + backup.DeploymentSlug + " from backup " + backupSlug + " to new deployment " + deploymentName)
@@ -74,7 +78,8 @@ func (c *Controller) CreateBackup(deploymentSlug string) {
 	backup, err := c.Api.BackupDeployment(deploymentSlug)
 	if err != nil {
 		fmt.Println("Error triggering backup on deployment: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	status := backup.Status
@@ -85,14 +90,16 @@ func (c *Controller) CreateBackup(deploymentSlug string) {
 		if err != nil {
 			fmt.Println(err.Error())
 			fmt.Println("\nError requesting backup status. For a manual update, please run:\n\n mongohq backups:info -b " + backup.Id)
-			os.Exit(1)
+			cliOSExit()
+			return
 		}
 		status = backup.Status
 	}
 
 	if status != "complete" {
-		fmt.Println("Error creating backup.  Please try once mroe, or contact support@mongohq.com.")
-		os.Exit(1)
+		fmt.Println("Error creating backup.  Please try once more, or contact support@mongohq.com.")
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== Backup " + backup.Filename)

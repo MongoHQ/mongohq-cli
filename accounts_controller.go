@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 )
 
 func (c *Controller) ListAccounts() {
@@ -10,7 +9,8 @@ func (c *Controller) ListAccounts() {
 
 	if err != nil {
 		fmt.Println("Error retreiving accounts: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== Accounts")
@@ -28,7 +28,8 @@ func (c *Controller) ShowAccount(slug string) {
 
 	if err != nil {
 		fmt.Println("Error retreiving account: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== " + slug)

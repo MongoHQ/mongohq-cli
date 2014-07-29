@@ -10,7 +10,10 @@ func (c *Controller) CurrentUser() {
 
 	if err != nil {
 		fmt.Println("Error returning user: " + err.Error())
-		os.Exit(1)
+		if !replMode {
+			os.Exit(1)
+		}
+		return
 	}
 
 	fmt.Println("== whoami")

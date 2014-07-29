@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 )
 
 func (c *Controller) ListLocations() {
@@ -10,7 +9,8 @@ func (c *Controller) ListLocations() {
 
 	if err != nil {
 		fmt.Println("Error returning locations: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("== locations")

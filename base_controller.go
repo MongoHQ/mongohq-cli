@@ -12,6 +12,11 @@ type Controller struct {
 }
 
 func prompt(text string) string {
+	if replMode == true {
+		line, _ := term.Prompt(text)
+		return line
+	}
+
 	var response string
 	var err error
 

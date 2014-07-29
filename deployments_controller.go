@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -76,7 +75,8 @@ func (c *Controller) DeleteDeployment(deploymentName string, force bool) {
 
 		if deploymentName != confirmDeploymentName {
 			fmt.Println("Confirmation of deployment name is incorrect.")
-			os.Exit(1)
+			cliOSExit()
+			return
 		}
 	}
 
@@ -84,7 +84,8 @@ func (c *Controller) DeleteDeployment(deploymentName string, force bool) {
 
 	if err != nil {
 		fmt.Println("Error removing deployment: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 
 	fmt.Println("Removed deployment named: " + deploymentName)
@@ -97,7 +98,8 @@ func (c *Controller) DeploymentMongoStat(deploymentSlug string) {
 	outputFormatter := func(mongoStats map[string]MongoStat, err error) {
 		if err != nil {
 			fmt.Println("Error authenticating connection to websocket.")
-			os.Exit(1)
+			cliOSExit()
+			return
 		}
 
 		hostLength := 0
@@ -135,7 +137,8 @@ func (c *Controller) DeploymentMongoStat(deploymentSlug string) {
 
 	if err != nil {
 		fmt.Println("Error: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 }
 
@@ -147,6 +150,7 @@ func (c *Controller) DeploymentOplog(deploymentSlug string) {
 	err := c.Api.DeploymentOplog(deploymentSlug, outputFormatter)
 	if err != nil {
 		fmt.Println("Error: " + err.Error())
-		os.Exit(1)
+		cliOSExit()
+		return
 	}
 }
