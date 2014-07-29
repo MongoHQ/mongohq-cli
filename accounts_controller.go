@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 )
 
 func (c *Controller) ListAccounts() {
@@ -10,9 +9,7 @@ func (c *Controller) ListAccounts() {
 
 	if err != nil {
 		fmt.Println("Error retreiving accounts: " + err.Error())
-		if !replMode {
-			os.Exit(1)
-		}
+		cliOSExit()
 		return
 	}
 
@@ -31,9 +28,7 @@ func (c *Controller) ShowAccount(slug string) {
 
 	if err != nil {
 		fmt.Println("Error retreiving account: " + err.Error())
-		if !replMode {
-			os.Exit(1)
-		}
+		cliOSExit()
 		return
 	}
 

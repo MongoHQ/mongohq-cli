@@ -58,9 +58,7 @@ These account users are different than database users, and cannot be used to dir
 				loginController.RequireAuth()
 				err := requireArguments(c, []string{"account"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.ShowAccount(c.String("account"))
@@ -110,9 +108,7 @@ Queues an on-demand backup for a deployment.  To read more about this feature, s
 
 				err := requireArguments(c, []string{"deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.CreateBackup(c.String("deployment"))
@@ -133,9 +129,7 @@ More detail about a particular backup, including deployment, databases, creation
 
 				err := requireArguments(c, []string{"backup"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.ShowBackup(c.String("backup"))
@@ -159,9 +153,7 @@ Restores a backup of a database to a new, fresh deployment. The new deployment w
 
 				err := requireArguments(c, []string{"deployment", "backup", "source-database", "destination-database"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.RestoreBackup(c.String("backup"), c.String("deployment"), c.String("source-database"), c.String("destination-database"))
@@ -181,9 +173,7 @@ Set a default account so the account flag is not required for each command.
 
 				err := requireArguments(c, []string{"account"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.SetConfigAccount(c.String("account"))
@@ -206,9 +196,7 @@ Create a new database on an existing deployment.  If you are looking to create a
 
 				err := requireArguments(c, []string{"deployment", "database"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.CreateDatabase(c.String("deployment"), c.String("database"))
@@ -231,9 +219,7 @@ More detail on a particular database, including name, status, and stats.
 
 				err := requireArguments(c, []string{"database", "deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.ShowDatabase(c.String("deployment"), c.String("database"))
@@ -259,9 +245,7 @@ You will be asked to verify the database name on delete, unless including the fo
 
 				err := requireArguments(c, []string{"database", "deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.DeleteDatabase(c.String("deployment"), c.String("database"), c.Bool("force"))
@@ -306,9 +290,7 @@ Creates an elastic deployment on the MongoHQ platform. Stick with me here: it wi
 
 				err := requireArguments(c, []string{"deployment", "database", "location"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.CreateDeployment(c.String("deployment"), c.String("database"), c.String("location"))
@@ -330,9 +312,7 @@ More detail about a particular deployment, including plan, status, location, cur
 
 				err := requireArguments(c, []string{"deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.ShowDeployment(c.String("deployment"))
@@ -357,9 +337,7 @@ Immediately after making this change, you will need to reference the deployment 
 
 				err := requireArguments(c, []string{"deployment", "name"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.RenameDeployment(c.String("deployment"), c.String("name"))
@@ -382,9 +360,7 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 
 				err := requireArguments(c, []string{"deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.DeleteDeployment(c.String("deployment"), c.Bool("force"))
@@ -405,9 +381,7 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 
 				err := requireArguments(c, []string{"deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.HistoricalLogs(c.String("deployment"), c.String("search"), c.String("exclude"), c.String("regexp"))
@@ -445,9 +419,7 @@ A streaming output of usage statistics for your database.  This is a very good f
 
 				err := requireArguments(c, []string{"deployment"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.DeploymentMongoStat(c.String("deployment"))
@@ -471,9 +443,7 @@ These are different than account users, which are used to authentication against
 
 				err := requireArguments(c, []string{"deployment", "database"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.ListDatabaseUsers(c.String("deployment"), c.String("database"))
@@ -499,9 +469,7 @@ If the user already exists, this command will update the password for the user.
 
 				err := requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.CreateDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"), c.String("password"))
@@ -526,9 +494,7 @@ This user action is against database users used for authentication against a dat
 
 				err := requireArguments(c, []string{"deployment", "database", "username"}, []string{})
 				if err != nil {
-					if !replMode {
-						os.Exit(1)
-					}
+					cliOSExit()
 					return
 				}
 				controller.DeleteDatabaseUser(c.String("deployment"), c.String("database"), c.String("username"))
@@ -568,15 +534,18 @@ To update, run:
 				fmt.Println("To update, run: `curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh`")
 			},
 		},
+		{
+			Name:  "shell",
+			Usage: "starts REPL shell",
+			Description: `Starts a command line shell for the MongoHQ CLI
+				`,
+			Action: func(c *cli.Context) {
+				loginController.Api = &Api{UserAgent: "MongoHQ-CLI " + Version()}
+				controller = Controller{Api: loginController.Api}
+				loginController.RequireAuth()
+				repl(app)
+			},
+		},
 	}
-
-	// Basic REPL code
-	if len(os.Args) == 1 {
-		loginController.Api = &Api{UserAgent: "MongoHQ-CLI " + Version()}
-		controller = Controller{Api: loginController.Api}
-		loginController.RequireAuth()
-		repl(app)
-	} else {
-		app.Run(os.Args)
-	}
+	app.Run(os.Args)
 }

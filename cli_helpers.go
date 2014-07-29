@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"os"
 )
 
 func requireArguments(c *cli.Context, argumentsSlice []string, errorMessages []string) error {
@@ -37,8 +36,8 @@ func findClosestCommand(context *cli.Context, command string) {
 	if !replMode {
 		fmt.Println(" ! `" + command + "` is not a mongohq command.")
 		fmt.Println(" ! See `mongohq help` for a list of available commands")
-		os.Exit(1)
 	} else {
 		fmt.Println("Unknown command:" + command)
 	}
+	cliOSExit()
 }

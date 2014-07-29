@@ -5,17 +5,27 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/peterh/liner"
 	"os"
+	"os/signal"
 	"strings"
 )
 
 var replMode bool // This is the repl mode - set to avoid exits
 var replExit bool // This is the flag to set if you need the repl to exit
+var term *liner.State
 
 func repl(app *cli.App) {
 	replMode = true
 	replExit = false
 
-	term := liner.NewLiner()
+	term = liner.NewLiner()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		term.Close()
+		fmt.Println("Quitting shell")
+		os.Exit(1)
+	}()
 
 	var prompt = "> "
 	if f, err := os.Open(historyfn); err == nil {
@@ -89,4 +99,10 @@ func repl(app *cli.App) {
 		f.Close()
 	}
 	term.Close()
+}
+
+func cliOSExit() {
+	if !replMode {
+		os.Exit(1)
+	}
 }
