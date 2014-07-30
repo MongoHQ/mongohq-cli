@@ -1,7 +1,6 @@
 package main
 
 import (
-	"code.google.com/p/gopass"
 	"fmt"
 )
 
@@ -119,7 +118,7 @@ func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, su
 	var err error
 
 	if suppliedPassword == "<string>" {
-		password, err = gopass.GetPass("Password (typing will be hidden): ")
+		password, err = safeGetPass("Password (typing will be hidden): ")
 
 		if err != nil {
 			fmt.Println("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
@@ -127,7 +126,7 @@ func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, su
 			return
 		}
 
-		confirmedPassword, _ := gopass.GetPass("Confirm password: ")
+		confirmedPassword, _ := safeGetPass("Confirm password: ")
 
 		if password != confirmedPassword {
 			fmt.Println("Password confirmation failed.")

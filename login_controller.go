@@ -2,7 +2,6 @@ package main
 
 import (
 	//"fmt"
-	"code.google.com/p/gopass"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -25,7 +24,7 @@ var Email, OauthToken string
 func (c *LoginController) login() error {
 	fmt.Println("Enter your MongoHQ credentials.")
 	username := prompt("Email")
-	password, err := gopass.GetPass("Password (typing will be hidden): ")
+	password, err := safeGetPass("Password (typing will be hidden): ")
 
 	if err != nil {
 		return errors.New("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
