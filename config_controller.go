@@ -29,7 +29,7 @@ func requireAccount(api *Api) {
 	runCount := 0
 	for api.Config.AccountSlug == "" {
 		if runCount > 2 {
-			fmt.Println("Default account is required.  Please run `mongohq accounts` and `mongohq config:account -a <account-slug>` to set a default acount.")
+			fmt.Println("Default account is required.  Please run `compose accounts` and `compose config:account -a <account-slug>` to set a default acount.")
 			os.Exit(1)
 		}
 
@@ -69,7 +69,7 @@ func requireAccount(api *Api) {
 		api.Config = config
 
 		if err != nil {
-			fmt.Println("Error saving default configuartion to ~/.mongohq/defaults. Will you check the permissions on the file allow you to write?")
+			fmt.Println("Error saving default configuartion to ~/.compose/defaults. Will you check the permissions on the file allow you to write?")
 		}
 
 		fmt.Println("Set default account to " + account.Slug + "\n")

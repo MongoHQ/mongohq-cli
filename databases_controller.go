@@ -121,7 +121,7 @@ func (c *Controller) CreateDatabaseUser(deploymentId, databaseName, username, su
 		password, err = safeGetPass("Password (typing will be hidden): ")
 
 		if err != nil {
-			fmt.Println("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
+			fmt.Println("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@compose.io.")
 			cliOSExit()
 			return
 		}

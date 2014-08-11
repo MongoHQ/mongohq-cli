@@ -22,7 +22,7 @@ func (api Api) Authenticate(username, password, token string) (string, error) {
 
 	data, err := json.Marshal(AuthenticationArguments{Username: username, Password: password, GrantType: "password", ClientId: oauth_client_id})
 	if err != nil {
-		return oauthToken, errors.New("Error creating MongoHQ authentication request.")
+		return oauthToken, errors.New("Error creating Compose authentication request.")
 	}
 
 	client, err := buildHttpClient()
@@ -42,12 +42,12 @@ func (api Api) Authenticate(username, password, token string) (string, error) {
 	responseBody, _ := ioutil.ReadAll(response.Body)
 
 	if err != nil {
-		return "", errors.New("Error authenticating against MongoHQ: " + err.Error())
+		return "", errors.New("Error authenticating against Compose: " + err.Error())
 	} else if response.StatusCode >= 400 {
 		if response.Header.Get("X-Mongohq-Otp") == "required; sms" {
 			return "", errors.New("2fa token required")
 		} else if response.Header.Get("X-Mongohq-Otp") == "required; unconfigured" {
-			return "", errors.New("Account requires 2fa authentication.  Go to https://app.mongohq.com to configure")
+			return "", errors.New("Account requires 2fa authentication.  Go to https://app.compose.io to configure")
 		} else {
 			var errorResponse ErrorResponse
 			err = json.Unmarshal(responseBody, &errorResponse)
@@ -56,7 +56,7 @@ func (api Api) Authenticate(username, password, token string) (string, error) {
 				return "", errors.New(errorResponse.Error)
 			}
 
-			return "", errors.New("Error authenticating against MongoHQ.")
+			return "", errors.New("Error authenticating against Compose.")
 		}
 	} else {
 		_ = json.Unmarshal(responseBody, &jsonResponse)

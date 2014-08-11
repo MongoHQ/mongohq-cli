@@ -1,4 +1,4 @@
-mongohq-cli
+compose-cli
 checksum
 builds/*
 .env

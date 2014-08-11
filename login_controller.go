@@ -16,18 +16,18 @@ type LoginController struct {
 	Username   string
 }
 
-var configPath = os.Getenv("HOME") + "/.mongohq"
+var configPath = os.Getenv("HOME") + "/.compose"
 var credentialFile = configPath + "/credentials"
 
 var Email, OauthToken string
 
 func (c *LoginController) login() error {
-	fmt.Println("Enter your MongoHQ credentials.")
+	fmt.Println("Enter your Compose credentials.")
 	username := prompt("Email")
 	password, err := safeGetPass("Password (typing will be hidden): ")
 
 	if err != nil {
-		return errors.New("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@mongohq.com.")
+		return errors.New("Error returning password.  We may not be compliant with your system yet.  Please send us a message telling us about your system to support@compose.io.")
 	}
 
 	oauthToken, err := c.Api.Authenticate(username, password, "")
@@ -123,7 +123,7 @@ func (c *LoginController) Logout() {
 	os.Remove(configFile)
 
 	if err != nil {
-		fmt.Println("Error deleting authorization token.  You will need to do that manually from the MongoHQ UI.")
+		fmt.Println("Error deleting authorization token.  You will need to do that manually from the Compose UI.")
 	} else {
 		fmt.Println("Logout successful.")
 	}

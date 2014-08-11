@@ -36,11 +36,11 @@ type ErrorResponse struct {
 }
 
 func (api *Api) apiUrl(path string) string {
-	return "https://api.mongohq.com" + path
+	return "https://api.compose.io" + path
 }
 
 func (api *Api) gopherSocketUrl(path string) string {
-	return "wss://api.mongohq.com/mongo" + path + "?token=Bearer%20" + api.OauthToken
+	return "wss://api.compose.io/mongo" + path + "?token=Bearer%20" + api.OauthToken
 }
 
 func decodePem(certInput string) tls.Certificate {
@@ -67,7 +67,7 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	}
 
 	if api.OauthToken == "" {
-		return nil, errors.New("Unknown oauth token.  Please run `mongohq logout`, then rerun your command.")
+		return nil, errors.New("Unknown oauth token.  Please run `compose logout`, then rerun your command.")
 	}
 
 	request.Header.Add("Authorization", "Bearer "+api.OauthToken)
@@ -79,7 +79,7 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	if err != nil {
 		noConnection := regexp.MustCompile("no such host")
 		if noConnection.Match([]byte(err.Error())) {
-			fmt.Println("We couldn't find the MongoHQ host.  Typically, this means your internet connections has gone AWOL.")
+			fmt.Println("We couldn't find the Compose host.  Typically, this means your internet connections has gone AWOL.")
 			os.Exit(1)
 		} else {
 			return nil, err
@@ -101,9 +101,9 @@ func (api *Api) sendRequest(request *http.Request) ([]byte, error) {
 	if string(responseBody) == "NOT FOUND" {
 		return responseBody, errors.New("Object not found")
 	} else if response.StatusCode == 500 {
-		return responseBody, errors.New("MongoHQ service returned an error. Check your parameters and try again, or check our status page: https://status.mongohq.com.")
+		return responseBody, errors.New("Compose service returned an error. Check your parameters and try again, or check our status page: https://status.compose.io.")
 	} else if response.StatusCode >= 401 {
-		return responseBody, errors.New("Could not access the requested object.  Double check the arguments, or run `mongohq logout` and re-run the prior command.")
+		return responseBody, errors.New("Could not access the requested object.  Double check the arguments, or run `compose logout` and re-run the prior command.")
 	} else if response.StatusCode >= 400 {
 		var errorResponse ErrorResponse
 		err := json.Unmarshal(responseBody, &errorResponse)

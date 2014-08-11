@@ -8,16 +8,16 @@ import (
 
 var api *Api
 var controller Controller
-var historyfn = os.Getenv("HOME") + "/.mongohq/history"
+var historyfn = os.Getenv("HOME") + "/.compose/history"
 
 func main() {
 	loginController := new(LoginController)
 
 	app := cli.NewApp()
-	app.Name = "mongohq"
-	app.Usage = "Allow MongoHQ interaction from the commandline (enables awesomeness)"
+	app.Name = "compose"
+	app.Usage = "Allow Compose interaction from the commandline (enables awesomeness)"
 	app.Before = func(c *cli.Context) error {
-		loginController.Api = &Api{UserAgent: "MongoHQ-CLI " + Version()}
+		loginController.Api = &Api{UserAgent: "Compose-CLI " + Version()}
 		controller = Controller{Api: loginController.Api}
 		return nil
 	}
@@ -97,7 +97,7 @@ To see a list of all backups on a single deployment, include the name or id of t
 			Name:  "backups:create",
 			Usage: "create an on-demand backup for a deployment",
 			Description: `
-Queues an on-demand backup for a deployment.  To read more about this feature, see http://docs.mongohq.com/backups/elastic-deployments.html#on-demand-backups.
+Queues an on-demand backup for a deployment.  To read more about this feature, see http://docs.compose.io/backups/elastic-deployments.html#on-demand-backups.
       `,
 			Flags: []cli.Flag{
 				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "deployment name"},
@@ -279,10 +279,10 @@ List the slugs for all deployments.
 			Flags: []cli.Flag{
 				cli.StringFlag{Name: "database,db", Value: "<string>", Usage: "new database name"},
 				cli.StringFlag{Name: "deployment,dep", Value: "<string>", Usage: "new deployment name"},
-				cli.StringFlag{Name: "location,l", Value: "<string>", Usage: "location of deployment (for list of locations, run 'mongohq locations')"},
+				cli.StringFlag{Name: "location,l", Value: "<string>", Usage: "location of deployment (for list of locations, run 'compose locations')"},
 			},
 			Description: `
-Creates an elastic deployment on the MongoHQ platform. Stick with me here: it will create a new database on a new deployment at location you specify.  The deployment is a Replica Set and the database is the logical MongoDB database. You can find a list of locations by running "mongohq locations".
+Creates an elastic deployment on the Compose platform. Stick with me here: it will create a new database on a new deployment at location you specify.  The deployment is a Replica Set and the database is the logical MongoDB database. You can find a list of locations by running "compose locations".
       `,
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
@@ -391,7 +391,7 @@ Deletes a deployment.  Requires confirmation because this is a very destructive 
 			Name:  "locations",
 			Usage: "list available locations",
 			Description: `
-List the current locations available for MongoHQ deployments.  Used with both new deployments and restoring databases from backups.
+List the current locations available for Compose deployments.  Used with both new deployments and restoring databases from backups.
       `,
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
@@ -435,7 +435,7 @@ A streaming output of usage statistics for your database.  This is a very good f
 			Description: `
 List a databases' users.  These users are used to authenticate against a database.
 
-These are different than account users, which are used to authentication against the MongoHQ service.
+These are different than account users, which are used to authentication against the Compose service.
       `,
 			Action: func(c *cli.Context) {
 				loginController.RequireAuth()
@@ -516,7 +516,7 @@ Just a simple command to tell you which account user you are currently acting as
 			Name:  "logout",
 			Usage: "remove stored auth",
 			Description: `
-Removes authentication information from the MongoHQ CLI on this machine, and sends a kill command to the oauth token used for authentication.
+Removes authentication information from the Compose CLI on this machine, and sends a kill command to the oauth token used for authentication.
       `,
 			Action: func(c *cli.Context) {
 				loginController.Logout()
@@ -524,23 +524,23 @@ Removes authentication information from the MongoHQ CLI on this machine, and sen
 		},
 		{
 			Name:  "update",
-			Usage: "script to update the MongoHQ CLI binary",
+			Usage: "script to update the Compose CLI binary",
 			Description: `
 To update, run:
 
-  curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh
+  curl https://compose-cli.s3.amazonaws.com/install.sh | sh
       `,
 			Action: func(c *cli.Context) {
-				fmt.Println("To update, run: `curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh`")
+				fmt.Println("To update, run: `curl https://compose-cli.s3.amazonaws.com/install.sh | sh`")
 			},
 		},
 		{
 			Name:  "shell",
 			Usage: "starts REPL shell",
-			Description: `Starts a command line shell for the MongoHQ CLI
+			Description: `Starts a command line shell for the Compose CLI
 				`,
 			Action: func(c *cli.Context) {
-				loginController.Api = &Api{UserAgent: "MongoHQ-CLI " + Version()}
+				loginController.Api = &Api{UserAgent: "Compose-CLI " + Version()}
 				controller = Controller{Api: loginController.Api}
 				loginController.RequireAuth()
 				repl(app)

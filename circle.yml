@@ -4,18 +4,18 @@ deployment:
     commands:
       - echo "package main; func Version() string { return \"0.0.$CIRCLE_BUILD_NUM\" }" > version.go
       - echo "package main; var oauth_client_id = \"$OAUTH_CLIENT_ID\"" > oauth_client.go
-      - GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/linux/amd64/mongohq
-      - shasum builds/$CIRCLE_BRANCH/linux/amd64/mongohq | awk '{print $1}' > builds/$CIRCLE_BRANCH/linux/amd64/checksum
-      - GOOS=linux  GOARCH=386   CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/linux/386/mongohq
-      - shasum builds/$CIRCLE_BRANCH/linux/386/mongohq | awk '{print $1}' > builds/$CIRCLE_BRANCH/linux/386/checksum
-      - GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/darwin/amd64/mongohq
-      - shasum builds/$CIRCLE_BRANCH/darwin/amd64/mongohq | awk '{print $1}' > builds/$CIRCLE_BRANCH/darwin/amd64/checksum
-      - GOOS=darwin GOARCH=386   CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/darwin/386/mongohq
-      - shasum builds/$CIRCLE_BRANCH/darwin/386/mongohq | awk '{print $1}' > builds/$CIRCLE_BRANCH/darwin/386/checksum
+      - GOOS=linux  GOARCH=amd64 CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/linux/amd64/compose
+      - shasum builds/$CIRCLE_BRANCH/linux/amd64/compose | awk '{print $1}' > builds/$CIRCLE_BRANCH/linux/amd64/checksum
+      - GOOS=linux  GOARCH=386   CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/linux/386/compose
+      - shasum builds/$CIRCLE_BRANCH/linux/386/compose | awk '{print $1}' > builds/$CIRCLE_BRANCH/linux/386/checksum
+      - GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/darwin/amd64/compose
+      - shasum builds/$CIRCLE_BRANCH/darwin/amd64/compose | awk '{print $1}' > builds/$CIRCLE_BRANCH/darwin/amd64/checksum
+      - GOOS=darwin GOARCH=386   CGO_ENABLED=0 go build -o builds/$CIRCLE_BRANCH/darwin/386/compose
+      - shasum builds/$CIRCLE_BRANCH/darwin/386/compose | awk '{print $1}' > builds/$CIRCLE_BRANCH/darwin/386/checksum
       - echo "[default]" > .s3cmd
       - echo "access_key = $KEY" >> .s3cmd
       - echo "secret_key = $SECRET" >> .s3cmd
       - echo "host_base = s3.amazonaws.com" >> .s3cmd
-      - s3cmd -c .s3cmd sync builds s3://mongohq-cli/
-      - s3cmd -c .s3cmd put install.sh s3://mongohq-cli/
+      - s3cmd -c .s3cmd sync builds s3://compose-cli/
+      - s3cmd -c .s3cmd put install.sh s3://compose-cli/
       - rm .s3cmd

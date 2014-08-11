@@ -1,6 +1,6 @@
 # MongoHQ CLI
 
-For usage instructions see the [documentation](http://docs.mongohq.com/getting-started/cli.html).
+For usage instructions see the [documentation](http://docs.compose.io/getting-started/cli.html).
 
 This is a test MongoHQ cli project.  It works using the API and Gopher
 projects.  The purpose of this project is to:
@@ -10,12 +10,12 @@ projects.  The purpose of this project is to:
   * Stats monitoring from the command line, which is much nicer than
 * Allow MongoHQ developers to give access to features without the need for UI features.
 
-## Installation 
+## Installation
 
 To install, run:
 
 ```
-curl https://mongohq-cli.s3.amazonaws.com/install.sh | sh
+curl https://compose-cli.s3.amazonaws.com/install.sh | sh
 ```
 
 ## Using in Dev Mode

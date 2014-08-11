@@ -89,7 +89,7 @@ func (c *Controller) CreateBackup(deploymentSlug string) {
 		backup, err = c.Api.GetBackup(backup.Id)
 		if err != nil {
 			fmt.Println(err.Error())
-			fmt.Println("\nError requesting backup status. For a manual update, please run:\n\n mongohq backups:info -b " + backup.Id)
+			fmt.Println("\nError requesting backup status. For a manual update, please run:\n\n compose backups:info -b " + backup.Id)
 			cliOSExit()
 			return
 		}
@@ -97,7 +97,7 @@ func (c *Controller) CreateBackup(deploymentSlug string) {
 	}
 
 	if status != "complete" {
-		fmt.Println("Error creating backup.  Please try once more, or contact support@mongohq.com.")
+		fmt.Println("Error creating backup.  Please try once more, or contact support@compose.io.")
 		cliOSExit()
 		return
 	}
